@@ -1,6 +1,6 @@
 ﻿(* CODE: Page 7a *)
 /// Split a string into words at spaces
-let splitAtSpaces (text: string) = 
+let splitAtSpaces (text:string) = 
     text.Split ' ' 
     |> Array.toList 
 
@@ -9,8 +9,8 @@ let wordCount text =
     let words = splitAtSpaces text
     let wordSet = Set.ofList words
     let numWords = words.Length
-    let numDups  = words.Length - wordSet.Count
-    (numWords,numDups)
+    let numDups = numWords - wordSet.Count
+    (numWords, numDups)
 
 /// Analyze a string for duplicate words and display the results.
 let showWordCount text =
@@ -19,23 +19,28 @@ let showWordCount text =
     printfn "--> %d duplicate words" numDups
 
 (* OUTPUT: Page 8a *)
-//val splitatspaces : string -> string[]
-//val wordcount : string -> int * int
-//val showwordcount : string -> unit
+//val splitAtSpaces : text:string -> string list
+//val wordCount : text:string -> int * int
+//val showWordCount : text:string -> unit
 
-let (numWords,numDups) = wordCount "All the king's horses and all the king's men";;
+let (numWords, numDups) = wordCount "All the king's horses and all the king's men";;
 (* OUTPUT: Page 8b *)
 //val numWords : int = 9
-//val numDups  : int = 2
+//val numDups : int = 2
 
 showWordCount "Couldn't put Humpty together again";;
 (* OUTPUT: Page 8c *)
 //--> 5 words in the text
 //--> 0 duplicate words
+//val it : unit = ()
+
+(* SNIPPET: Page 9a *)
+//let wordCount (text:string) =
+//    let words = ...
 
 wordCount;;
 (* OUTPUT: Page 10a *)
-//val wordCount : string -> int * int
+//val it : (string -> int * int) = <fun:it@36>
 
 (* SNIPPET: Page 12a *)
 //let wordCount (text: string) =
@@ -51,8 +56,8 @@ let wordCount text =
     let words = splitAtSpaces text in
     let wordSet = Set.ofList words in
     let numWords = words.Length in
-    let numDups  = words.Length - wordSet.Count in
-    (numWords,numDups)
+    let numDups = numWords - wordSet.Count in
+    (numWords, numDups)
 
 let powerOfFour n =
     let nSquared = n * n in nSquared * nSquared
@@ -71,14 +76,12 @@ let badDefinition1 =
 //      let words = splitAtSpaces text
 //  ------------------------------^^^^
 (* OUTPUT: Page 14a *)
-//stdin(19,31): error FS0039: The value or constructor 'text' is not defined
+//error FS0039: The value or constructor 'text' is not defined
 
-let badDefinition2 = badDefinition2+1
+let badDefinition2 = badDefinition2 + 1
 
 (* OUTPUT: Page 14b *)
-//let badDefinition2 = badDefinition2+1
-//  ------------------^^^^^^^^^^^^^^^ 
-//stdin(21,19): error FS0039: The value or constructor 'badDefinition2' is not defined
+//error FS0039: The value or constructor 'badDefinition2' is not defined
 
 (* CODE: Page 15a *)
 let powerOfFourPlusTwo n =
@@ -114,47 +117,45 @@ let invalidFunction n =
 //Script.fsx(110,14): error FS0039: The value or constructor 'n1' is not defined
 
 (* SNIPPET: Page 16a *)
-//let wordCount (text : string) =
+//let wordCount (text:string) =
 //    let words = splitAtSpaces text
 //    let wordSet = Set.ofList words
 //    ...
 
-Set.ofList ["b";"a";"b";"b";"c" ];;
+Set.ofList ["b"; "a"; "b"; "b"; "c"];;
 (* OUTPUT: Page 17a *)
-//val it : Set<string> = seq [ "a"; "b"; "c" ]
+//val it : Set<string> = set ["a"; "b"; "c"]
 
 Set.toList (Set.ofList ["abc"; "ABC"]);;
 (* OUTPUT: Page 17b *)
-//val it : string list = [ "ABC"; "abc" ]
+//val it : string list = ["ABC"; "abc"]
 
 (* SNIPPET: Page 17a *)
 //  let numWords = words.Length
-//  let numDups = words.Length - wordSet.Count
+//  let numDups = numWords - wordSet.Count
 
-let length (inp : 'T list) = inp.Length
+let length (inp:'T list) = inp.Length
 (* MISSING-OUTPUT: Page 18a *)
-//val length : 'T list -> int
+//val length : inp:'T list -> int
 
 (* SNIPPET: Page 18a *)
 //let numWords = List.length words
-//let numDups = List.length words - Set.count wordSet
+//let numDups = numWords - Set.count wordSet
 
 let length inp = inp.Length;;
-//  let length inp = inp.Length;;
-//  ----------------^^^^
 (* OUTPUT: Page 18a *)
-//stdin(1,17): error FS0072: Lookup on object of indeterminate type based on information prior to this program point. A type annotation may be needed prior to this program point to constrain the type of the object. This may allow the lookup to be resolved.
+//error FS0072: Lookup on object of indeterminate type based on information prior to this program point. A type annotation may be needed prior to this program point to constrain the type of the object. This may allow the lookup to be resolved.
 
 (* SNIPPET: Page 19a *)
 //    ...
 //    let numWords = words.Length
-//    let numDups  = words.Length - wordSet.Count
-//    (numWords,numDups)
+//    let numDups = numWords - wordSet.Count
+//    (numWords, numDups)
 
-let site1 = ("www.cnn.com",10)
-let site2 = ("news.bbc.com",5)
-let site3 = ("www.msnbc.com",4)
-let sites = (site1,site2,site3)
+let site1 = ("www.cnn.com", 10)
+let site2 = ("news.bbc.com", 5)
+let site3 = ("www.msnbc.com", 4)
+let sites = (site1, site2, site3)
 (* OUTPUT: Page 19a *)
 //val site1 : string * int = ("www.cnn.com", 10)
 //val site2 : string * int = ("news.bbc.com", 5)
@@ -171,11 +172,11 @@ let relevance = snd site1;;
 //val relevance : int = 10
 
 (* SNIPPET: Page 20a *)
-//let fst (a,b) = a
-//let snd (a,b) = b
+//let fst (a, b) = a
+//let snd (a, b) = b
 
-let url,relevance = site1
-let siteA,siteB,siteC = sites
+let url, relevance = site1
+let siteA, siteB, siteC = sites
 (* MISSING-OUTPUT: Page 20a *)
 //val url : string = "www.cnn.com"
 //val relevance : int = 10
@@ -183,11 +184,15 @@ let siteA,siteB,siteC = sites
 //val siteB : string * int = ("news.bbc.com", 5)
 //val siteA : string * int = ("www.cnn.com", 10)
 
-let a,b = (1,2,3);;
+let a, b = (1, 2, 3);;
 (* OUTPUT: Page 20b *)
-//error: this pattern matches values of type 'int * int' but is here used with values of type 'int * int * int'. The tuples have different lengths.
+//error FS0001: Type mismatch. Expecting a
+//    'a * 'b    
+//but given a
+//    'a * 'b * 'c    
+//The tuples have differing lengths of 2 and 3
 
-let showResults (numWords,numDups) =
+let showResults (numWords, numDups) =
     printfn "--> %d words in the text" numWords
     printfn "--> %d duplicate words" numDups
 
@@ -207,7 +212,7 @@ printfn "--> %d duplicate words" numDups
 //System.Console.WriteLine("--> {0} words in the text", box numWords)
 //System.Console.WriteLine("--> {0} duplicate words", box numDups)
 
-let two = (printfn "Hello World"; 1+1)
+let two = (printfn "Hello World"; 1 + 1)
 let four = two + two
 (* MISSING-OUTPUT: Page 20b *)
 //Hello World
@@ -223,7 +228,7 @@ let four = two + two
 //val it : unit = ()
 
 /// Split a string into words at spaces
-let splitAtSpaces (text: string) = 
+let splitAtSpaces (text:string) = 
     text.Split ' ' 
     |> Array.toList 
 (* MISSING-OUTPUT: Page 23a *)
@@ -231,16 +236,16 @@ let splitAtSpaces (text: string) =
 
 open System.Windows.Forms
 
-let form = new Form(Visible=true,TopMost=true,Text="Welcome to F#")
+let form = new Form(Visible = true, TopMost = true, Text = "Welcome to F#")
 
-let textB = new RichTextBox(Dock=DockStyle.Fill, Text="Here is some initial text")
+let textB = new RichTextBox(Dock = DockStyle.Fill, Text = "Here is some initial text")
 form.Controls.Add textB
 
 open System.IO
 open System.Net
 
 /// Get the contents of the URL via a web request
-let http (url: string) =
+let http (url:string) =
     let req = System.Net.WebRequest.Create(url)
     let resp = req.GetResponse()
     let stream = resp.GetResponseStream()
@@ -249,7 +254,6 @@ let http (url: string) =
     resp.Close()
     html
 
-let google = http "http://www.google.com"
 textB.Text <- http "http://news.bbc.co.uk"
 (* GUI-OUTPUT: Page 23a *)
 
@@ -257,11 +261,10 @@ textB.Text <- http "http://news.bbc.co.uk"
 //open System.Windows.Forms
 
 (* SNIPPET: Page 24b *)
-let form = new System.Windows.Forms.Form(Visible=true,TopMost=true,
-                                         Text="Welcome to F#")
+let form = new System.Windows.Forms.Form(Visible = true, TopMost = true, Text = "Welcome to F#")
 
 (* SNIPPET: Page 25a *)
-let form = new Form(Visible=true, TopMost=true, Text="Welcome to F#")
+let form = new Form(Visible = true, TopMost = true, Text = "Welcome to F#")
 
 open System.Windows.Forms
 let form = new Form()
@@ -274,7 +277,7 @@ form.Text <- "Programming is Fun!"
 let form2 = form
 form2.Text <- "F# Forms are Fun"
 
-let textB = new RichTextBox(Dock= DockStyle.Fill)
+let textB = new RichTextBox(Dock = DockStyle.Fill)
 form.Controls.Add(textB)
 (* GUI-OUTPUT: Page 27a *)
 
@@ -300,7 +303,8 @@ let reader = new StreamReader(stream);;
 
 let html = reader.ReadToEnd();;
 (* OUTPUT: Page 28e *)
-//val html : string
+//val html : string =
+//  "<html><head><title>Microsoft Corporation</title><meta http-eq"+[959 chars]
 
 textB.Text <- html;;
 (* GUI-OUTPUT: Page 28a *)
