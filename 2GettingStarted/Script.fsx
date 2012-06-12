@@ -318,3 +318,37 @@ let fst ((a,  b) : 'a * 'b) = a
 let fst ((a,  b) : 'a * _) = a
 let fst ((a,  b) : _ * 'b) = a
 let fst ((a,  b) : _ * _) = a
+
+(* SNIPPET: Page 20a - to support review comment on tuples and the absence of enclosing parens. *) 
+let a = (1, 2);;
+let a = 1, 2;;
+let (a) = 1, 2;;
+//val a : int * int = (1, 2)
+
+let a,b = (1,2);;
+let (a,b) = (1,2);;
+let a,b = 1,2;;
+let (a,b) = 1,2;;
+//val b : int = 2
+//val a : int = 1
+
+let [a; b] = [1; 2];;
+//warning FS0025: Incomplete pattern matches on this expression. For example, the value '[_;_;_]' may indicate a case not covered by the pattern(s).
+//val b : int = 2
+//val a : int = 1
+
+let a::b::_ = [1; 2];;
+//warning FS0025: Incomplete pattern matches on this expression. For example, the value '[_]' may indicate a case not covered by the pattern(s).
+//val b : int = 2
+//val a : int = 1
+
+let a; b = [1; 2];;
+//error FS0010: Unexpected symbol ';' in binding. Expected '=' or other token.
+
+let [|a; b|] = [|1; 2|];;
+//warning FS0025: Incomplete pattern matches on this expression. For example, the value '[|_; _; _|]' may indicate a case not covered by the pattern(s).
+//val b : int = 2
+//val a : int = 1
+
+let a; b = [|1; 2|];;
+//error FS0010: Unexpected symbol ';' in binding. Expected '=' or other token.
