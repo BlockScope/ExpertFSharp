@@ -308,3 +308,13 @@ textB.Text <- html;;
 http;;
 (* OUTPUT: Page 28f *)
 //val http : string -> string
+
+(* SNIPPET: Page 17a - to support review comment on underscore being used as a type variable name. *)
+let len (s : Set<_>) = s.Count
+let len (s : Set<'T>) = s.Count
+let len (s : 'T Set) = s.Count
+let len (s : _ Set) = s.Count
+let fst ((a,  b) : 'a * 'b) = a
+let fst ((a,  b) : 'a * _) = a
+let fst ((a,  b) : _ * 'b) = a
+let fst ((a,  b) : _ * _) = a
