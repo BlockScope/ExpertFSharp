@@ -73,18 +73,30 @@ let primes = 2 :: (oddPrimes @ morePrimes)
 > people;;
 //val it : string list = ["Adam"; "Dominic"; "James"]
 
-//List.length	'T list -> int	Returns the length of the list.
-//List.head	'T list -> 'T	Returns the first element of a nonempty list.
-//List.tail	'T list -> 'T list	Returns all the elements of a nonempty list except the first.
-//List.init	int -> (int -> 'T) -> 'T list	Returns a new list. The length of the new list is specified by the first parameter. The second parameter must be a generating function that maps list indexes to values.
-//List.append	'T list -> 'T list -> 'T list	Returns a new list containing the elements of the first list followed by the elements of the second list.
-//List.filter	('T -> bool) -> 'T list -> 'T list	Returns a new list containing only those elements of the original list where the function returns true.
-//List.map	('T -> 'U ) -> 'T list -> 'U list	Creates a new list by applying a function to each element of the original list.
-//List.iter	('T -> unit) -> 'T list -> unit	Executes the given function for each element of the list.
-//List.unzip	('T * 'U) list -> 'T list * 'U list	Returns two new lists containing the first and second elements of the pairs in the input list.
-//List.zip	'T list -> 'U list -> ('T * 'U) list	Returns a new list containing the elements of the two input lists combined pairwise. The input lists must be the same length; otherwise, an exception is raised.
-//List.toArray	'T list -> 'T[]	Creates an array from the given list.
-//List.ofArray	'T[]    -> 'T list	Creates a list from the given array.
+List.length
+//'T list -> int
+List.head
+//'T list -> 'T
+List.tail
+//'T list -> 'T list
+List.init
+//int -> (int -> 'T) -> 'T list
+List.append
+//'T list -> 'T list -> 'T list
+List.filter
+//('T -> bool) -> 'T list -> 'T list
+List.map
+//('T -> 'U ) -> 'T list -> 'U list
+List.iter
+//('T -> unit) -> 'T list -> unit
+List.unzip
+//('T * 'U) list -> 'T list * 'U list
+List.zip
+//'T list -> 'U list -> ('T * 'U) list
+List.toArray
+//'T list -> 'T[]
+List.ofArray
+//'T[] -> 'T list
 
 > List.head [5; 4; 3];;
 //val it : int = 5
@@ -244,10 +256,14 @@ let getStats site =
 //  [("www.live.com", 12132, 892, 11); ("www.google.com", 44139, 2586, 33);
 //   ("search.yahoo.com", 12617, 846, 23)]
 
-List.map	('T -> 'U) -> 'T list -> 'U list
-Array.map	('T -> 'U) -> 'T [] -> 'U []
-Option.map	('T -> 'U) -> 'T option -> 'U option
-Seq.map	('T -> 'U) -> seq<'T> -> seq<'U>
+List.map
+('T -> 'U) -> 'T list -> 'U list
+Array.map
+('T -> 'U) -> 'T [] -> 'U []
+Option.map
+('T -> 'U) -> 'T option -> 'U option
+Seq.map
+('T -> 'U) -> seq<'T> -> seq<'U>
 
 site.Map getStats
 // TODO:    Work out how to get the above working
@@ -426,20 +442,34 @@ let time f =
 > range |> Seq.map (fun i -> (i, i * i));;
 //val it : seq<int * int> = seq [(0, 0); (1, 1); (2, 4); (3, 9); ...]
 
-//Seq.append	: seq<'T> -> seq<'T> -> seq<'T>
-//Seq.concat	: seq< seq<'T> >  -> seq<'T>
-//Seq.choose	: ('T -> 'U option) -> seq<'T> -> seq<'U>
-//Seq.delay	: (unit -> seq<'T>) -> seq<'T>
-//Seq.empty	seq<'T>
-//Seq.iter	: ('T -> unit) -> seq<'T> -> unit
-//Seq.filter	: ('T -> bool) -> seq<'T> -> seq<'T>
-//Seq.map	: ('T -> 'U) -> seq<'T> -> seq<'U>
-//Seq.singleton	: 'T -> seq<'T>
-//Seq.truncate	: int -> seq<'T> -> seq<'T>
-//Seq.toList	: seq<'T> -> 'T list
-//Seq.ofList	: 'T list -> seq<'T>
-//Seq.toArray	: seq<'T> -> 'T[]
-//Seq.ofArray	: 'T[] -> seq<'T>
+Seq.append
+//seq<'T> -> seq<'T> -> seq<'T>
+Seq.concat
+//seq< seq<'T> >  -> seq<'T>
+Seq.choose
+//('T -> 'U option) -> seq<'T> -> seq<'U>
+Seq.delay
+//(unit -> seq<'T>) -> seq<'T>
+Seq.empty
+//seq<'T>
+Seq.iter
+//('T -> unit) -> seq<'T> -> unit
+Seq.filter
+//('T -> bool) -> seq<'T> -> seq<'T>
+Seq.map
+//('T -> 'U) -> seq<'T> -> seq<'U>
+Seq.singleton
+//'T -> seq<'T>
+Seq.truncate
+//int -> seq<'T> -> seq<'T>
+Seq.toList
+//seq<'T> -> 'T list
+Seq.ofList
+//'T list -> seq<'T>
+Seq.toArray
+//seq<'T> -> 'T[]
+Seq.ofArray
+//'T[] -> seq<'T>
 
 open System.IO
 let rec allFiles dir =
