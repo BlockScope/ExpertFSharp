@@ -87,6 +87,7 @@ let primes = 2 :: (oddPrimes @ morePrimes)
 > people;;
 //val it : string list = ["Adam"; "Dominic"; "James"]
 
+(* SNIPPET: Page 34a *)
 List.length
 //'T list -> int
 List.head
@@ -100,7 +101,7 @@ List.append
 List.filter
 //('T -> bool) -> 'T list -> 'T list
 List.map
-//('T -> 'U ) -> 'T list -> 'U list
+//('T -> 'U) -> 'T list -> 'U list
 List.iter
 //('T -> unit) -> 'T list -> unit
 List.unzip
@@ -108,9 +109,9 @@ List.unzip
 List.zip
 //'T list -> 'U list -> ('T * 'U) list
 List.toArray
-//'T list -> 'T[]
+//'T list -> 'T []
 List.ofArray
-//'T[] -> 'T list
+//'T [] -> 'T list
 
 > List.head [5; 4; 3];;
 //val it : int = 5
@@ -270,14 +271,15 @@ let getStats site =
 //  [("www.live.com", 12132, 892, 11); ("www.google.com", 44139, 2586, 33);
 //   ("search.yahoo.com", 12617, 846, 23)]
 
+(* SNIPPET: Page 45a *)
 List.map
-('T -> 'U) -> 'T list -> 'U list
+//('T -> 'U) -> 'T list -> 'U list
 Array.map
-('T -> 'U) -> 'T [] -> 'U []
+//('T -> 'U) -> 'T [] -> 'U []
 Option.map
-('T -> 'U) -> 'T option -> 'U option
+//('T -> 'U) -> 'T option -> 'U option
 Seq.map
-('T -> 'U) -> seq<'T> -> seq<'U>
+//('T -> 'U) -> seq<'T> -> seq<'U>
 
 site.Map getStats
 // TODO:    Work out how to get the above working
@@ -448,10 +450,11 @@ let time f =
 > range |> Seq.map (fun i -> (i, i * i));;
 //val it : seq<int * int> = seq [(0, 0); (1, 1); (2, 4); (3, 9); ...]
 
+(* SNIPPET: Page 58a *)
 Seq.append
 //seq<'T> -> seq<'T> -> seq<'T>
 Seq.concat
-//seq< seq<'T> >  -> seq<'T>
+//seq<#seq<'T>> -> seq<'T>
 Seq.choose
 //('T -> 'U option) -> seq<'T> -> seq<'U>
 Seq.delay
@@ -473,7 +476,7 @@ Seq.toList
 Seq.ofList
 //'T list -> seq<'T>
 Seq.toArray
-//seq<'T> -> 'T[]
+//seq<'T> -> 'T []
 Seq.ofArray
 //'T[] -> seq<'T>
 
