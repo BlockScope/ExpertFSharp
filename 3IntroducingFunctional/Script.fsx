@@ -1,9 +1,12 @@
 ﻿> let squareAndAdd a b = a * a + b;;
 //val squareAndAdd : a:int -> b:int -> int
+> let squareAndAdd a b = a * a + (b:float);;
 > let squareAndAdd (a:float) b = a * a + b;;
 //val squareAndAdd : a:float -> b:float -> float
 > let squareAndAdd (a:float) (b:float) : float = a * a + b;;
 //val squareAndAdd : a:float -> b:float -> float
+
+> int -17.8;;
 > let s = "Couldn't put Humpty";;
 //val s : string = "Couldn't put Humpty"
 > s.Length;;
@@ -66,7 +69,10 @@ let rec repeatFetch url n =
         printfn "fetched <<< %s >>> on iteration %d" html n
         repeatFetch url (n - 1)
 
-let rec badFactorial n = if n <= 0 then 1 else n * badFactorial n
+let rec badFactorial n = if n <= 0 then 1 else n * badFactorial n;;
+badFactorial 0;;
+badFactorial 1;;
+badFactorial 2;;
 
 let rec even n = (n = 0u) || odd(n - 1u)
 and odd n = (n <> 0u) && even(n - 1u)
@@ -75,6 +81,12 @@ and odd n = (n <> 0u) && even(n - 1u)
 
 let even (n:uint32) = (n % 2u) = 0u
 let odd (n:uint32) = (n % 2u) = 1u
+
+let even n = (n % 2u) = 0u
+let odd n = (n % 2u) = 1u
+
+[1 .. 99];;
+['A' .. 'Z'];;
 
 let oddPrimes = [3; 5; 7; 11]
 let morePrimes = [13; 17]
@@ -113,6 +125,8 @@ List.toArray
 List.ofArray
 //'T [] -> 'T list
 
+List.zip oddPrimes morePrimes;;
+
 > List.head [5; 4; 3];;
 //val it : int = 5
 > List.tail [5; 4; 3];;
@@ -148,8 +162,20 @@ let isLikelySecretAgent url agent =
     match (url, agent) with
     | "http://www.control.org", 99 -> true
     | "http://www.control.org", 86 -> true
-    | "http://www.kaos.org", _  -> true
+    | "http://www.kaos.org", _ -> true
     | _ -> false
+
+let isLikelySecretAgent url agent =
+    match url, agent with
+    | ("http://www.control.org", 99) -> true
+    | ("http://www.control.org", 86) -> true
+    | ("http://www.kaos.org", _) -> true
+    | _ -> false
+
+isLikelySecretAgent "http://www.control.org" 99;;
+isLikelySecretAgent "http://www.control.org" 86;;
+isLikelySecretAgent @"http://www.kaos.org" 77;;
+isLikelySecretAgent "" 71;;
 
 let printFirst primes =
     match primes with
@@ -281,7 +307,16 @@ Option.map
 Seq.map
 //('T -> 'U) -> seq<'T> -> seq<'U>
 
-site.Map getStats
+sites.Map getStats
+List.map getStats
+//val it : (string list -> (string * int * int * int) list) = <fun:it@312-9>
+
+Seq.map getStats
+//error FS0030: Value restriction. The value 'it' has been inferred to have generic type
+//    val it : ('_a -> seq<string * int * int * int>) when '_a :> seq<string>    
+//Either make the arguments to 'it' explicit or, if you do not intend for it to be generic, add a type annotation.
+
+Seq.map (getStats:string -> string * int * int * int)
 // TODO:    Work out how to get the above working
 
 [1; 2; 3] |> List.map (fun x -> x * x * x)
@@ -336,11 +371,16 @@ let remap (r1:Rectangle) (r2:Rectangle) =
     let mapy y = int (float r2.Top + truncate (float (y - r1.Top) * scaley))
     let mapp (p:Point) = Point(mapx p.X, mapy p.Y)
     mapp
+//val remap : r1:Rectangle -> r2:Rectangle -> (Point -> Point)
 
-//val remap :
-//  r1:System.Drawing.Rectangle ->
-//    r2:System.Drawing.Rectangle ->
-//      (System.Drawing.Point -> System.Drawing.Point)
+let remapF (r1:RectangleF) (r2:RectangleF) =
+    let scalex = r2.Width / r1.Width
+    let scaley = r2.Height / r1.Height
+    let mapx x = r2.Left + (x - r1.Left) * scalex
+    let mapy y = r2.Top + (y - r1.Top) * scaley
+    let mapp (p:PointF) = PointF(mapx p.X, mapy p.Y)
+    mapp
+//val remapF : r1:RectangleF -> r2:RectangleF -> (PointF -> PointF)
 
 > let mapp = remap (Rectangle(100, 100, 100, 100)) (Rectangle(50, 50, 200, 200));;
 //val mapp : Point -> Point
@@ -359,6 +399,24 @@ let remap (r1:Rectangle) (r2:Rectangle) =
 //val it : Point = {X=250,Y=250} {IsEmpty = false;
 //                                X = 250;
 //                                Y = 250;}
+
+> let mappF = remapF (RectangleF(100.f, 100.f, 100.f, 100.f)) (RectangleF(50.f, 50.f, 200.f, 200.f));;
+//val mappF : PointF -> PointF
+
+> mappF (PointF(100.f, 100.f));;
+//val it : PointF = {X=50, Y=50} {IsEmpty = false;
+//                                X = 50.0f;
+//                                Y = 50.0f;}
+
+> mappF (PointF(150.f, 150.f));;
+//val it : PointF = {X=150, Y=150} {IsEmpty = false;
+//                                  X = 150.0f;
+//                                  Y = 150.0f;}
+
+> mappF (PointF(200.f, 200.f));;
+//val it : PointF = {X=250, Y=250} {IsEmpty = false;
+//                                  X = 250.0f;
+//                                  Y = 250.0f;}
 
 let sites = ["http://www.live.com";
              "http://www.google.com";
@@ -423,6 +481,10 @@ let time f =
 //          IsPowerOfTwo = true;
 //          IsZero = false;
 //          Sign = 1;}; ...]
+
+10I**12 = 1000000000000I;;
+10I**12 = 1_000_000_000_000I;;
+10I**12 = 1 000 000 000 000I;;
 
 > seq {1 .. 2 .. 5};;
 //val it : seq<int> = seq [1; 3; 5]
@@ -505,7 +567,8 @@ let rec allFiles dir =
 let checkerboardCoordinates n = 
    seq {for row in 1 .. n do
             for col in 1 .. n do
-                if (row + col) % 2 = 0 then
+                let sum = row + col
+                if sum % 2 = 0 then
                     yield (row, col)}
 //val checkerboardCoordinates : n:int -> seq<int * int>
 
