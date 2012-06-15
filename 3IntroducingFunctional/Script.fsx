@@ -55,12 +55,12 @@ let rec repeatFetch url n =
 let rec badFactorial n = if n <= 0 then 1 else n * badFactorial n
 
 let rec even n = (n = 0u) || odd(n - 1u)
-and     odd n = (n <> 0u) && even(n - 1u)
+and odd n = (n <> 0u) && even(n - 1u)
 //val even : n:uint32 -> bool
 //val odd : n:uint32 -> bool
 
 let even (n:uint32) = (n % 2u) = 0u
-let odd  (n:uint32) = (n % 2u) = 1u
+let odd (n:uint32) = (n % 2u) = 1u
 
 let oddPrimes = [3; 5; 7; 11]
 let morePrimes = [13; 17]
@@ -133,7 +133,7 @@ let isLikelySecretAgent url agent =
     match (url, agent) with
     | "http://www.control.org", 99 -> true
     | "http://www.control.org", 86 -> true
-    | "http://www.kaos.org" , _  -> true
+    | "http://www.kaos.org", _  -> true
     | _ -> false
 
 let printFirst primes =
@@ -195,7 +195,7 @@ let sign x =
 
 let getValue a =
     match a with
-    | (("lo" | "low") ,v) -> v
+    | (("lo" | "low"), v) -> v
     | ("hi", v) | ("high", v) -> v
     | _ -> failwith "expected a both a high and low value"
 
@@ -507,7 +507,7 @@ let fileInfo dir =
     seq {for file in Directory.GetFiles dir do
             let creationTime = File.GetCreationTime file 
             let lastAccessTime = File.GetLastAccessTime file
-            yield (file,creationTime,lastAccessTime)}
+            yield (file, creationTime, lastAccessTime)}
 //val fileInfo : dir:string -> seq<string * DateTime * DateTime>
 
 let rec allFiles dir =
