@@ -41,6 +41,20 @@ let round2 (x, y) =
 > factorial 5;;
 //val it : int = 120
 
+// FROM: Chapter 2's script
+open System.IO
+open System.Net
+
+/// Get the contents of the URL via a web request
+let http (url:string) =
+    let req = System.Net.WebRequest.Create(url)
+    let resp = req.GetResponse()
+    let stream = resp.GetResponseStream()
+    let reader = new StreamReader(stream)
+    let html = reader.ReadToEnd()
+    resp.Close()
+    html
+    
 let rec length l =
     match l with
     | [] -> 0
@@ -278,19 +292,11 @@ let google = http "http://www.google.com"
 //val google : string =
 //  "<!doctype html><html itemscope itemtype="http://schema.org/We"+[44114 chars]
 
-google |> getWords |> List.filter (fun s -> s = "href") |> List.length
-//Script.fsx(270,23): error FS0001: Type mismatch. Expecting a
-//    string [] -> 'a    
-//but given a
-//    'b list -> 'b list    
-//The type 'string []' does not match the type ''a list'
+google |> getWords |> Array.filter (fun s -> s = "href") |> Array.length
+//val it : int = 32
 
-let countLinks = getWords >> List.filter (fun s -> s = "href") >> List.length
-//Script.fsx(277,30): error FS0001: Type mismatch. Expecting a
-//    string [] -> 'a    
-//but given a
-//    'b list -> 'b list    
-//The type 'string []' does not match the type ''a list'
+let countLinks = getWords >> Array.filter (fun s -> s = "href") >> Array.length
+//val countLinks : (string -> int)
 
 google |> countLinks
 //Script.fsx(284,11): error FS0039: The value or constructor 'countLinks' is not defined
