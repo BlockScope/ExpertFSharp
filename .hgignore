@@ -1,0 +1,9 @@
+syntax: glob
+*.dll
+*.exe
+*.suo
+*.pdb
+*.cache
+*.XML
+*.xml
+*.FileListAbsolute.txt
