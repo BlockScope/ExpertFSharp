@@ -1,31 +1,82 @@
 ﻿type index = int
 type flags = int64
-type results = string * TimeSpan * int * int
+type results = string * System.TimeSpan * int * int
 
 type Person =
-    { Name: string
-      DateOfBirth: System.DateTime }
+    {Name : string
+     DateOfBirth : System.DateTime}
 
-> { Name = "Bill"; DateOfBirth = new System.DateTime(1962,09,02) };;
-//val it : Person = { Name="Bill"; DateOfBirth = 09/02/1962 }
+> {Name = "Bill"; DateOfBirth = new System.DateTime(1962, 09, 02)};;
+//val it : Person =
+//  {Name = "Bill";
+//   DateOfBirth = 2/09/1962 12:00:00 a.m. {Date = 2/09/1962 12:00:00 a.m.;
+//                                          Day = 2;
+//                                          DayOfWeek = Sunday;
+//                                          DayOfYear = 245;
+//                                          Hour = 0;
+//                                          Kind = Unspecified;
+//                                          Millisecond = 0;
+//                                          Minute = 0;
+//                                          Month = 9;
+//                                          Second = 0;
+//                                          Ticks = 619042176000000000L;
+//                                          TimeOfDay = 00:00:00;
+//                                          Year = 1962;};}
 
-> ({ Name = "Anna"; DateOfBirth = new System.DateTime(1968,07,23) } : Person);;
-//val it : Person = { Name="Anna"; DateOfBirth = 23/07/1968 }
+> ({Name = "Anna"; DateOfBirth = new System.DateTime(1968,07,23)} : Person);;
+//val it : Person =
+//  {Name = "Anna";
+//   DateOfBirth = 23/07/1968 12:00:00 a.m. {Date = 23/07/1968 12:00:00 a.m.;
+//                                           Day = 23;
+//                                           DayOfWeek = Tuesday;
+//                                           DayOfYear = 205;
+//                                           Hour = 0;
+//                                           Kind = Unspecified;
+//                                           Millisecond = 0;
+//                                           Minute = 0;
+//                                           Month = 7;
+//                                           Second = 0;
+//                                           Ticks = 620900640000000000L;
+//                                           TimeOfDay = 00:00:00;
+//                                           Year = 1968;};}
 
 type PageStats =
-    { Site: string;
-      Time: System.TimeSpan;
-      Length: int;
-      NumWords: int;
-      NumHRefs: int }
+    {Site : string;
+     Time : System.TimeSpan;
+     Length : int;
+     NumWords : int;
+     NumHRefs : int}
+
+open System
+open System.IO
+open System.Net
+
+//Using the time, http and getWords functions from Chapter 3.
+let time f =
+    let start = DateTime.Now
+    let res = f()
+    let finish = DateTime.Now
+    (res, finish - start)
+
+let http (url : string) =
+    let req = System.Net.WebRequest.Create(url)
+    let resp = req.GetResponse()
+    let stream = resp.GetResponseStream()
+    let reader = new StreamReader(stream)
+    let html = reader.ReadToEnd()
+    resp.Close()
+    html
+
+let delimiters = [|' '; '\n'; '\t'; '<'; '>'; '='|]
+let getWords (s:string) = s.Split delimiters
 
 let stats site =
     let url = "http://" + site
-    let html,t = time (fun () -> http url)
+    let html, t = time (fun () -> http url)
     let words = html |> getWords
-    let hrefs = words |> List.filter (fun s -> s = "href")
-    { Site=site; Time=t; Length=html.Length;
-      NumWords=hwords.Length; NumHRefs=hrefs.Length }
+    let hrefs = words |> Array.filter (fun s -> s = "href")
+    {Site = site; Time = t; Length = html.Length;
+     NumWords = words.Length; NumHRefs = hrefs.Length}
 
 //val stats  : string -> PageStats
 
@@ -34,34 +85,38 @@ let stats site =
 //                       Length=7728, NumWords=1156; NumHRefs=10; }
 
 type Person =
-    { Name: string
-      DateOfBirth: System.DateTime }
+    {Name : string
+     DateOfBirth : System.DateTime}
 
 type Company =
-    { Name: string
-      Address: string }
+    {Name : string
+     Address : string}
 
-type Dot = { X: int; Y: int }
-type Point = { X: float; Y: float }
+type Dot = {X : int; Y : int}
+type Point = {X : float; Y : float}
 
-> let coords1 (p:Point) = (p.X,p.Y);;
-//val coords1 : Point -> float * float
+> let coords1 (p : Point) = (p.X, p.Y);;
+//val coords1 : p:Point -> float * float
 
-> let coords2 (d:Dot) = (d.X,d.Y);;
-//val coords2 : Dot -> int * int
+> let coords2 (d : Dot) = (d.X, d.Y);;
+//val coords2 : d:Dot -> int * int
 
 > let dist p = sqrt (p.X * p.X + p.Y * p.Y);; // use of X and Y implies type "Point"
-//val dist : Point -> float
+//val dist : p:Point -> float
 
-type Point3D = { X: float; Y: float; Z: float }
+type Point3D = {X : float; Y : float; Z : float}
+let p1 = {X = 3.0; Y = 4.0; Z = 5.0}
+let p2 = {p1 with Y = 0.0; Z = 0.0}
 
-let p1 = { X=3.0; Y=4.0; Z=5.0 }
+val p1 : Point3D = {X = 3.0;
+                    Y = 4.0;
+                    Z = 5.0;}
 
-let p2 = { p1 with Y=0.0; Z=0.0 }
-val p1 : Point3D = { X=3.0; Y=4.0; Z=5.0 }
-val p2 : Point3D = { X=3.0; Y=0.0; Z=0.0 }
+val p2 : Point3D = {X = 3.0;
+                    Y = 0.0;
+                    Z = 0.0;}
 
-let p2 = { X=p1.X; Y=0.0; Z=0.0 }
+let p2 = {X = 3.0; Y = 0.0; Z = 0.0}
 
 type Route = int
 type Make = string
@@ -72,15 +127,15 @@ type Transport =
     | Bus of Route
 
 > let ian = Car("BMW","360");;
-//val ian : Transport = Car("BMW","360")
+//val ian : Transport = Car ("BMW","360")
 
-> let don = [ Bicycle; Bus 8 ];;
-//val don  : Transport list = [ Bicycle; Bus 8 ]
+> let don = [Bicycle; Bus 8];;
+//val don  : Transport list = [Bicycle; Bus 8]
 
-> let peter = [ Car ("Ford","Fiesta"); Bicycle ];;
+> let peter = [Car ("Ford","Fiesta"); Bicycle];;
 //val peter  : Transport list = [ Car ("Ford","Fiesta"); Bicycle ];;
 
-let averageSpeed (tr: Transport) =
+let averageSpeed (tr : Transport) =
     match tr with
     | Car _ -> 35
     | Bicycle -> 16
@@ -92,7 +147,7 @@ type Proposition =
     | Or of Proposition * Proposition
     | Not of Proposition
 
-let rec eval (p: Proposition) =
+let rec eval (p : Proposition) =
     match p with
     | True -> true
     | And(p1,p2) -> eval p1 && eval p2
@@ -113,40 +168,44 @@ type Tree<'T> =
 
 let rec sizeOfTree tree =
     match tree with
-    | Tree(_,l,r) -> 1 + sizeOfTree l + sizeOfTree r
+    | Tree(_, l, r) -> 1 + sizeOfTree l + sizeOfTree r
     | Tip _ -> 1
     
 //val sizeOfTree : Tree<'T> -> int
 
 > let smallTree = Tree ("1", Tree ("2", Tip "a", Tip "b"), Tip "c");;
-//val smallTree : Tree<string> = = Tree ("1",Tree ("2",Tip("a"),Tip("b")),Tip("c"))
+//val smallTree : Tree<string> = Tree ("1",Tree ("2",Tip "a",Tip "b"),Tip "c")
 
 > sizeOfTree smallTree;;
 //val it : int = 5
 
 type Point3D = Vector3D of float * float * float
 
-let origin = Vector3D(0.,0.,0.)
-let unitX  = Vector3D(1.,0.,0.)
-let unitY  = Vector3D(0.,1.,0.)
-let unitZ  = Vector3D(0.,0.,1.)
+let origin = Vector3D(0., 0., 0.)
+let unitX = Vector3D(1., 0., 0.)
+let unitY = Vector3D(0., 1., 0.)
+let unitZ = Vector3D(0., 0., 1.)
 
-let length (Vector3D(dx,dy,dz)) = sqrt(dx*dx+dy*dy+dz*dz)
+let length (Vector3D(dx, dy, dz)) = sqrt(dx * dx + dy * dy + dz * dz)
 
 type Node =
-    { Name : string;
-      Links : Link list }
+    {Name : string;
+     Links : Link list}
 and Link =
     | Dangling
     | Link of Node
 
 type Set<'T> = ...
 
-type StringMap<'T> = Microsoft.FSharp.Collections.Map<string,'T>
+type StringMap<'T> = Microsoft.FSharp.Collections.Map<string, 'T>
 
-type Projections<'T,'U> = ('T -> 'U) * ('U -> 'T)
+type Projections<'T, 'U> = ('T -> 'U) * ('U -> 'T)
+List.map;;
+//val it : (('a -> 'b) -> 'a list -> 'b list) = <fun:clo@203>
 //val map : ('T -> 'U) -> 'T list -> 'U list
-//val fetch : string -> string * string
+
+let fetch url = (url, http url);;
+//val fetch : url:string -> string * string
 //val map<'T,'U> : ('T -> 'U) -> 'T list -> 'U list
 
 let rec map (f : 'T -> 'U) (l : 'T list) =
@@ -154,17 +213,25 @@ let rec map (f : 'T -> 'U) (l : 'T list) =
     | h :: t -> f h :: map f t
     | [] -> []
 
-let rec map<'T,'U> (f : 'T -> 'U) (l : 'T list) =
+let rec map<'T, 'U> (f : 'T -> 'U) (l : 'T list) =
     match l with
     | h :: t -> f h :: map f t
     | [] -> []
 
-let getFirst (a,b,c) = a
-//val getFirst: 'a * 'b * 'c -> 'a
+let getFirst (a, b, c) = a
+//val getFirst : a:'a * b:'b * c:'c -> 'a
 
-let mapPair f g (x,y) = (f x, g y)
-//val mapPair : ('a -> 'b) -> ('c -> 'd) -> ('a * 'c) -> ('b * 'd)
+let mapPair f g (x, y) = (f x, g y)
+//val mapPair : f:('a -> 'b) -> g:('c -> 'd) -> x:'a * y:'c -> 'b * 'd
 
+compare
+(=)
+(<)
+(<=)
+(>)
+(>=)
+(min)
+(max)
 val compare : 'T -> 'T -> int when 'T : comparison
 val (=) : 'T -> 'T -> bool when 'T : equality
 val (<) : 'T -> 'T -> bool when 'T : comparison
@@ -174,20 +241,22 @@ val (>=) : 'T  -> 'T  -> bool when 'T : comparison
 val (min) : 'T  -> 'T  -> 'T  when 'T : comparison
 val (max) : 'T  -> 'T  -> 'T  when 'T : comparison
 
-> ("abc","def") < ("abc","xyz");;
+> ("abc", "def") < ("abc", "xyz");;
 //val it : bool = true
 
-> compare (10,30) (10,20);;
+> compare (10, 30) (10, 20);;
 //val it : int = 1
 
-> compare [10;30] [10;20];;
+> compare [10; 30] [10; 20];;
 //val it : int = 1
 
-> compare [| 10;30 |] [| 10;20 |];;
+> compare [|10; 30|] [|10; 20|];;
 //val it : int = 1
 
-> compare [| 10;20 |] [| 10;30 |];;
+> compare [|10; 20|] [|10; 30|];;
 //val it : int = -1
+
+hash;;
 //val hash : 'T -> int when 'T : equality
 
 > hash 100;;
@@ -196,12 +265,15 @@ val (max) : 'T  -> 'T  -> 'T  when 'T : comparison
 > hash "abc";;
 //val it : int = 536991770
 
-> hash (100,"abc");;
+> hash (100, "abc");;
 //val it : int = 536990974
 
 > sprintf "result = %A" ([1], [true]);;
 //val it : string = "result = ([1], [true])"
-val box   : 'T -> obj
+
+box;;
+unbox;;
+val box : 'T -> obj
 val unbox : obj -> 'T
 
 > box 1;;
@@ -219,10 +291,10 @@ val unbox : obj -> 'T
 > (unbox stringObj : string);;
 //val it : string = "abc"
 
-> (unbox stringObj: int);;
+> (unbox stringObj : int);;
 //System.InvalidCastException: Specified cast is not valid.
-//   at <StartupCode>.FSI_0014._main()
-//stopped due to error
+//   at <StartupCode$FSI_0046>.$FSI_0046.main@()
+//Stopped due to error
 
 //val writeValue  : System.IO.Stream -> 'T -> unit
 //val readValue   : System.IO.Stream -> 'T
@@ -230,7 +302,7 @@ val unbox : obj -> 'T
 open System.IO
 open System.Runtime.Serialization.Formatters.Binary
 
-let writeValue outputStream (x: 'T) =
+let writeValue outputStream (x : 'T) =
     let formatter = new BinaryFormatter()
     formatter.Serialize(outputStream, box x)
 
@@ -240,36 +312,31 @@ let readValue inputStream =
     unbox res
 
 open System.IO
-let addresses = Map.ofList [ "Jeff", "123 Main Street, Redmond, WA 98052";
-                             "Fred", "987 Pine Road, Phila., PA 19116";
-                             "Mary", "PO Box 112233, Palo Alto, CA 94301" ]
+let addresses = Map.ofList ["Jeff", "123 Main Street, Redmond, WA 98052";
+                            "Fred", "987 Pine Road, Phila., PA 19116";
+                            "Mary", "PO Box 112233, Palo Alto, CA 94301"]
 
 
 let fsOut = new FileStream("Data.dat", FileMode.Create)
 writeValue fsOut addresses
 fsOut.Close()
 let fsIn = new FileStream("Data.dat", FileMode.Open)
-let res : Map<string,string> = readValue fsIn
+let res : Map<string, string> = readValue fsIn
 fsIn.Close()
 
 > res;;
 
-val it : Map<string,string>
-       = seq
-           [[Fred, 987 Pine Road, Phila., PA 19116]
-              {Key = "Fred";
-               Value = "987 Pine Road, Phila., PA 19116";};
-            [Jeff, 123 Main Street, Redmond, WA 98052]
-              {Key = "Jeff";
-               Value = "123 Main Street, Redmond, WA 98052";};
-            [Mary, PO Box 112233, Palo Alto, CA 94301]
-              {Key = "Mary";
-               Value = "PO Box 112233, Palo Alto, CA 94301";}]
+val it : Map<string,string> =
+  map
+    [("Fred", "987 Pine Road, Phila., PA 19116");
+     ("Jeff", "123 Main Street, Redmond, WA 98052");
+     ("Mary", "PO Box 112233, Palo Alto, CA 94301")]
 
 let rec hcf a b =
-    if   a=0 then b
-    elif a<b then hcf a (b-a)
-    else hcf (a-b) b
+    if a = 0 then b
+    elif a < b then hcf a (b - a)
+    else hcf (a - b) b
+//val hcf : a:int -> b:int -> int
 
 > hcf 18 12;;
 //val it : int = 6
@@ -277,20 +344,20 @@ let rec hcf a b =
 > hcf 33 24;;
 //val it : int = 3
 
-let hcfGeneric (zero,sub,lessThan) =
+let hcfGeneric (zero, sub, lessThan) =
     let rec hcf a b =
-        if   a=zero then b
+        if a = zero then b
         elif lessThan a b then hcf a (sub b a)
         else hcf (sub a b) b
     hcf
 
-//val hcfGeneric : 
-//     'a * ('a -> 'a -> 'a) * ('a -> 'a -> bool) -> ('a -> 'a -> 'a) 
-//         when 'a : equality
+//val hcfGeneric :
+//  zero:'a * sub:('a -> 'a -> 'a) * lessThan:('a -> 'a -> bool) ->
+//    ('a -> 'a -> 'a) when 'a : equality
 
-let hcfInt    = hcfGeneric (0, (-),(<))
-let hcfInt64  = hcfGeneric (0L,(-),(<))
-let hcfBigInt = hcfGeneric (0I,(-),(<))
+let hcfInt = hcfGeneric (0, (-), (<))
+let hcfInt64  = hcfGeneric (0L, (-), (<))
+let hcfBigInt = hcfGeneric (0I, (-), (<))
 
 > hcfInt 18 12;;
 //val it : int = 6
@@ -299,13 +366,13 @@ let hcfBigInt = hcfGeneric (0I,(-),(<))
 //val it : bigint = 33224I
 
 type Numeric<'T> =
-    { Zero: 'T;
-      Subtract: ('T -> 'T -> 'T);
-      LessThan: ('T -> 'T -> bool); }
+    {Zero : 'T;
+     Subtract : ('T -> 'T -> 'T);
+     LessThan : ('T -> 'T -> bool);}
 
-let intOps    = { Zero=0 ; Subtract=(-); LessThan=(<) }
-let bigintOps = { Zero=0I; Subtract=(-); LessThan=(<) }
-let int64Ops  = { Zero=0L; Subtract=(-); LessThan=(<) }
+let intOps = {Zero = 0; Subtract = (-); LessThan = (<)}
+let bigintOps = {Zero = 0I; Subtract = (-); LessThan = (<)}
+let int64Ops = {Zero = 0L; Subtract = (-); LessThan = (<)}
 
 let hcfGeneric (ops : Numeric<'T>) =
     let rec hcf a b =
@@ -314,12 +381,15 @@ let hcfGeneric (ops : Numeric<'T>) =
         else hcf (ops.Subtract a b) b
     hcf
 
-let hcfInt    = hcfGeneric intOps
+let hcfInt = hcfGeneric intOps
 let hcfBigInt = hcfGeneric bigintOps
 
-//val hcfGeneric : Numeric<'T> -> ('T -> 'T -> 'T) when 'T : equality
+//val hcfGeneric : ops:Numeric<'T> -> ('T -> 'T -> 'T) when 'T : equality
 //val hcfInt : (int -> int -> int)
-//val hcfBigInt : (bigint -> bigint -> bigint)
+//val hcfBigInt :
+//  (System.Numerics.BigInteger -> System.Numerics.BigInteger ->
+//     System.Numerics.BigInteger)
+
 > hcfInt 18 12;;
 //val it : int = 6
 
@@ -328,21 +398,21 @@ let hcfBigInt = hcfGeneric bigintOps
 
 type INumeric<'T> =
     abstract Zero : 'T
-    abstract Subtract: 'T * 'T -> 'T
-    abstract LessThan: 'T * 'T -> bool
+    abstract Subtract : 'T * 'T -> 'T
+    abstract LessThan : 'T * 'T -> bool
 
 let intOps =
-    { new INumeric<int> with
-          member ops.Zero = 0
-          member ops.Subtract(x,y) = x - y
-          member ops.LessThan(x,y) = x < y }
+    {new INumeric<int> with
+        member ops.Zero = 0
+        member ops.Subtract(x, y) = x - y
+        member ops.LessThan(x, y) = x < y}
 //val intOps : INumeric<int>
 
 let hcfGeneric (ops : INumeric<'T>) =
     let rec hcf a b =
-        if a= ops.Zero then b
-        elif ops.LessThan(a,b) then hcf a (ops.Subtract(b,a))
-        else hcf (ops.Subtract(a,b)) b
+        if a = ops.Zero then b
+        elif ops.LessThan(a, b) then hcf a (ops.Subtract(b, a))
+        else hcf (ops.Subtract(a, b)) b
     hcf
 
 let convertToFloat x = float x
@@ -353,16 +423,15 @@ let inline convertToFloatAndAdd x y = float x + float y
 
 let inline hcf a b =
     let rec loop a b = 
-        if   a=LanguagePrimitives.GenericZero<_> then b
-        elif a<b then loop a (b-a)
-        else loop (a-b) b
+        if a = LanguagePrimitives.GenericZero<_> then b
+        elif a < b then loop a (b - a)
+        else loop (a - b) b
     loop a b
 
 //val inline hcf :
-//   ^a ->  ^a ->  ^a
-//    when ^a : (static member Zero : ^a) 
-//    and  ^a : (static member ( - ) :  ^a *  ^a ->  ^a)
-//    and   ^a : comparison
+//  a: ^a -> b: ^a ->  ^a
+//    when  ^a : (static member get_Zero : ->  ^a) and  ^a : comparison and
+//          ^a : (static member ( - ) :  ^a *  ^a ->  ^a)
 
 > hcf 18 12;;
 //val it : int = 6
@@ -372,11 +441,15 @@ let inline hcf a b =
 
 let inline hcf a b =
     hcfGeneric 
-        { new INumeric<'T> with
-              member ops.Zero = LanguagePrimitives.GenericZero<'T>
-              member ops.Subtract(x,y) = x - y
-              member ops.LessThan(x,y) = x < y }
+        {new INumeric<'T> with
+            member ops.Zero = LanguagePrimitives.GenericZero<'T>
+            member ops.Subtract(x, y) = x - y
+            member ops.LessThan(x, y) = x < y}
         a b
+//val inline hcf :
+//  a: ^T -> b: ^T ->  ^T
+//    when  ^T : (static member get_Zero : ->  ^T) and
+//          ^T : (static member ( - ) :  ^T *  ^T ->  ^T) and  ^T : comparison
 
 > let xobj = (1 :> obj);;
 //val xobj : obj = 1
@@ -388,39 +461,44 @@ let inline hcf a b =
 //val boxedObject : obj
 
 > let downcastString = (boxedObject :?> string);;
-//val downcastString  : string = "abc"
+//val downcastString : string = "abc"
+
 > let xobj = box 1;;
 //val xobj : obj = 1
 
 > let x = (xobj :?> string);;
 //error: InvalidCastException raised at or near stdin:(2,0)
 
-let checkObject (x: obj) =
+let checkObject (x : obj) =
     match x with
     | :? string -> printfn "The object is a string"
-    | :? int    -> printfn "The object is an integer"
-    | _         -> printfn "The input is something else"
+    | :? int -> printfn "The object is an integer"
+    | _ -> printfn "The input is something else"
+//val checkObject : x:obj -> unit
+
 > checkObject (box "abc");;
 //val it : unit = ()
 
-let reportObject (x: obj) =
+let reportObject (x : obj) =
     match x with
     | :? string as s -> printfn "The input is the string '%s'" s
-    | :? int as d    -> printfn "The input is the integer '%d'" d
-    | _              -> printfn "the input is something else"
+    | :? int as d -> printfn "The input is the integer '%d'" d
+    | _ -> printfn "the input is something else"
+//val reportObject : x:obj -> unit
+
 >  reportObject (box 17);;
 //val it : unit = ()
 
 > open System.Windows.Forms;;
 
-> let setTextOfControl (c: Control) (s:string) = c.Text <- s;;
+> let setTextOfControl (c : Control) (s : string) = c.Text <- s;;
 //val setTextOfControl: Control -> string -> unit
 
 > let form = new Form();;
-//val form: Form
+//val form : Form = System.Windows.Forms.Form, Text: 
 
 > let textBox = new TextBox();;
-//val textBox : TextBox
+//val textBox : TextBox = System.Windows.Forms.TextBox, Text: 
 
 > setTextOfControl form "Form Text";;
 
@@ -434,20 +512,17 @@ let textReader  =
     then Console.In
     else File.OpenText("input.txt")
 
-//The error reported is as follows:
-//      else File.OpenText("input.txt")
-//           ^^^^^^^^^^^^^^^^^^^^^^^^^^
-// error: FS0001: This expression has type
-//        StreamReader
-//but is here used with type
-//        TextReader
-//stopped due to error
+error FS0001: This expression was expected to have type
+    TextReader    
+but here has type
+    StreamReader
+    
 //StreamReader is a subtype of TextReader, so the code can be corrected by throwing away the information that the returned type is a StreamReader:
 
 open System
 open System.IO
 
-let textReader  =
+let textReader =
     if DateTime.Today.DayOfWeek = DayOfWeek.Monday
     then Console.In
     else (File.OpenText("input.txt") :> TextReader)
@@ -456,81 +531,81 @@ let getTextReader () : TextReader = (File.OpenText("input.txt") :> TextReader)
 
 > open System.Windows.Forms;;
 
-> let setTextOfControl (c : 'T when 'T :> Control) (s:string) = c.Text <- s;;
+> let setTextOfControl (c : 'T when 'T :> Control) (s : string) = c.Text <- s;;
 //val setTextOfControl: #Control -> string -> unit
-Seq.concat [ [1;2;3]; [4;5;6] ]
-Seq.concat [ [| 1;2;3 |]; [| 4;5;6 |] ]
 
-> let getLengths inp = inp |> Seq.map (fun y -> y.Length) ;;
-//inp |> Seq.map (fun y -> y.Length)
-//------------------------^^^^^^^^
-//
-//stdin(11,36): error: Lookup on object of indeterminate type. A type annotation
-//may be needed prior to this program point to constrain the type of the object.
-//This may allow the lookup to be resolved.
-//You can easily solve this problem by adding a type annotation, such as to y:
+Seq.concat;;
+Seq.concat [[1;2;3]; [4;5;6]]
+Seq.concat [[|1; 2; 3|]; [|4; 5; 6|]]
+
+> let getLengths inp = inp |> Seq.map (fun y -> y.Length);;
+//error FS0072: Lookup on object of indeterminate type based on information prior to this program point. A type annotation may be needed prior to this program point to constrain the type of the object. This may allow the lookup to be resolved.
 
 let getLengths inp =
-    inp |> Seq.map (fun (y:string) -> y.Length)
+    inp |> Seq.map (fun (y : string) -> y.Length)
 
 let printSecondElements (inp : seq<'T * int>) =
     inp
-    |> Seq.iter (fun (x,y) -> printfn "y = %d" x)
+    |> Seq.iter (fun (x, y) -> printfn "y = %d" x)
 //> ... enter the code above ...
-//
-//      |> Seq.iter (fun (x,y) -> printfn "y = %d" x)
-//  --------------------------------------^^^^^^^^^
-//
-//stdin(21,38): warning: FS0064: This construct causes code to be less generic than
-//indicated by the type annotations. The type variable 'T has been constrained to
-//the type 'int'.
+//warning FS0064: This construct causes code to be less generic than indicated by the type annotations. The type variable 'T has been constrained to be type 'int'.
 
 type PingPong = Ping | Pong
 
 let printSecondElements (inp : seq<PingPong * int>) =
     inp
-    |> Seq.iter (fun (x,y) -> printfn "y = %d" x)
+    |> Seq.iter (fun (x, y) -> printfn "y = %d" x)
 
 > ... enter the code above ...
 
-//      |> Seq.iter (fun (x,y) -> printfn "y = %d" x)
-// ------------------------------------------------^
-//
-//stdin(27,47): error: FS0001: The type 'PingPong' is not compatible with any of
-//the types byte,int16,int32,int64,sbyte,uint16,uint32,uint64,nativeint,unativeint,
-//arising from the use of a printf-style format string
+error FS0001: The type 'PingPong' is not compatible with any of the types byte,int16,int32,int64,sbyte,uint16,uint32,uint64,nativeint,unativeint, arising from the use of a printf-style format string
 
 > let empties = Array.create 100 [];;
-//------^^^^^^
-//
-//error: FS0030: Value restriction. The value 'empties' has been inferred to 
-//have generic type
-//        val empties : '_a list []
-//Either define 'empties' as a simple data term, make it a function 
-//with explicit arguments or, if you do not intend for it to be generic, 
-//add a type annotation.
+//error FS0030: Value restriction. The value 'empties' has been inferred to have generic type
+//    val empties : '_a list []    
+//Either define 'empties' as a simple data term, make it a function with explicit arguments or, if you do not intend for it to be generic, add a type annotation.
 
 let emptyList = []
-let initialLists = ([],[2])
-let listOfEmptyLists = [[];[]]
-let makeArray ()  = Array.create 100 []
-val emptyList : 'a list
-val initialLists : ('a list * int list)
-val listOfEmptyLists : 'a list list
-val makeArray : unit -> 'a list []
+let initialLists = ([], [2])
+let listOfEmptyLists = [[]; []]
+let makeArray () = Array.create 100 []
+//val emptyList : 'a list
+//val initialLists : 'a list * int list
+//val listOfEmptyLists : 'a list list
+//val makeArray : unit -> 'a list []
 
 let empties = Array.create 100 []
+//error FS0030: Value restriction. The value 'empties' has been inferred to have generic type
+//    val empties : '_a list []    
+//Either define 'empties' as a simple data term, make it a function with explicit arguments or, if you do not intend for it to be generic, add a type annotation.
 
 let empties : int list [] = Array.create 100 []
+//val empties : int list [] =
+//  [|[]; []; []; []; []; []; []; []; []; []; []; []; []; []; []; []; []; []; [];
+//    []; []; []; []; []; []; []; []; []; []; []; []; []; []; []; []; []; []; [];
+//    []; []; []; []; []; []; []; []; []; []; []; []; []; []; []; []; []; []; [];
+//    []; []; []; []; []; []; []; []; []; []; []; []; []; []; []; []; []; []; [];
+//    []; []; []; []; []; []; []; []; []; []; []; []; []; []; []; []; []; []; [];
+//    []; []; []; []; []|]
 
 let mapFirst = List.map fst
+//error FS0030: Value restriction. The value 'mapFirst' has been inferred to have generic type
+//    val mapFirst : (('_a * '_b) list -> '_a list)    
+//Either make the arguments to 'mapFirst' explicit or, if you do not intend for it to be generic, add a type annotation.
 
 let mapFirst inp = List.map fst inp
-//val mapFirst : ('a * 'b) list -> 'a list
+//val mapFirst : inp:('a * 'b) list -> 'a list
 
-let mapFirst inp = inp |> List.map (fun (x,y) -> x)
+let mapFirst inp = inp |> List.map (fun (x, y) -> x)
+//val mapFirst : inp:('a * 'b) list -> 'a list
+
 let printFstElements = List.map fst >> List.iter (printf "res = %d")
+//error FS0030: Value restriction. The value 'printFstElements' has been inferred to have generic type
+//    val printFstElements : ((int * '_a) list -> unit)    
+//Either make the arguments to 'printFstElements' explicit or, if you do not intend for it to be generic, add a type annotation.
+
 let printFstElements inp = inp |> List.map fst |> List.iter (printf "res = %d")
+//val printFstElements : inp:(int * 'a) list -> unit
 
 let empties = Array.create 100 []
 
@@ -539,8 +614,12 @@ let intEmpties : int list [] = empties()
 let stringEmpties : string list [] = empties()
 
 let emptyLists = Seq.init 100 (fun _ -> [])
+//error FS0030: Value restriction. The value 'emptyLists' has been inferred to have generic type
+//    val emptyLists : seq<'_a list>    
+//Either define 'emptyLists' as a simple data term, make it a function with explicit arguments or, if you do not intend for it to be generic, add a type annotation.
 
 let emptyLists<'T> : seq<'T list> = Seq.init 100 (fun _ -> [])
+//val emptyLists<'T> : seq<'T list>
 
 > Seq.length emptyLists;;
 //val it : int = 100
@@ -554,10 +633,10 @@ let emptyLists<'T> : seq<'T list> = Seq.init 100 (fun _ -> [])
 let twice x = (x + x)
 //val twice : int -> int
 
-let twiceFloat (x:float) = x + x
-//val twiceFloat : float -> float
+let twiceFloat (x : float) = x + x
+//val twiceFloat : x:float -> float
 
 let threeTimes x = (x + x + x)
-let sixTimesInt64 (x:int64) = threeTimes x + threeTimes x
-val threeTimes : int64 -> int64
-val sixTimesInt64 : int64 -> int64
+let sixTimesInt64 (x : int64) = threeTimes x + threeTimes x
+//val threeTimes : x:int64 -> int64
+//val sixTimesInt64 : x:int64 -> int64
