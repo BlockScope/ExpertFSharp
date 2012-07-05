@@ -69,6 +69,8 @@ val it : string = " "
 //but here has type
 //    int    
 
+// This section shows sprintf with the various format codes. It is an expansion of table 4-5.
+// --- START TABLE ----
 >sprintf "%b";;
 //val it : (bool -> string) = <fun:it@72-6>
 
@@ -166,6 +168,7 @@ sprintf "%a" (fun () -> (fun (d:DateTime) -> sprintf "%A" d.DayOfWeek)) DateTime
 
 >sprintf;;
 //val it : (Printf.StringFormat<'a> -> 'a) = <fun:clo@167-1>
+// --- STOP TABLE ----
 
 > System.DateTime.Now.ToString();;
 //val it : string = "28/06/20.. 17:14:07 PM"
@@ -252,13 +255,13 @@ sprintf "%a" (fun () -> (fun (d:DateTime) -> sprintf "%A" d.DayOfWeek)) DateTime
 > line.Split ',' |> Array.map (fun s -> s.Trim());;
 //val it : string [] = [|"Smith"; "John"; "20 January 1986"; "Software Developer"|]
 
-let splitLine (line: string) =
-    line.Split [| ',' |] |> Array.map (fun s -> s.Trim())
+let splitLine (line : string) =
+    line.Split [|','|] |> Array.map (fun s -> s.Trim())
 //val splitLine : line:string -> string []
 
-let parseEmployee (line: string) =
+let parseEmployee (line : string) =
     match splitLine line with
-    | [| last; first; startDate; title |] ->
+    | [|last; first; startDate; title|] ->
         last, first, System.DateTime.Parse(startDate), title
     | _ ->
         failwithf "invalid employee format: '%s'" line
@@ -296,7 +299,7 @@ let firstThree = readEmployees "employees.txt" |> Seq.truncate 3 |> Seq.toList
 //   ("Smith", "John", 20/01/1986 12:00:00 a.m., "Software Developer");
 //   ("Smith", "John", 20/01/1986 12:00:00 a.m., "Software Developer")]
 
-> firstThree |> Seq.iter (fun (last,first,startDate,title)  -> 
+> firstThree |> Seq.iter (fun (last, first, startDate, title)  -> 
       printfn "%s %s started on %A" first last startDate);;
 //John Smith started on 20/01/1986 12:00:00 a.m.
 //John Smith started on 20/01/1986 12:00:00 a.m.
@@ -314,8 +317,8 @@ let parseHttpRequest line =
 
 open System.Text.RegularExpressions
 let regex s = new Regex(s)
-let (=~) s (re:Regex) = re.IsMatch(s)
-let (<>~) s (re:Regex) = not (s =~ re)
+let (=~) s (re : Regex) = re.IsMatch(s)
+let (<>~) s (re : Regex) = not (s =~ re)
 //val regex : s:string -> Regex
 //val ( =~ ) : s:string -> re:Regex -> bool
 //val ( <>~ ) : s:string -> re:Regex -> bool
@@ -388,7 +391,7 @@ let re =
 > r.Groups.["pcode"].Value;;
 //val it : string = "CB2 1TJ"
 
-let (|IsMatch|_|) (re: string) (inp:string) = 
+let (|IsMatch|_|) (re : string) (inp : string) = 
     if Regex(re).IsMatch(inp)  then Some() else None
 //val ( |IsMatch|_| ) : re:string -> inp:string -> unit option
     
@@ -398,7 +401,7 @@ let (|IsMatch|_|) (re: string) (inp:string) =
 | _ -> "nothing matched"
 //val it : string = "yes, it matched " 
 
-let firstAndSecondWord (inp:string) = 
+let firstAndSecondWord (inp : string) = 
     let re = regex "(?<word1>\w+)\s+(?<word2>\w+)"
     let results = re.Match(inp) 
     if results.Success then 
@@ -410,15 +413,15 @@ let firstAndSecondWord (inp:string) =
 > firstAndSecondWord "This is a super string"
 //val it : (string * string) option = Some ("This", "is")
 
-let (?) (results:Match) (name:string) = 
+let (?) (results : Match) (name : string) = 
     results.Groups.[name].Value
 //val ( ? ) : results:Match -> name:string -> string
 
-let firstAndSecondWord (inp:string) = 
+let firstAndSecondWord (inp : string) = 
     let re = regex "(?<word1>\w+)\s+(?<word2>\w+)"
     let results = re.Match(inp) 
     if results.Success then 
-        Some (results?word1, results?word2)
+        Some (results ? word1, results ? word2)
     else 
         None
 //val firstAndSecondWord : inp:string -> (string * string) option
@@ -479,7 +482,7 @@ let inp = """<?xml version="1.0" encoding="utf-8" ?>
 //val it : XmlNodeList =
 //  seq [seq []; seq [seq [seq []; seq [seq []; seq []]; seq []]]]
 
-> fsi.AddPrinter(fun (x:XmlNode) -> x.OuterXml);;
+> fsi.AddPrinter(fun (x : XmlNode) -> x.OuterXml);;
 //val it : unit = ()
 
 > doc.ChildNodes;;
@@ -504,9 +507,8 @@ let inp = """<?xml version="1.0" encoding="utf-8" ?>
 
 open System.Drawing
 type Scene =
-    | Ellipse   of RectangleF
-    | Rect      of RectangleF
-    
+    | Ellipse of RectangleF
+    | Rect of RectangleF
     | Composite of Scene list
 //type Scene =
 //  | Ellipse of RectangleF
@@ -517,33 +519,33 @@ open System.Xml
 open System.Drawing
 type Scene =
     | Ellipse of RectangleF
-    | Rect    of RectangleF
-    | Composite   of Scene list
+    | Rect of RectangleF
+    | Composite of Scene list
 
     /// A derived constructor
-    static member Circle(center:PointF,radius) =
-        Ellipse(RectangleF(center.X-radius,center.Y-radius,
-                           radius*2.0f,radius*2.0f))
+    static member Circle(center : PointF, radius) =
+        Ellipse(RectangleF(center.X - radius, center.Y - radius,
+                           radius * 2.0f, radius * 2.0f))
 
     /// A derived constructor
-    static member Square(left,top,side) =
-        Rect(RectangleF(left,top,side,side))
+    static member Square(left, top, side) =
+        Rect(RectangleF(left, top, side, side))
 
 /// Extract a number from an XML attribute collection
-let extractFloat32 attrName (attribs: XmlAttributeCollection) =
+let extractFloat32 attrName (attribs : XmlAttributeCollection) =
     float32 (attribs.GetNamedItem(attrName).Value)
 
 /// Extract a Point from an XML attribute collection
-let extractPointF (attribs: XmlAttributeCollection) =
-    PointF(extractFloat32 "x" attribs,extractFloat32 "y" attribs)
+let extractPointF (attribs : XmlAttributeCollection) =
+    PointF(extractFloat32 "x" attribs, extractFloat32 "y" attribs)
 
 /// Extract a Rectangle from an XML attribute collection
-let extractRectangleF (attribs: XmlAttributeCollection) =
-    RectangleF(extractFloat32 "left" attribs,extractFloat32 "top" attribs,
-               extractFloat32 "width" attribs,extractFloat32 "height" attribs)
+let extractRectangleF (attribs : XmlAttributeCollection) =
+    RectangleF(extractFloat32 "left" attribs, extractFloat32 "top" attribs,
+               extractFloat32 "width" attribs, extractFloat32 "height" attribs)
 
 /// Extract a Scene from an XML node
-let rec extractScene (node: XmlNode) =
+let rec extractScene (node : XmlNode) =
     let attribs = node.Attributes
     let childNodes = node.ChildNodes
     match node.Name with
@@ -554,19 +556,18 @@ let rec extractScene (node: XmlNode) =
     | "Rectangle"  ->
         Scene.Rect(extractRectangleF(attribs))
     | "Square"  ->
-        Scene.Square(extractFloat32 "left" attribs,extractFloat32 "top" attribs,
+        Scene.Square(extractFloat32 "left" attribs, extractFloat32 "top" attribs,
                      extractFloat32 "side" attribs)
-
     | "Composite"   ->
-        Scene.Composite [ for child in childNodes -> extractScene(child) ]
+        Scene.Composite [for child in childNodes -> extractScene(child)]
     | _ -> failwithf "unable to convert XML '%s'" node.OuterXml
 
 /// Extract a list of Scenes from an XML document
-let extractScenes (doc: XmlDocument) =
-   [ for node in doc.ChildNodes do
+let extractScenes (doc : XmlDocument) =
+   [for node in doc.ChildNodes do
        if node.Name = "Scene" then
           yield (Composite
-                     [ for child in node.ChildNodes -> extractScene(child) ]) ]
+                     [for child in node.ChildNodes -> extractScene(child)])]
 //type Scene =
 //  | Ellipse of RectangleF
 //  | Rect of RectangleF
@@ -582,7 +583,7 @@ let extractScenes (doc: XmlDocument) =
 //val extractScene : node:XmlNode -> Scene
 //val extractScenes : doc:XmlDocument -> Scene list
 
-> fsi.AddPrinter(fun (r:RectangleF) ->
+> fsi.AddPrinter(fun (r : RectangleF) ->
       sprintf "[%A,%A,%A,%A]" r.Left r.Top r.Width r.Height);;
 //val it : unit = ()
 
@@ -596,7 +597,7 @@ let extractScenes (doc: XmlDocument) =
 //         Ellipse [-2.0f,2.0f,3.0f,4.0f]]]]
 
 type Term =
-    | Term  of int * string * int
+    | Term of int * string * int
     | Const of int
 //type Term =
 //  | Term of int * string * int
@@ -628,8 +629,8 @@ let regex s = new Regex(s)
 let tokenR = regex @"((?<token>(\d+|\w+|\^|\+|-))\s*)*"
 //val tokenR : Regex = ((?<token>(\d+|\w+|\^|\+|-))\s*)*
 
-let tokenize (s:string) = 
-    [ for x in tokenR.Match(s).Groups.["token"].Captures do 
+let tokenize (s : string) = 
+    [for x in tokenR.Match(s).Groups.["token"].Captures do 
          let token = 
              match x.Value with 
              | "^" -> HAT 
@@ -637,7 +638,7 @@ let tokenize (s:string) =
              | "+" -> PLUS
              | s when System.Char.IsDigit s.[0] -> INT (int s)
              | s -> ID s 
-         yield token ]
+         yield token]
 //val tokenize : s:string -> Token list
 
 > tokenize "x^5 - 2x^3 + 20";;
@@ -647,13 +648,13 @@ let tokenize (s:string) =
 [ID "x"; HAT; INT 5; MINUS; INT 2; ID "x"; HAT; INT 3; PLUS; INT 20]
 
 type Term =
-    | Term  of int * string * int
+    | Term of int * string * int
     | Const of int
 
 type Polynomial = Term list
 type TokenStream = Token list
 
-let tryToken (src: TokenStream) =
+let tryToken (src : TokenStream) =
     match src with
     | tok :: rest -> Some(tok, rest)
     | _ -> None
@@ -720,13 +721,13 @@ let parse input =
 //val it : Term list = [Term (2,"x",2); Term (3,"x",1); Const 5]
 
 type OutState = System.IO.BinaryWriter
-type InState  = System.IO.BinaryReader
+type InState = System.IO.BinaryReader
 
 type Pickler<'T> = 'T -> OutState -> unit
 type Unpickler<'T> = InState -> 'T
 
-let byteP (b: byte) (st: OutState) = st.Write(b)
-let byteU (st: InState) = st.ReadByte()
+let byteP (b : byte) (st : OutState) = st.Write(b)
+let byteU (st : InState) = st.ReadByte()
 
 let boolP b st = byteP (if b then 1uy else 0uy) st
 let boolU st = let b = byteU st in (b = 1uy)
@@ -755,21 +756,21 @@ let int32U st =
 //val int32P : i:int -> st:OutState -> unit
 //val int32U : st:InState -> int
 
-let tup2P p1 p2 (a, b) (st: OutState) =
+let tup2P p1 p2 (a, b) (st : OutState) =
     (p1 a st : unit)
     (p2 b st : unit)
 
-let tup3P p1 p2 p3 (a, b, c) (st: OutState) =
+let tup3P p1 p2 p3 (a, b, c) (st : OutState) =
     (p1 a st : unit)
     (p2 b st : unit)
     (p3 c st : unit)
 
-let tup2U p1 p2 (st: InState) =
+let tup2U p1 p2 (st : InState) =
     let a = p1 st
     let b = p2 st
     (a, b)
 
-let tup3U p1 p2 p3 (st: InState) =
+let tup3U p1 p2 p3 (st : InState) =
     let a = p1 st
     let b = p2 st
     let c = p3 st
@@ -787,8 +788,8 @@ let listU f st =
         let tag = byteU st
         match tag with
         | 0uy -> List.rev acc
-        | 1uy -> let a = f st in loop (a::acc)
-        | n ->   failwithf "listU: found number %d" n
+        | 1uy -> let a = f st in loop (a :: acc)
+        | n -> failwithf "listU: found number %d" n
     loop []
 
 //val tup2P :
