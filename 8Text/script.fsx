@@ -340,7 +340,7 @@ let (<>~) s (re:Regex) = not (s =~ re)
 > regex(@"\s+").Split("I'm a little  \t\t\n\t\n\t teapot");;
 //val it : string [] = [|"I'm"; "a"; "little"; "teapot"|]
 
-> let m = regex(@"joe").Match("maryjoewashere");;
+> let m = regex("joe").Match("maryjoewashere");;
 //val m : Match = joe
 
 > if m.Success then
@@ -392,11 +392,6 @@ let (|IsMatch|_|) (re: string) (inp:string) =
     if Regex(re).IsMatch(inp)  then Some() else None
 //val ( |IsMatch|_| ) : re:string -> inp:string -> unit option
     
-let (|MatchGroups|_|) (re: string) (inp:string) = 
-    let results = Regex(re).Match(inp) 
-    if results.Success then Some results.Groups else None
-//val ( |MatchGroups|_| ) : re:string -> inp:string -> GroupCollection option
-
 > match "This is a string" with 
 | IsMatch "(?i)HIS" -> "yes, it matched"
 | IsMatch "ABC" -> "this would not match"
@@ -649,18 +644,6 @@ let tokenize (s:string) =
 //val it : Token list =
 //  [ID "x"; HAT; INT 5; MINUS; INT 2; ID "x"; HAT; INT 3; PLUS; INT 20]
 
-type Term =
-    | Term  of int * string * int
-    | Const of int
-//type Term =
-//  | Term of int * string * int
-//  | Const of int
-
-type Polynomial = Term list
-//type Polynomial = Term list
-
-[Term (1,"x",5); Term (-2,"x",3); Const 20]
-
 [ID "x"; HAT; INT 5; MINUS; INT 2; ID "x"; HAT; INT 3; PLUS; INT 20]
 
 type Term =
@@ -722,68 +705,6 @@ let parse input =
 //val parsePolynomial : src:TokenStream -> Term list * Token list
 //val parse : input:string -> Term list
 
-(* TODO: Delete this section to match revision changes in document.
-open SimpleTokensLex
-open Microsoft.FSharp.Text.Lexing
-
-type Term =
-    | Term  of int * string * int
-    | Const of int
-
-type Polynomial = term list
-type TokenStream = LazyList<token * Position * Position>
-
-let tryToken (src: TokenStream ) =
-    match src with
-    | LazyList.Cons ((tok, startPos, endPos), rest) -> Some(tok, rest)
-    | _ -> None
-
-let parseIndex src =
-    match tryToken src with
-    | Some (HAT, src) ->
-        match tryToken src with
-        | Some (INT num2, src) ->
-            num2, src
-        | _ -> failwith "expected an integer after '^'"
-    | _ -> 1, src
-
-let parseTerm src =
-    match tryToken src with
-    | Some (INT num, src) ->
-        match tryToken src with
-        | Some (ID id, src) ->
-           let idx, src = parseIndex src
-           Term (num, id, idx), src
-        | _ -> Const num, src
-    | Some (ID id, src) ->
-         let idx, src = parseIndex src
-         Term(1, id, idx), src
-    | _ -> failwith "end of token stream in term"
-
-let rec parsePolynomial src =
-    let t1, src = parseTerm src
-    match tryToken src with
-    | Some (PLUS, src) ->
-        let p2, src = parsePolynomial src
-        (t1 :: p2), src
-    | _ -> [t1], src
-//val tryToken        : TokenStream  -> (token * TokenStream ) option
-//val parseIndex      : TokenStream  -> int * TokenStream 
-//val parseTerm       : TokenStream  -> Term * TokenStream 
-//val parsePolynomial : TokenStream  -> Polynomial * TokenStream 
-
-let getTokenStream  inp : TokenStream  =
-    // Generate the token stream as a seq<token>
-    seq { let lexbuf = LexBuffer<_>.FromString inp
-          while not lexbuf.IsPastEndOfStream do
-              match SimpleTokensLex.token lexbuf with
-              | EOF -> yield! []
-              | token -> yield (token, lexbuf.StartPos, lexbuf.EndPos) }
-
-    // Convert to a lazy list
-    |> LazyList.ofSeq
-*)
-
 let parse input =
     let src = tokenize input
     let result, src = parsePolynomial src
@@ -798,14 +719,14 @@ let parse input =
 > parse "2x^2+3x+5";;
 //val it : Term list = [Term (2,"x",2); Term (3,"x",1); Const 5]
 
-type OoutSstate = System.IO.BinaryWriter
-type IinSstate  = System.IO.BinaryReader
+type OutState = System.IO.BinaryWriter
+type InState  = System.IO.BinaryReader
 
-type Ppickler<'T> = 'T -> OoutSstate -> unit
-type Uunpickler<'T> = IinSstate -> 'T
+type Pickler<'T> = 'T -> OutState -> unit
+type Unpickler<'T> = InState -> 'T
 
-let byteP (b: byte) (st: OoutSstate) = st.Write(b)
-let byteU (st: IinSstate) = st.ReadByte()
+let byteP (b: byte) (st: OutState) = st.Write(b)
+let byteU (st: InState) = st.ReadByte()
 
 let boolP b st = byteP (if b then 1uy else 0uy) st
 let boolU st = let b = byteU st in (b = 1uy)
@@ -823,32 +744,32 @@ let int32U st =
     let b3 = int (byteU st)
     b0 ||| (b1 <<< 8) ||| (b2 <<< 16) ||| (b3 <<< 24)
 
-//type OoutSstate = System.IO.BinaryWriter
-//type IinSstate = System.IO.BinaryReader
-//type Ppickler<'T> = 'T -> OoutSstate -> unit
-//type Uunpickler<'T> = IinSstate -> 'T
-//val byteP : b:byte -> st:OoutSstate -> unit
-//val byteU : st:IinSstate -> byte
-//val boolP : b:bool -> st:OoutSstate -> unit
-//val boolU : st:IinSstate -> bool
-//val int32P : i:int -> st:OoutSstate -> unit
-//val int32U : st:IinSstate -> int
+//type OutState = BinaryWriter
+//type InState = BinaryReader
+//type Pickler<'T> = 'T -> OutState -> unit
+//type Unpickler<'T> = InState -> 'T
+//val byteP : b:byte -> st:OutState -> unit
+//val byteU : st:InState -> byte
+//val boolP : b:bool -> st:OutState -> unit
+//val boolU : st:InState -> bool
+//val int32P : i:int -> st:OutState -> unit
+//val int32U : st:InState -> int
 
-let tup2P p1 p2 (a, b) (st: OoutSstate) =
+let tup2P p1 p2 (a, b) (st: OutState) =
     (p1 a st : unit)
     (p2 b st : unit)
 
-let tup3P p1 p2 p3 (a, b, c) (st: OoutSstate) =
+let tup3P p1 p2 p3 (a, b, c) (st: OutState) =
     (p1 a st : unit)
     (p2 b st : unit)
     (p3 c st : unit)
 
-let tup2U p1 p2 (st: IinSstate) =
+let tup2U p1 p2 (st: InState) =
     let a = p1 st
     let b = p2 st
     (a, b)
 
-let tup3U p1 p2 p3 (st: IinSstate) =
+let tup3U p1 p2 p3 (st: InState) =
     let a = p1 st
     let b = p2 st
     let c = p3 st
@@ -871,22 +792,19 @@ let listU f st =
     loop []
 
 //val tup2P :
-//  p1:('a -> OoutSstate -> unit) ->
-//    p2:('b -> OoutSstate -> unit) -> a:'a * b:'b -> st:OoutSstate -> unit
+//  p1:('a -> OutState -> unit) ->
+//    p2:('b -> OutState -> unit) -> a:'a * b:'b -> st:OutState -> unit
 //val tup3P :
-//  p1:('a -> OoutSstate -> unit) ->
-//    p2:('b -> OoutSstate -> unit) ->
-//      p3:('c -> OoutSstate -> unit) ->
-//        a:'a * b:'b * c:'c -> st:OoutSstate -> unit
-//val tup2U :
-//  p1:(IinSstate -> 'a) -> p2:(IinSstate -> 'b) -> st:IinSstate -> 'a * 'b
+//  p1:('a -> OutState -> unit) ->
+//    p2:('b -> OutState -> unit) ->
+//      p3:('c -> OutState -> unit) -> a:'a * b:'b * c:'c -> st:OutState -> unit
+//val tup2U : p1:(InState -> 'a) -> p2:(InState -> 'b) -> st:InState -> 'a * 'b
 //val tup3U :
-//  p1:(IinSstate -> 'a) ->
-//    p2:(IinSstate -> 'b) ->
-//      p3:(IinSstate -> 'c) -> st:IinSstate -> 'a * 'b * 'c
+//  p1:(InState -> 'a) ->
+//    p2:(InState -> 'b) -> p3:(InState -> 'c) -> st:InState -> 'a * 'b * 'c
 //val listP :
-//  f:('a -> 'b -> unit) -> lst:'a list -> st:'b -> unit when 'b :> OoutSstate
-//val listU : f:('a -> 'b) -> st:'a -> 'b list when 'a :> IinSstate
+//  f:('a -> 'b -> unit) -> lst:'a list -> st:'b -> unit when 'b :> OutState
+//val listU : f:('a -> 'b) -> st:'a -> 'b list when 'a :> InState
 
 type format = list<int32 * bool>
 
