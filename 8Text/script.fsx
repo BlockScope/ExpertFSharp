@@ -27,13 +27,13 @@
 //val text : string = "I "like" you"
 
 > let s = "All the kings horses
-- and all the kings men";;
+- and all the kings men""";;
 
 //val s : string = " All the kings horses 
 //and all the kings men"
 
 > let s2 = """All the kings' "horses"
-- and all the kings men";;
+- and all the kings men""";;
 
 //val s2 : string = " All the kings' "horses" 
 //and all the kings men"
@@ -296,7 +296,7 @@ let inp = """
                  </Composite>
                  <Ellipse top='2' left='-2' width='3' height='4'/>
               </Composite>
-           </Scene>"
+           </Scene>"""
 
 > open System.Xml;;
 > let doc = new XmlDocument();;
