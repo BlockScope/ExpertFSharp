@@ -1,13 +1,13 @@
 > open System.Windows.Forms;;
-> let form = new Form(Text="Click Form",Visible=true,TopMost=true);;
+> let form = new Form(Text = "Click Form", Visible = true, TopMost = true);;
 //val form : Form
 
 > form.Click.Add(fun evArgs -> printfn "Clicked!");;
-> form.MouseMove.Add(fun args -> printfn "Mouse, (X,Y) = (%A,%A)" args.X args.Y);;
+> form.MouseMove.Add(fun args -> printfn "Mouse, (X, Y) = (%A, %A)" args.X args.Y);;
 
 form.MouseMove
     |> Event.filter (fun args -> args.X > 100)
-    |> Event.listen (fun args -> printfn "Mouse, (X,Y) = (%A,%A)" args.X args.Y)
+    |> Event.listen (fun args -> printfn "Mouse, (X, Y) = (%A, %A)" args.X args.Y)
 
 Event.choose
 Event.create
@@ -16,6 +16,8 @@ Event.scan
 Event.listen
 Event.map
 Event.partition
+// I get the following error when trying to get F# interactive to give me the types.
+// error FS0335: Could not resolve the ambiguity in the use of a generic construct with a 'delegate' constraint at or near this position
 //Event.choose	: ('T -> 'U option) -> IEvent<'T> -> IEvent<'U>
 //Event.create	: unit -> ('T -> unit) * IEvent<'T>
 //Event.filter	: ('T -> bool) -> IEvent<'T> -> IEvent<'T>
@@ -32,8 +34,8 @@ type RandomTicker(approxInterval) =
     let rnd = new System.Random(99)
     let tickEvent = new Event<int> ()
 
-    let chooseInterval() :int =
-        approxInterval + approxInterval/4 - rnd.Next(approxInterval/2)
+    let chooseInterval() : int =
+        approxInterval + approxInterval / 4 - rnd.Next(approxInterval / 2)
 
     do timer.Interval <- chooseInterval()
 
@@ -47,6 +49,14 @@ type RandomTicker(approxInterval) =
     member x.Stop() = timer.Stop()
     interface IDisposable with
         member x.Dispose() = timer.Dispose()
+//type RandomTicker =
+//  class
+//    interface System.IDisposable
+//    new : approxInterval:int -> RandomTicker
+//    member Start : unit -> unit
+//    member Stop : unit -> unit
+//    member RandomTick : IEvent<int>
+//  end
 
 > let rt = new RandomTicker(1000);;
 //val rt : RandomTicker
@@ -77,7 +87,7 @@ worker.DoWork.Add(fun args ->
             args.Result <- box res
         else
             // Compute the next result
-            computeFibonacci resPrev res (i+1)
+            computeFibonacci resPrev res (i + 1)
 
     computeFibonacci 1 1 2)
 
@@ -97,20 +107,20 @@ open System.Windows.Forms
 ///
 /// Percentage progress is based on the iteration number. Cancellation checks
 /// are made at each iteration. Implemented via an internal BackgroundWorker.
-type IterativeBackgroundWorker<'T>(oneStep:('T -> 'T),
-                                   initialState:'T,
-                                   numIterations:int) =
+type IterativeBackgroundWorker<'T>(oneStep : ('T -> 'T),
+                                   initialState : 'T,
+                                   numIterations : int) =
 
     let worker =
-        new BackgroundWorker(WorkerReportsProgress=true,
-                             WorkerSupportsCancellation=true)
+        new BackgroundWorker(WorkerReportsProgress = true,
+                             WorkerSupportsCancellation = true)
 
 
     // Create the events that we will later trigger
     let completed = new Event<_>()
-    let error     = new Event<_>()
+    let error = new Event<_>()
     let cancelled = new Event<_>()
-    let progress  = new Event<_>()
+    let progress = new Event<_>()
 
     do worker.DoWork.Add(fun args ->
         // This recursive function represents the computation loop.
@@ -126,48 +136,52 @@ type IterativeBackgroundWorker<'T>(oneStep:('T -> 'T),
                 let state' = oneStep state
 
                 // Report the percentage computation and the internal state
-                let percent = int ((float (i+1)/float numIterations) * 100.0)
+                let percent = int ((float (i + 1) / float numIterations) * 100.0)
                 do worker.ReportProgress(percent, box state);
 
                 // Compute the next result
-                iterate state' (i+1)
+                iterate state' (i + 1)
             else
                 args.Result <- box state
 
         iterate initialState 0)
 
     do worker.RunWorkerCompleted.Add(fun args ->
-        if args.Cancelled       then cancelled.Trigger()
+        if args.Cancelled then cancelled.Trigger()
         elif args.Error <> null then error.Trigger args.Error
         else completed.Trigger (args.Result :?> 'T))
 
     do worker.ProgressChanged.Add(fun args ->
         progress.Trigger (args.ProgressPercentage,(args.UserState :?> 'T)))
 
-    member x.WorkerCompleted  = completed.Publish
-    member x.WorkerCancelled  = cancelled.Publish
-    member x.WorkerError      = error.Publish
-    member x.ProgressChanged  = progress.Publish
+    member x.WorkerCompleted = completed.Publish
+    member x.WorkerCancelled = cancelled.Publish
+    member x.WorkerError = error.Publish
+    member x.ProgressChanged = progress.Publish
 
     // Delegate the remaining members to the underlying worker
-    member x.RunWorkerAsync()    = worker.RunWorkerAsync()
-    member x.CancelAsync()       = worker.CancelAsync()
+    member x.RunWorkerAsync() = worker.RunWorkerAsync()
+    member x.CancelAsync() = worker.CancelAsync()
+//type IterativeBackgroundWorker<'T> =
+//  class
+//    new : oneStep:('T -> 'T) * initialState:'T * numIterations:int ->
+//            IterativeBackgroundWorker<'T>
+//    member CancelAsync : unit -> unit
+//    member RunWorkerAsync : unit -> unit
+//    member ProgressChanged : IEvent<int * 'T>
+//    member WorkerCancelled : IEvent<unit>
+//    member WorkerCompleted : IEvent<'T>
+//    member WorkerError : IEvent<exn>
+//  end
 
-type IterativeBackgroundWorker<'State> =
-    new : ('State -> 'State) * 'State * int -> IterativeBackgroundWorker<'State>
-    member RunWorkerAsync : unit -> unit
-    member CancelAsync : unit -> unit
+let fibOneStep (fibPrevPrev : bigint, fibPrev) = (fibPrev, fibPrevPrev + fibPrev);;
+//val fibOneStep :
+//  fibPrevPrev:bigint * fibPrev:Numerics.BigInteger ->
+//    Numerics.BigInteger * Numerics.BigInteger
 
-    member ProgressChanged : IEvent<int * 'State>
-    member WorkerCompleted : IEvent<'State>
-    member WorkerCancelled : IEvent<unit>
-    member WorkerError     : IEvent<exn>
 
-let fibOneStep (fibPrevPrev:bigint,fibPrev) = (fibPrev, fibPrevPrev+fibPrev);;
-//val fibOneStep : bigint * bigint -> bigint * bigint
-
-> let worker = new IterativeBackgroundWorker<_>( fibOneStep,(1I,1I),100);;
-//val worker : IterativeBackgroundWorker<bigint * bigint>
+> let worker = new IterativeBackgroundWorker<_>(fibOneStep, (1I, 1I), 100);;
+//val worker : IterativeBackgroundWorker<bigint * Numerics.BigInteger>
 
 > worker.WorkerCompleted.Add(fun result ->
       MessageBox.Show(sprintf "Result = %A" result) |> ignore);;
@@ -204,57 +218,57 @@ type IterativeBackgroundWorker<'T>(...) =
     // to the captured synchronization context.
     do worker.DoWork.Add(fun args ->
         syncContext.Post(SendOrPostCallback(fun _ -> started.Trigger(DateTime.Now)),
-                         state=null)
+                         state = null)
         ...
 
     /// The Started event gets raised when the worker starts. It is
     /// raised on the GUI thread (i.e. in the synchronization context of
     /// the thread where the worker object was created).
     // It has type IEvent<DateTime>
-    member x.Started             = started.Publish
+    member x.Started = started.Publish
 
 open System.Drawing
 open System.Windows.Forms
 
-let form = new Form(Visible=true,TopMost=true)
+let form = new Form(Visible = true, TopMost = true)
 
-let panel = new FlowLayoutPanel(Visible=true,
+let panel = new FlowLayoutPanel(Visible = true,
                                 Height = 20,
-                                Dock=DockStyle.Bottom,
-                                BorderStyle=BorderStyle.FixedSingle)
+                                Dock = DockStyle.Bottom,
+                                BorderStyle = BorderStyle.FixedSingle)
 
-let progress = new ProgressBar(Visible=false,
-                               Anchor=(AnchorStyles.Bottom ||| AnchorStyles.Top),
-                               Value=0)
+let progress = new ProgressBar(Visible = false,
+                               Anchor = (AnchorStyles.Bottom ||| AnchorStyles.Top),
+                               Value = 0)
 
-let text = new Label(Text="Paused",
-                     Anchor=AnchorStyles.Left,
-                     Height=20,
-                     TextAlign= ContentAlignment.MiddleLeft)
+let text = new Label(Text = "Paused",
+                     Anchor = AnchorStyles.Left,
+                     Height = 20,
+                     TextAlign = ContentAlignment.MiddleLeft)
 
 panel.Controls.Add(progress)
 panel.Controls.Add(text)
 form.Controls.Add(panel)
 
-let fibOneStep (fibPrevPrev:bigint,fibPrev) = (fibPrev, fibPrevPrev+fibPrev)
+let fibOneStep (fibPrevPrev : bigint, fibPrev) = (fibPrev, fibPrevPrev + fibPrev)
 
 // Run the iterative algorithm 500 times before reporting intermediate results
 let rec repeatMultipleTimes n f s = 
-    if n <= 0 then s else repeatMultipleTimes (n-1) f (f s)
+    if n <= 0 then s else repeatMultipleTimes (n - 1) f (f s)
 
 // Burn some additional cycles to make sure it runs slowly enough
 let rec burnSomeCycles n f s = 
-    if n <= 0 then f s else ignore (f s); burnSomeCycles (n-1) f s
+    if n <= 0 then f s else ignore (f s); burnSomeCycles (n - 1) f s
 
 let step = (repeatMultipleTimes 500 (burnSomeCycles 1000 fibOneStep))
 
 // Create the iterative worker.
-let worker = new IterativeBackgroundWorker<_>(step,(1I,1I),80)
+let worker = new IterativeBackgroundWorker<_>(step, (1I, 1I), 80)
 
-worker.ProgressChanged.Add(fun (progressPercentage,state)->
+worker.ProgressChanged.Add(fun (progressPercentage, state)->
     progress.Value <- progressPercentage)
 
-worker.WorkerCompleted.Add(fun (_,result) ->
+worker.WorkerCompleted.Add(fun (_, result) ->
     progress.Visible <- false;
     text.Text <- "Paused";
     MessageBox.Show(sprintf "Result = %A" result) |> ignore)
@@ -271,13 +285,12 @@ worker.WorkerError.Add(fun exn ->
 form.Menu <- new MainMenu()
 let workerMenu = form.Menu.MenuItems.Add("&Worker")
 
-workerMenu.MenuItems.Add(new MenuItem("Run",onClick=(fun _ args ->
+workerMenu.MenuItems.Add(new MenuItem("Run", onClick = (fun _ args ->
     text.Text <- "Running";
     progress.Visible <- true;
     worker.RunWorkerAsync())))
 
-
-workerMenu.MenuItems.Add(new MenuItem("Cancel",onClick=(fun _ args ->
+workerMenu.MenuItems.Add(new MenuItem("Cancel", onClick = (fun _ args ->
     text.Text <- "Cancelling";
     worker.CancelAsync())))
 
@@ -286,78 +299,119 @@ form.Closed.Add(fun _ -> worker.CancelAsync())
 open System.Net
 open System.IO
 
-let museums = ["MOMA",           "http://moma.org/";
+let museums = ["MOMA", "http://moma.org/";
                "British Museum", "http://www.thebritishmuseum.ac.uk/";
-               "Prado",          "http://museoprado.mcu.es"]
+               "Prado", "http://www.museodelprado.es/"]
 
-let fetchAsync(nm,url:string) =
-    async { printfn "Creating request for %s..." nm
-            let req  = WebRequest.Create(url)
+let fetchAsync(nm, url : string) = async {
+    printfn "Creating request for %s..." nm
+    let req = WebRequest.Create(url)
 
-            let! resp  = req.AsyncGetResponse()
+    let! resp = req.AsyncGetResponse()
 
-            printfn "Getting response stream for %s..." nm
-            let stream = resp.GetResponseStream()
+    printfn "Getting response stream for %s..." nm
+    let stream = resp.GetResponseStream()
 
-            printfn "Reading response for %s..." nm
-            let reader = new StreamReader(stream)
-            let html = reader.ReadToEnd()
+    printfn "Reading response for %s..." nm
+    let reader = new StreamReader(stream)
+    let html = reader.ReadToEnd()
 
-            printfn "Read %d characters for %s..." html.Length nm }
+    printfn "Read %d characters for %s..." html.Length nm}
 
-Async.Parallel [ for nm,url in museums -> fetchAsync(nm,url) ] 
-   |> Async.Ignore
-   |> Async.RunSynchronously
+Async.Parallel [for nm, url in museums -> fetchAsync(nm, url)]
+    |> Async.Ignore
+    |> Async.RunSynchronously
 
-//val museums : (string * string) list
-//val fetchAsync : string * string -> Async<unit>
-//Creating request for MOMA...
-//Creating request for British Museum...
-//Creating request for Prado...
-//Getting response for MOMA...
+//val museums : (string * string) list =
+//  [("MOMA", "http://moma.org/");
+//   ("British Museum", "http://www.thebritishmuseum.ac.uk/");
+//   ("Prado", "http://www.museodelprado.es/")]
+//val fetchAsync : nm:string * url:string -> Async<unit>
+//Creating request for Creating request for Creating request for Prado...
+//British Museum...
+//MOMA...
+//Getting response stream for MOMA...
 //Reading response for MOMA...
-//Getting response for Prado...
+//Getting response stream for Prado...
 //Reading response for Prado...
-//Read 188 characters for Prado...
-//Read 41635 characters for MOMA...
-//Getting response for British Museum...
+//Read 38207 characters for MOMA...
+//Read 21591 characters for Prado...
+//Getting response stream for British Museum...
 //Reading response for British Museum...
-//Read 24341 characters for British Museum...
+//Read 36607 characters for British Museum...
 
 let tprintfn fmt =
     printf "[.NET Thread %d]" System.Threading.Thread.CurrentThread.ManagedThreadId;
     printfn fmt
-//[.NET Thread 12]Creating request for MOMA...
-//[.NET Thread 13]Creating request for British Museum...
-//[.NET Thread 12]Creating request for Prado...
-//[.NET Thread 8]Getting response for MOMA...
+
+open System.Net
+open System.IO
+
+let museums = ["MOMA", "http://moma.org/";
+               "British Museum", "http://www.thebritishmuseum.ac.uk/";
+               "Prado", "http://www.museodelprado.es/"]
+
+let fetchAsync(nm, url : string) = async {
+    tprintfn "Creating request for %s..." nm
+    let req = WebRequest.Create(url)
+
+    let! resp = req.AsyncGetResponse()
+
+    tprintfn "Getting response stream for %s..." nm
+    let stream = resp.GetResponseStream()
+
+    tprintfn "Reading response for %s..." nm
+    let reader = new StreamReader(stream)
+    let html = reader.ReadToEnd()
+
+    tprintfn "Read %d characters for %s..." html.Length nm}
+
+Async.Parallel [for nm, url in museums -> fetchAsync(nm, url)]
+    |> Async.Ignore
+    |> Async.RunSynchronously
+//[.NET Thread 9]Creating request for British Museum...
+//[.NET Thread 5]Creating request for Prado...
+//[.NET Thread 3]Creating request for MOMA...
+//[.NET Thread 8]Getting response stream for MOMA...
 //[.NET Thread 8]Reading response for MOMA...
-//[.NET Thread 9]Getting response for Prado...
-//[.NET Thread 9]Reading response for Prado...
-//[.NET Thread 9]Read 188 characters for Prado...
-//[.NET Thread 8]Read 41635 characters for MOMA...
-//[.NET Thread 8]Getting response for British Museum...
-//[.NET Thread 8]Reading response for British Museum...
-//[.NET Thread 8]Read 24341 characters for British Museum...
+//[.NET Thread 10]Getting response stream for Prado...
+//[.NET Thread 10]Reading response for Prado...
+//[.NET Thread 8]Read 38216 characters for MOMA...
+//[.NET Thread 10]Read 21591 characters for Prado...
+//[.NET Thread 10]Getting response stream for British Museum...
+//[.NET Thread 10]Reading response for British Museum...
+//[.NET Thread 10]Read 36607 characters for British Museum...
+
 
     open System.Threading
 
     ThreadPool.QueueUserWorkItem(fun _ -> printf "Hello!") |> ignore
-	
+    
+let showMethods(t : System.Type) =
+  t.GetMethods() |> Seq.iter (printfn "%A")
+// SOURCE: http://stackoverflow.com/questions/3142082/get-description-of-types-in-f-interactive
+
 //type Async<'T> = Async of ('T -> unit) * (exn -> unit) -> unit
-
 //type AsyncBuilder with
-//    member Return : 'T -> Async<'T>
-//    member Delay : (unit -> Async<'T>) -> Async<'T>
-//    member Using: 'T * ('T -> Async<'U>) -> Async<'U> when 'T :> System.IDisposable
-//    member Bind: Async<'T> * ('T -> Async<'U>) -> Async<'U>
+//    member Return : value:'T -> Async<'T>
+//    member Delay : generator:(unit -> Async<'T>) -> Async<'T>
+//    member Using: resource:'T * binding:('T -> Async<'U>) -> Async<'U> when 'T :> System.IDisposable
+//    member Bind: computation:Async<'T> * binder:('T -> Async<'U>) -> Async<'U>
 
-async { let req  = WebRequest.Create("http://moma.org/")
-        let! resp  = req.AsyncGetResponse()
-        let stream = resp.GetResponseStream()
-        let reader = new StreamReader(stream)
-        let! html = reader.AsyncReadToEnd()
-        html }
+#r @".\packages\FSPowerPack.Community.2.1.3.1\Lib\Net40\FSharp.PowerPack.dll"
+open System.Net
+open System.IO
+open Microsoft.FSharp.Control.WebExtensions
+
+async {let req = WebRequest.Create("http://moma.org/")
+       let! resp = req.AsyncGetResponse()
+       let stream = resp.GetResponseStream()
+       let reader = new StreamReader(stream)
+       let! html = reader.AsyncReadToEnd()
+       html}
+// warning FS0020: This expression should have type 'unit', but has type 'string'. Use 'ignore' to discard the result of the expression, or 'let' to bind the result to a name.
+//val it : Async<unit> =
+//  Microsoft.FSharp.Control.FSharpAsync`1[Microsoft.FSharp.Core.Unit]
 
 async.Delay(fun () ->
     let req = WebRequest.Create("http://moma.org/")
@@ -365,7 +419,9 @@ async.Delay(fun () ->
         let stream = resp.GetResponseStream() 
         let reader = new StreamReader(stream)  
         async.Bind(reader.AsyncReadToEnd(), (fun html ->
-            async.Return html)))
+            async.Return html)))))
+//warning FS0044: This construct is deprecated. The extension method now resides in the 'WebExtensions' module in the F# core library. Please add 'open Microsoft.FSharp.Control.WebExtensions' to access this method
+//val it : Async<string> = Microsoft.FSharp.Control.FSharpAsync`1[System.String]
 
 open System.IO
 let numImages = 200
@@ -391,41 +447,65 @@ let transformImage (pixels, imageNum) =
 let processImageSync i =
     use inStream =  File.OpenRead(sprintf "Image%d.tmp" i)
     let pixels = Array.zeroCreate numPixels
-    let nPixels = inStream.Read(pixels,0,numPixels);
-    let pixels' = transformImage(pixels,i)
+    let nPixels = inStream.Read(pixels, 0, numPixels);
+    let pixels' = transformImage(pixels, i)
     use outStream =  File.OpenWrite(sprintf "Image%d.done" i)
-    outStream.Write(pixels',0,numPixels)
+    outStream.Write(pixels', 0, numPixels)
 
 let processImagesSync () =
     printfn "processImagesSync...";
     for i in 1 .. numImages do
         processImageSync(i)
+//val numImages : int = 200
+//val size : int = 512
+//val numPixels : int = 262144
+//val makeImageFiles : unit -> unit
+//val processImageRepeats : int = 20
+//val transformImage : pixels:byte [] * imageNum:int32 -> byte []
+//val processImageSync : i:int32 -> unit
+//val processImagesSync : unit -> unit
 
 > System.Environment.CurrentDirectory <- __SOURCE_DIRECTORY__;;
+> System.Environment.CurrentDirectory <- @"C:\temp\11AsyncImages";;
 > makeImageFiles();;
 
+#time "off"
+#time "on"
+
 let processImageAsync i =
-    async { use inStream = File.OpenRead(sprintf "Image%d.tmp" i)
-            let! pixels = inStream.AsyncRead(numPixels)
-            let  pixels' = transformImage(pixels,i)
-            use outStream = File.OpenWrite(sprintf "Image%d.done" i)
-            do! outStream.AsyncWrite(pixels')  }
+    async {use inStream = File.OpenRead(sprintf "Image%d.tmp" i)
+           let! pixels = inStream.AsyncRead(numPixels)
+           let  pixels' = transformImage(pixels, i)
+           use outStream = File.OpenWrite(sprintf "Image%d.done" i)
+           do! outStream.AsyncWrite(pixels')}
 
 let processImagesAsync() =
     printfn "processImagesAsync...";
-    let tasks = [ for i in 1 .. numImages -> processImageAsync(i) ]
-    Async.RunSynchronously (Async.Parallel tasks)  |> ignore
-    printfn "processImagesAsync finished!";
+    let tasks = [for i in 1 .. numImages -> processImageAsync(i)]
+    Async.RunSynchronously (Async.Parallel tasks) |> ignore
+    printfn "processImagesAsync finished!"
+
+//val processImageAsync : i:int32 -> Async<unit>
+//val processImagesAsync : unit -> unit
 
 Async.FromContinuations
+//val it :
+//  arg00:(('a -> unit) * (exn -> unit) *
+//         (System.OperationCanceledException -> unit) -> unit) -> Async<'a>
 Async.FromBeginEnd
+//error FS0505: The member or object constructor 'FromBeginEnd' does not take 1 argument(s). An overload was found taking 3 arguments.
 Async.AwaitTask
+//val it : arg00:System.Threading.Tasks.Task<'a> -> Async<'a>
 Async.Parallel
-
+//al it : arg00:seq<Async<'a>> -> Async<'a []>
 Async.RunSynchronously
+//val it : arg00:Async<'a> -> 'a
 Async.Start
+//val it : arg00:Async<unit> -> unit
 Async.StartImmediate
+//val it : arg00:Async<unit> -> unit
 Async.StartChild
+//val it : arg00:Async<'a> -> Async<Async<'a>>
 
 Stream.AsyncRead
 Stream.AsyncWrite
@@ -438,46 +518,65 @@ SqlCommand.AsyncExecuteXmlReader
 SqlCommand.AsynExecuteNonQuery
 
 Async.AwaitTask
+//val it : arg00:System.Threading.Tasks.Task<'a> -> Async<'a>
 Async.StartAsTask
+//val it : arg00:Async<'a> -> System.Threading.Tasks.Task<'a>
 
-> let failingTask = async { do failwith "fail" };;
+> let failingTask = async {do failwith "fail"};;
 //val failingTask: Async<unit>
 
 > Async.RunSynchronously failingTask;;
-//Microsoft.FSharp.Core.FailureException: fail
-//stopped due to error
+System.Exception: fail
+   at Microsoft.FSharp.Control.AsyncBuilderImpl.commit[a](Result`1 res)
+   at Microsoft.FSharp.Control.CancellationTokenOps.RunSynchronously[a](CancellationToken token, FSharpAsync`1 computation, FSharpOption`1 timeout)
+   at Microsoft.FSharp.Control.FSharpAsync.RunSynchronously[T](FSharpAsync`1 computation, FSharpOption`1 timeout, FSharpOption`1 cancellationToken)
+   at <StartupCode$FSI_0036>.$FSI_0036.main@()
+Stopped due to error
 
-> let failingTasks = [ async { do failwith "fail A" };
-                       async { do failwith "fail B" }; ];;
-//val failingTasks: Async<unit>
+> let failingTasks = [async {do failwith "fail A"};
+                      async {do failwith "fail B"}];;
+//val failingTasks : Async<unit> list =
+//  [Microsoft.FSharp.Control.FSharpAsync`1[Microsoft.FSharp.Core.Unit];
+//   Microsoft.FSharp.Control.FSharpAsync`1[Microsoft.FSharp.Core.Unit]]
 
 > Async.RunSynchronously (Async.Parallel failingTasks);;
-//Microsoft.FSharp.Core.FailureException: fail A
-//stopped due to error
+//System.Exception: fail B
+//   at Microsoft.FSharp.Control.AsyncBuilderImpl.commit[a](Result`1 res)
+//   at Microsoft.FSharp.Control.CancellationTokenOps.RunSynchronously[a](CancellationToken token, FSharpAsync`1 computation, FSharpOption`1 timeout)
+//   at Microsoft.FSharp.Control.FSharpAsync.RunSynchronously[T](FSharpAsync`1 computation, FSharpOption`1 timeout, FSharpOption`1 cancellationToken)
+//   at <StartupCode$FSI_0039>.$FSI_0039.main@()
+//Stopped due to error
+
 
 > Async.RunSynchronously (Async.Parallel failingTasks);;
 //Microsoft.FSharp.Core.FailureException: fail B
 //stopped due to error
 
 Async.Catch
-//static member Catch : Async<'T> -> Async<Choice<'T,exn>>
+//static member Catch : computation:Async<'T> -> Async<Choice<'T,exn>>
+//val it : arg00:Async<'a> -> Async<Choice<'a,exn>>
 
 > Async.RunSynchronously (Async.Catch failingTask);;
-//val it : Choice<unit,exn> = Choice2_2 (FailureException ())
+//val it : Choice<unit,exn> =
+//  Choice2Of2
+//    System.Exception: fail
+//  ...
 
 Async.Parallel
+//val it : arg00:seq<Async<'a>> -> Async<'a []>
 
 let forkJoinParallel(taskSeq) =
-    Async.FromContinuations (fun (cont,econt,ccont) ->
+    Async.FromContinuations (fun (cont, econt, ccont) ->
         let tasks = Seq.toArray taskSeq
         let count = ref tasks.Length
         let results = Array.zeroCreate tasks.Length
         tasks |> Array.iteri (fun i p ->
             Async.Start
-               (async { let! res = p
-                        results.[i] <- res;
-                        let n = System.Threading.Interlocked.Decrement(count)
-                        if n=0 then cont results })))
+               (async {let! res = p
+                       results.[i] <- res;
+                       let n = System.Threading.Interlocked.Decrement(count)
+                       if n = 0 then cont results})))
+//val forkJoinParallel : taskSeq:seq<Async<'a>> -> Async<'a []>
 
 open System.Threading
 open System
@@ -492,12 +591,16 @@ let parallelArrayInit n f =
        if y < n then res.[y] <- f y; loop()
 
    // Start just the right number of tasks, one for each physical CPU
-   Async.Parallel [ for i in 1 .. Environment.ProcessorCount -> async { do loop()} ]
+   Async.Parallel [for i in 1 .. Environment.ProcessorCount -> async {do loop()}]
       |> Async.Ignore 
       |> Async.RunSynchronously
 
    res
+//val parallelArrayInit : n:int -> f:(int -> 'a) -> 'a []
+
 > let rec fib x = if x < 2 then 1 else fib (x - 1) + fib (x - 2)
+//val fib : x:int -> int
+
 > parallelArrayInit 25 (fun x -> fib x);;
 //val it : int [] =
 //  [|1; 1; 2; 3; 5; 8; 13; 21; 34; 55; 89; 144; 233; 377; 610; 987; 1597; 2584;
@@ -509,10 +612,12 @@ type Agent<'T> = MailboxProcessor<'T>
 let counter =
     new Agent<_>(fun inbox ->
         let rec loop n =
-            async { printfn "n = %d, waiting..." n
-                    let! msg = inbox.Receive()
-                    return! loop (n+msg) }
+            async {printfn "n = %d, waiting..." n
+                   let! msg = inbox.Receive()
+                   return! loop (n + msg)}
         loop 0)
+//type Agent<'T> = MailboxProcessor<'T>
+//val counter : Agent<int>
 
 > counter.Start();;
 //n = 0, waiting...
@@ -533,10 +638,10 @@ let agent =
     MailboxProcessor.Start(fun inbox ->
 
         // The states of the state machine
-        let rec state1(args) =  async { ... }
-        and     state2(args) =  async { ... }
+        let rec state1(args) = async { ... }
+        and state2(args) = async { ... }
         ...
-        and     stateN(args) =  async { ... }
+        and stateN(args) = async { ... }
 
         // Enter the initial state
         state1(initialArgs))
@@ -546,33 +651,38 @@ type internal msg = Increment of int | Fetch of AsyncReplyChannel<int> | Stop
 
 type CountingAgent() =
     let counter = MailboxProcessor.Start(fun inbox ->
-             // The states of the message-processing state machine...
-             let rec loop n =
-                async { let! msg = inbox.Receive()
-                        match msg with
-                        | Increment m ->
-                            // increment and continue...
-                            return! loop(n+m)
-                        | Stop ->
-                            // exit
-                            return ()
-                        | Fetch  replyChannel  ->
-                            // post response to reply channel and continue
-                            do replyChannel.Reply n
-                            return! loop n }
+         // The states of the message-processing state machine...
+         let rec loop n =
+             async {let! msg = inbox.Receive()
+                    match msg with
+                    | Increment m ->
+                        // increment and continue...
+                        return! loop(n + m)
+                    | Stop ->
+                        // exit
+                        return ()
+                    | Fetch replyChannel  ->
+                        // post response to reply channel and continue
+                        do replyChannel.Reply n
+                        return! loop n}
 
-             // The initial state of the message-processing state machine...
-             loop(0))
+         // The initial state of the message-processing state machine...
+         loop(0))
 
     member a.Increment(n) = counter.Post(Increment n)
     member a.Stop() = counter.Post Stop
     member a.Fetch() = counter.PostAndReply(fun replyChannel -> Fetch replyChannel)
-
-type CountingAgent =
-     new : unit -> CountingAgent
-     member Fetch : unit -> int
-     member Increment : n:int -> unit
-     member Stop : unit -> unit
+//type internal msg =
+//  | Increment of int
+//  | Fetch of AsyncReplyChannel<int>
+//  | Stop
+//type CountingAgent =
+//  class
+//    new : unit -> CountingAgent
+//    member Fetch : unit -> int
+//    member Increment : n:int -> unit
+//    member Stop : unit -> unit
+//  end
 
 > let counter = new CountingAgent();;
 //val counter : CountingAgent
@@ -605,16 +715,21 @@ let agent =
         let rec loop() =
             inbox.Scan(function
                 | Message1 ->
-                   Some (async { do printfn "message 1!"
-                                 return! loop() })
+                   Some (async {do printfn "message 1!"
+                                return! loop()})
                 | Message2 n ->
-                   Some (async { do printfn "message 2!"
-                                 return! loop() })
+                   Some (async {do printfn "message 2!"
+                                return! loop()})
                 | Message3 _ ->
                    None)
         loop())
+//type Message =
+//  | Message1
+//  | Message2 of int
+//  | Message3 of string
+//val agent : MailboxProcessor<Message>
 
-> agent.Post(Message1) ;;
+> agent.Post(Message1);;
 //message 1!
 //val it : unit = ()
 
@@ -640,44 +755,44 @@ open System.Text.RegularExpressions
 
 let limit = 50
 let linkPat = "href=\s*\"[^\"h]*(http://[^&\"]*)\""
-let getLinks (txt:string) =
-    [ for m in Regex.Matches(txt,linkPat)  -> m.Groups.Item(1).Value ]
+let getLinks (txt : string) =
+    [for m in Regex.Matches(txt, linkPat) -> m.Groups.Item(1).Value]
 
 // A type that helps limit the number of active web requests
-type RequestGate(n:int) =
-    let semaphore = new Semaphore(initialCount=n,maximumCount=n)
+type RequestGate(n : int) =
+    let semaphore = new Semaphore(initialCount = n, maximumCount = n)
     member x.AsyncAcquire(?timeout) =
-        async { let! ok = Async.AwaitWaitHandle(semaphore,
-                                                ?millisecondsTimeout=timeout)
-                if ok then
+        async {let! ok = Async.AwaitWaitHandle(semaphore,
+                                               ?millisecondsTimeout = timeout)
+               if ok then
                    return
-                     { new System.IDisposable with
+                     {new System.IDisposable with
                          member x.Dispose() =
-                             semaphore.Release() |> ignore }
-                else
+                             semaphore.Release() |> ignore}
+               else
                    return! failwith "couldn't acquire a semaphore" }
 
 // Gate the number of active web requests
 let webRequestGate = RequestGate(5)
 
 // Fetch the URL, and post the results to the urlCollector.
-let collectLinks (url:string) =
+let collectLinks (url : string) =
     async { // An Async web request with a global gate
-            let! html =
-                async { // Acquire an entry in the webRequestGate. Release
-                        // it when 'holder' goes out of scope
-                        use! holder = webRequestGate.AsyncAcquire()
+            let! html = async {
+                // Acquire an entry in the webRequestGate. Release
+                // it when 'holder' goes out of scope
+                use! holder = webRequestGate.AsyncAcquire()
 
-                        let req = WebRequest.Create(url,Timeout=5)
+                let req = WebRequest.Create(url, Timeout = 5)
 
-                        // Wait for the WebResponse
-                        use! response = req.AsyncGetResponse()
+                // Wait for the WebResponse
+                use! response = req.AsyncGetResponse()
 
-                        // Get the response stream
-                        use reader = new StreamReader(response.GetResponseStream())
+                // Get the response stream
+                use reader = new StreamReader(response.GetResponseStream())
 
-                        // Read the response stream (note: a synchronous read)
-                        return reader.ReadToEnd()  }
+                // Read the response stream (note: a synchronous read)
+                return reader.ReadToEnd()}
 
             // Compute the links, synchronously
             let links = getLinks html
@@ -686,7 +801,7 @@ let collectLinks (url:string) =
             do printfn "finished reading %s, got %d links" url (List.length links)
 
             // We're done
-            return links }
+            return links}
 
 /// 'urlCollector' is a single agent that receives URLs as messages. It creates new
 /// asynchronous tasks that post messages back to this object.
@@ -694,28 +809,39 @@ let urlCollector =
     MailboxProcessor.Start(fun self ->
 
         // This is the main state of the urlCollector
-        let rec waitForUrl (visited : Set<string>) =
+        let rec waitForUrl (visited : Set<string>) = async {
+            // Check the limit
+            if visited.Count < limit then
 
-           async { // Check the limit
-                   if visited.Count < limit then
+                // Wait for a URL...
+                let! url = self.Receive()
+                if not (visited.Contains(url)) then
+                    // Start off a new task for the new url. Each collects
+                    // links and posts them back to the urlCollector.
+                    do! Async.StartChild (async {
+                        let! links = collectLinks url
+                        for link in links do
+                            self.Post link}) |> Async.Ignore
 
-                       // Wait for a URL...
-                       let! url = self.Receive()
-                       if not (visited.Contains(url)) then
-                           // Start off a new task for the new url. Each collects
-                           // links and posts them back to the urlCollector.
-                           do! Async.StartChild
-                                   (async { let! links = collectLinks url
-                                            for link in links do
-                                               self.Post link }) |> Async.Ignore
-
-                       // Recurse into the waiting state
-                       return! waitForUrl(visited.Add(url)) }
+                // Recurse into the waiting state
+                return! waitForUrl(visited.Add(url))}
 
         // This is the initial state.
         waitForUrl(Set.empty))
+//val limit : int = 50
+//val linkPat : string = "href=\s*"[^"h]*(http://[^&"]*)""
+//val getLinks : txt:string -> string list
+//type RequestGate =
+//  class
+//    new : n:int -> RequestGate
+//    member AsyncAcquire : ?timeout:int -> Async<System.IDisposable>
+//  end
+//val webRequestGate : RequestGate
+//val collectLinks : url:string -> Async<string list>
+//val urlCollector : MailboxProcessor<string>
 
 > urlCollector <-- "http://news.google.com";;
+> urlCollector.Post "http://news.google.com";;
 //finished reading http://news.google.com, got 191 links
 //finished reading http://news.google.com/?output=rss, got 0 links
 //finished reading http://www.ktvu.com/politics/13732578/detail.html, got 14 links
@@ -726,7 +852,7 @@ let urlCollector =
 
 > open System.Windows.Forms;;
 
-> let form = new Form(Text="Click Form",Visible=true,TopMost=true);;
+> let form = new Form(Text = "Click Form", Visible = true, TopMost = true);;
 //val form : Form
 
 > form.Click |> Observable.add (fun evArgs -> printfn "Clicked!");;
@@ -745,29 +871,38 @@ printfn "Done!"
 //Thread 10: Hello
 //Done!
 
-type MutablePair<'T,'U>(x:'T,y:'U) =
+type MutablePair<'T, 'U>(x : 'T, y : 'U) =
     let mutable currentX = x
     let mutable currentY = y
-    member p.Value = (currentX,currentY)
-    member p.Update(x,y) =
+    member p.Value = (currentX, currentY)
+    member p.Update(x, y) =
         // Race condition: This pair of updates is not atomic
-        currentX <- x;
+        currentX <- x
         currentY <- y
 
-let p = new MutablePair<_,_>(1,2)
-do Async.Start (async { do (while true do p.Update(10,10)) })
-do Async.Start (async { do (while true do p.Update(20,20)) })
+let p = new MutablePair<_, _>(1, 2)
+do Async.Start (async {do (while true do p.Update(10, 10))})
+do Async.Start (async {do (while true do p.Update(20, 20))})
 
 open System.Threading
 let lock (lockobj : obj) f  =
-    Monitor.Enter lockobj;
+    Monitor.Enter lockobj
     try
         f()
     finally
         Monitor.Exit lockobj
 
-do Async.Start (async { do (while true do lock p (fun () -> p.Update(10,10))) })
-do Async.Start (async { do (while true do lock p (fun () -> p.Update(20,20))) })
+do Async.Start (async {do (while true do lock p (fun () -> p.Update(10, 10)))})
+do Async.Start (async {do (while true do lock p (fun () -> p.Update(20, 20)))})
+//type MutablePair<'T,'U> =
+//  class
+//    new : x:'T * y:'U -> MutablePair<'T,'U>
+//    member Update : x:'T * y:'U -> unit
+//    member Value : 'T * 'U
+//  end
+//val p : MutablePair<int,int>
+//val lock : lockobj:obj -> f:(unit -> 'a) -> 'a
+//val it : unit = ()
 
 open System.Threading
 
@@ -781,24 +916,34 @@ let readLock (rwlock : ReaderWriterLock) f  =
 let writeLock (rwlock : ReaderWriterLock) f  =
   rwlock.AcquireWriterLock(Timeout.Infinite)
   try
-      f();
+      f()
       Thread.MemoryBarrier()
   finally
       rwlock.ReleaseWriterLock()
+//val readLock :
+//  rwlock:System.Threading.ReaderWriterLock -> f:(unit -> 'a) -> 'a
+//val writeLock :
+//  rwlock:System.Threading.ReaderWriterLock -> f:(unit -> unit) -> unit
 
 Listing 11-15 shows how to use these functions to protect the MutablePair class.
 Listing 11-15. Shared-Memory Code with a Race Condition
-type MutablePair<'T,'U>(x:'T,y:'U) =
+type MutablePair<'T, 'U>(x : 'T, y : 'U) =
     let mutable currentX = x
     let mutable currentY = y
     let rwlock = new ReaderWriterLock()
     member p.Value =
         readLock rwlock (fun () ->
-            (currentX,currentY))
-    member p.Update(x,y) =
+            (currentX, currentY))
+    member p.Update(x, y) =
         writeLock rwlock (fun () ->
-            currentX <- x;
+            currentX <- x
             currentY <- y)
+type MutablePair<'T,'U> =
+  class
+    new : x:'T * y:'U -> MutablePair<'T,'U>
+    member Update : x:'T * y:'U -> unit
+    member Value : 'T * 'U
+  end
 
 System.Threading.WaitHandle
 System.Threading.AutoResetEvent
