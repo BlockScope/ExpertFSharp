@@ -8,3 +8,4 @@ syntax: glob
 *.xml
 *.FileListAbsolute.txt
 */packages/*
+*.snk
