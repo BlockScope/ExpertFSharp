@@ -1327,22 +1327,22 @@ let transformFile quality width height srcFileName outFileName =
     fout.LastWriteTime <- fin.LastWriteTime
 
 let transformDir quality width height src dest =
-    let rec visit (dirin : DirectoryInfo) (dirout : DirectoryInfo) =
-        for f in dirin.EnumerateFiles() do
+    let rec visit (dirIn : DirectoryInfo) (dirOut : DirectoryInfo) =
+        for f in dirIn.EnumerateFiles() do
             if f.Extension.ToUpper() = ".JPG" then
                 printfn "Processing file %s..." f.FullName
                 transformFile 
                     quality width height f.FullName 
-                    (dirout.FullName + "\\" + f.Name)
+                    (dirOut.FullName + "\\" + f.Name)
 
-        for d in dirin.EnumerateDirectories() do
-            visit d (dirout.CreateSubdirectory(d.Name))
+        for d in dirIn.EnumerateDirectories() do
+            visit d (dirOut.CreateSubdirectory(d.Name))
 
-    let dirin = new DirectoryInfo(src)
-    let dirout = 
+    let dirIn = new DirectoryInfo(src)
+    let dirOut = 
         if not(Directory.Exists(dest)) then Directory.CreateDirectory dest 
         else new DirectoryInfo(dest)
-    visit dirin dirout
+    visit dirIn dirOut
 //val transformFile :
 //  quality:int ->
 //    width:int ->
