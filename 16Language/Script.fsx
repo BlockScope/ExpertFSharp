@@ -679,6 +679,11 @@ let rec errorEstimateAux (e : Expr) (env : Map<Var, _>) =
         let y, Err(yerr) = errorEstimateAux yt env
         (x * y, Err(xerr * abs(y) + yerr * abs(x) + xerr * yerr))
 
+    | SpecificCall <@@ ( / ) @@> (tyargs, _, [xt; yt]) ->
+        let x, Err(xerr) = errorEstimateAux xt env
+        let y, Err(yerr) = errorEstimateAux yt env
+        (x / y, Err(xerr * abs(y) + yerr * abs(x) + xerr * yerr))
+
     | SpecificCall <@@ abs @@> (tyargs, _, [xt]) ->
         let x, Err(xerr) = errorEstimateAux xt env
         (abs(x), Err(xerr))
@@ -706,10 +711,12 @@ let rec errorEstimateRaw (t : Expr) =
 
 let errorEstimate (t : Expr<float -> float>) = errorEstimateRaw t
 //type Error = | Err of float
-//val errorEstimateAux : e:Expr -> env:Map<Var,(float * Error)> -> float * Error
-//val errorEstimateRaw : t:Expr -> (float * Error -> float * Error)
+//val errorEstimateAux :
+//  e:Quotations.Expr ->
+//    env:Map<Quotations.Var,(float * Error)> -> float * Error
+//val errorEstimateRaw : t:Quotations.Expr -> (float * Error -> float * Error)
 //val errorEstimate :
-//  t:Expr<(float -> float)> -> (float * Error -> float * Error)
+//  t:Quotations.Expr<(float -> float)> -> (float * Error -> float * Error)
 
 > let err x = Err x;;
 //val err : float -> Error
@@ -728,24 +735,7 @@ let poly x = x + 2.0 * x + 3.0 / (x * x)
 //val poly : x:float -> float
 
 > errorEstimate <@ poly @> (3.0, err 0.1);;
-//System.Exception: unrecognized term: Call (None, op_Division, [Value (3.0), Call (None, op_Multiply, [x, x])])
-//   at FSI_0145.errorEstimateAux@697.Invoke(String message) in C:\dev\apress\f-3.0code\16Language\Script.fsx:line 697
-//   at Microsoft.FSharp.Core.PrintfImpl.go@523-3[b,c,d](String fmt, Int32 len, FSharpFunc`2 outputChar, FSharpFunc`2 outa, b os, FSharpFunc`2 finalize, FSharpList`1 args, Int32 i)
-//   at Microsoft.FSharp.Core.PrintfImpl.run@521[b,c,d](FSharpFunc`2 initialize, String fmt, Int32 len, FSharpList`1 args)
-//   at Microsoft.FSharp.Core.PrintfImpl.capture@540[b,c,d](FSharpFunc`2 initialize, String fmt, Int32 len, FSharpList`1 args, Type ty, Int32 i)
-//   at <StartupCode$FSharp-Core>.$Reflect.Invoke@720-4.Invoke(T1 inp)
-//   at FSI_0145.errorEstimateAux(FSharpExpr e, FSharpMap`2 env) in C:\dev\apress\f-3.0code\16Language\Script.fsx:line 669
-//   at <StartupCode$FSI_0157>.$FSI_0157.main@()
-//Stopped due to error
+//val it : float * Error = 9.33333±2.13
 
 > errorEstimate <@ poly @> (30271.3, err 0.0001);;
-//System.Exception: unrecognized term: Call (None, op_Division, [Value (3.0), Call (None, op_Multiply, [x, x])])
-//   at FSI_0145.errorEstimateAux@697.Invoke(String message) in C:\dev\apress\f-3.0code\16Language\Script.fsx:line 697
-//   at Microsoft.FSharp.Core.PrintfImpl.go@523-3[b,c,d](String fmt, Int32 len, FSharpFunc`2 outputChar, FSharpFunc`2 outa, b os, FSharpFunc`2 finalize, FSharpList`1 args, Int32 i)
-//   at Microsoft.FSharp.Core.PrintfImpl.run@521[b,c,d](FSharpFunc`2 initialize, String fmt, Int32 len, FSharpList`1 args)
-//   at Microsoft.FSharp.Core.PrintfImpl.capture@540[b,c,d](FSharpFunc`2 initialize, String fmt, Int32 len, FSharpList`1 args, Type ty, Int32 i)
-//   at <StartupCode$FSharp-Core>.$Reflect.Invoke@720-4.Invoke(T1 inp)
-//   at FSI_0145.errorEstimateAux(FSharpExpr e, FSharpMap`2 env) in C:\dev\apress\f-3.0code\16Language\Script.fsx:line 669
-//   at <StartupCode$FSI_0158>.$FSI_0158.main@()
-//Stopped due to error
-
+//val it : float * Error = 90813.9±18.1631
