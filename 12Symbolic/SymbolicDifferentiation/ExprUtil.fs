@@ -54,7 +54,7 @@ let rec simp = function
             else [e], n
         let summands = function | Add es -> es | e -> [e]
         let exprs', num =
-            selectFold (simp >> summands >> selectFold filterNums) exprs 0N
+            selectFold (simp >> summands >> selectFold filterNums) exprs 0M
         match exprs' with
         | [Num _ as n] when num = 0M -> n
         | [] -> Num num
@@ -91,17 +91,15 @@ let Differentiate v e =
         | Num num -> Num 0M
         | Var v' when v' = v -> Num 1M
         | Var v' -> Num 0M
-        | Neg e -> diff v (Prod ((Num - 1M), e))
+        | Neg e -> diff v (Prod ((Num -1M), e))
         | Add exprs -> Add (List.map (diff v) exprs)
         | Sub (e1, exprs) -> Sub (diff v e1, List.map (diff v) exprs)
         | Prod (e1, e2) -> Add [Prod (diff v e1, e2); Prod (e1, diff v e2)]
-        | Frac (e1, e2) ->
-            Frac (Sub (Prod (diff v e1, e2), [Prod (e1, diff v e2)]), Pow (e2, 2N))
-        | Pow (e1, num) ->
-            Prod (Prod(Num num, Pow (e1, num - 1M)), diff v e1)
+        | Frac (e1, e2) -> Frac (Sub (Prod (diff v e1, e2), [Prod (e1, diff v e2)]), Pow (e2, 2M))
+        | Pow (e1, num) -> Prod (Prod(Num num, Pow (e1, num - 1M)), diff v e1)
         | Sin e -> Prod (Cos e, diff v e)
         | Cos e -> Neg (Prod (Sin e, diff v e))
-        | Exp (Var v') as e when v'=v  -> e
-        | Exp (Var v') as e when v'<>v -> Num 0M
+        | Exp (Var v') as e when v'= v  -> e
+        | Exp (Var v') as e when v'<> v -> Num 0M
         | Exp e -> Prod (Exp e, diff v e) 
     diff v e

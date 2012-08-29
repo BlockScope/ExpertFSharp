@@ -5,7 +5,7 @@ open System.Drawing
 open System.Drawing.Imaging
 
 type RenderOptions =
-    {NormalFont : Font;  SmallFont : Font;  IsSuper : bool;  Pen : Pen;}
+    {NormalFont : Font; SmallFont : Font; IsSuper : bool; Pen : Pen}
 
     static member Default =
         {
@@ -50,7 +50,7 @@ and ExprSize =
         }
 
     member self.FracSepHeight (opt: RenderOptions) =
-        max (int (opt.Pen.Width*5.0f)) 4
+        max (int (opt.Pen.Width * 5.0f)) 4
 
     member self.AddPower (e : VisualElement) =
         {
@@ -75,10 +75,7 @@ and ExprSize =
     static member Zero = {width = 0; height = 0; midline = 0}
 
 type VisualExpr =
-    {
-        Expression : VisualElement
-        RenderOptions: RenderOptions
-    }
+    {Expression : VisualElement; RenderOptions: RenderOptions}
 
     static member OfExpr (opt : RenderOptions) e =
         use bmp = new Bitmap(100, 100, PixelFormat.Format32bppArgb)
@@ -130,7 +127,7 @@ type VisualExpr =
             | Add exprs ->
                 let exprs' =
                     [for i, e in Seq.mapi (fun i x -> (i, x)) exprs do
-                        let first = (i=0)
+                        let first = (i = 0)
                         let e' = exp opt (if first then precAdd1 else precAdd2) e
                         if first || e.IsNegative then yield! [e']
                         else yield! [sym opt "+"; e']]

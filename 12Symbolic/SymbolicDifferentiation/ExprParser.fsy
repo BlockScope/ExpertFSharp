@@ -16,7 +16,6 @@ open Symbolic.Expressions
 %left TIMES DIV
 %left HAT
 
-
 %start expr
 %type <Expr> expr
 %%
@@ -25,10 +24,10 @@ expr:
     | exp EOF { $1 }
 
 number:
-    | INT {BigNum.of_int $1}
-    | FLOAT {BigNum.of_string (Float.to_string $1)}
-    | MINUS INT %prec prec_negate {BigNum.of_int (-$2)}
-    | MINUS FLOAT %prec prec_negate {BigNum.of_string (Float.to_string (-$2))}
+    | INT {Convert.ToDecimal($1)}
+    | FLOAT {Convert.ToDecimal($1)}
+    | MINUS INT %prec prec_negate {Convert.ToDecimal(-$2)}
+    | MINUS FLOAT %prec prec_negate {Convert.ToDecimal(-$2)}
 
 exp:
     | number {Num $1}

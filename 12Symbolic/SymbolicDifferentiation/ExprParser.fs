@@ -181,10 +181,10 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 25 "ExprParser.fsy"
+# 24 "ExprParser.fsy"
                                      _1 
                    )
-# 25 "ExprParser.fsy"
+# 24 "ExprParser.fsy"
                  : Expr));
 # 189 "ExprParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
@@ -192,10 +192,10 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 28 "ExprParser.fsy"
-                                BigNum.of_int _1
+# 27 "ExprParser.fsy"
+                                Convert.ToDecimal(_1)
                    )
-# 28 "ExprParser.fsy"
+# 27 "ExprParser.fsy"
                  : 'number));
 # 200 "ExprParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
@@ -203,10 +203,10 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 29 "ExprParser.fsy"
-                                  BigNum.of_string (Float.to_string _1)
+# 28 "ExprParser.fsy"
+                                  Convert.ToDecimal(_1)
                    )
-# 29 "ExprParser.fsy"
+# 28 "ExprParser.fsy"
                  : 'number));
 # 211 "ExprParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
@@ -214,10 +214,10 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 30 "ExprParser.fsy"
-                                                        BigNum.of_int (-_2)
+# 29 "ExprParser.fsy"
+                                                        Convert.ToDecimal(-_2)
                    )
-# 30 "ExprParser.fsy"
+# 29 "ExprParser.fsy"
                  : 'number));
 # 222 "ExprParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
@@ -225,10 +225,10 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 31 "ExprParser.fsy"
-                                                          BigNum.of_string (Float.to_string (-_2))
+# 30 "ExprParser.fsy"
+                                                          Convert.ToDecimal(-_2)
                    )
-# 31 "ExprParser.fsy"
+# 30 "ExprParser.fsy"
                  : 'number));
 # 233 "ExprParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
@@ -236,10 +236,10 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 34 "ExprParser.fsy"
+# 33 "ExprParser.fsy"
                                    Num _1
                    )
-# 34 "ExprParser.fsy"
+# 33 "ExprParser.fsy"
                  : 'exp));
 # 244 "ExprParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
@@ -247,10 +247,10 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 35 "ExprParser.fsy"
+# 34 "ExprParser.fsy"
                                Var _1
                    )
-# 35 "ExprParser.fsy"
+# 34 "ExprParser.fsy"
                  : 'exp));
 # 255 "ExprParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
@@ -259,10 +259,10 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 36 "ExprParser.fsy"
+# 35 "ExprParser.fsy"
                                          Add [_1; _3]
                    )
-# 36 "ExprParser.fsy"
+# 35 "ExprParser.fsy"
                  : 'exp));
 # 267 "ExprParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
@@ -271,10 +271,10 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 37 "ExprParser.fsy"
+# 36 "ExprParser.fsy"
                                           Sub (_1, [_3])
                    )
-# 37 "ExprParser.fsy"
+# 36 "ExprParser.fsy"
                  : 'exp));
 # 279 "ExprParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
@@ -283,10 +283,10 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 38 "ExprParser.fsy"
+# 37 "ExprParser.fsy"
                                           Prod (_1, _3)
                    )
-# 38 "ExprParser.fsy"
+# 37 "ExprParser.fsy"
                  : 'exp));
 # 291 "ExprParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
@@ -295,10 +295,10 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 39 "ExprParser.fsy"
+# 38 "ExprParser.fsy"
                                         Frac (_1, _3)
                    )
-# 39 "ExprParser.fsy"
+# 38 "ExprParser.fsy"
                  : 'exp));
 # 303 "ExprParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
@@ -306,10 +306,10 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 40 "ExprParser.fsy"
+# 39 "ExprParser.fsy"
                                                   Sin _3
                    )
-# 40 "ExprParser.fsy"
+# 39 "ExprParser.fsy"
                  : 'exp));
 # 314 "ExprParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
@@ -317,10 +317,10 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 41 "ExprParser.fsy"
+# 40 "ExprParser.fsy"
                                                   Cos _3
                    )
-# 41 "ExprParser.fsy"
+# 40 "ExprParser.fsy"
                  : 'exp));
 # 325 "ExprParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
@@ -328,10 +328,10 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 42 "ExprParser.fsy"
+# 41 "ExprParser.fsy"
                                       Exp _3
                    )
-# 42 "ExprParser.fsy"
+# 41 "ExprParser.fsy"
                  : 'exp));
 # 336 "ExprParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
@@ -339,10 +339,10 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 43 "ExprParser.fsy"
+# 42 "ExprParser.fsy"
                                  _1
                    )
-# 43 "ExprParser.fsy"
+# 42 "ExprParser.fsy"
                  : 'exp));
 # 347 "ExprParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
@@ -351,10 +351,10 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 44 "ExprParser.fsy"
+# 43 "ExprParser.fsy"
                                            Pow (_1, _3)
                    )
-# 44 "ExprParser.fsy"
+# 43 "ExprParser.fsy"
                  : 'exp));
 # 359 "ExprParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
@@ -362,10 +362,10 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 45 "ExprParser.fsy"
+# 44 "ExprParser.fsy"
                                               _2
                    )
-# 45 "ExprParser.fsy"
+# 44 "ExprParser.fsy"
                  : 'exp));
 # 370 "ExprParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
@@ -373,10 +373,10 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 46 "ExprParser.fsy"
+# 45 "ExprParser.fsy"
                                                     Neg _3
                    )
-# 46 "ExprParser.fsy"
+# 45 "ExprParser.fsy"
                  : 'exp));
 # 381 "ExprParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
@@ -385,10 +385,10 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 49 "ExprParser.fsy"
+# 48 "ExprParser.fsy"
                                       Prod (Num _1, Var _2)
                    )
-# 49 "ExprParser.fsy"
+# 48 "ExprParser.fsy"
                  : 'term));
 # 393 "ExprParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
@@ -398,10 +398,10 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 50 "ExprParser.fsy"
+# 49 "ExprParser.fsy"
                                                  Prod (Num _1, Pow (Var _2, _4))
                    )
-# 50 "ExprParser.fsy"
+# 49 "ExprParser.fsy"
                  : 'term));
 # 406 "ExprParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
@@ -410,10 +410,10 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 51 "ExprParser.fsy"
+# 50 "ExprParser.fsy"
                                           Prod (Num 1M, Pow (Var _1, _3))
                    )
-# 51 "ExprParser.fsy"
+# 50 "ExprParser.fsy"
                  : 'term));
 |]
 # 419 "ExprParser.fs"
