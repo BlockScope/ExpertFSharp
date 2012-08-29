@@ -67,8 +67,8 @@ let NewStringExpression form s =
           NewExpressionError form msg
 
 let ConstructMainForm ()  = 
-    let form  =  new Form(Text  =  "Symbolic Differentiation Example",
-                          IsMdiContainer  =  true,
+    let form  =  new Form(Text = "Symbolic Differentiation Example",
+                          IsMdiContainer = true,
                           Visible = true, Height = 600, Width = 700)
     let label  =  new Label(Text = "Enter function = ", Width = 100, Height = 20)
     let tb  =  new TextBox(Width = 150, Left = 100)
