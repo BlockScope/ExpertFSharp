@@ -37,41 +37,46 @@ Console.WriteLine(i * v)
 //} // end of method $Program$Main::main@
 
 > open System;;
-> let o = Activator.CreateInstance(Type.GetTypeFromProgID("InternetExplorer.Application"));;
+> let o = Activator.CreateInstance(Type.GetTypeFromProgID("Word.Application"));;
 //val o : obj
 
 > let t = o.GetType();;
-//val t : Type = System.__ComObject
+//val t : Type = Microsoft.Office.Interop.Word.ApplicationClass
 
 > t.GetProperty("Visible").SetValue(o, (true :> Object), null);;
+//val it : unit = ()
 
 > let m = t.GetMethod("Quit");;
-//val m : Reflection.MethodInfo
+//val m : Reflection.MethodInfo =
+//  Void Quit(System.Object ByRef, System.Object ByRef, System.Object ByRef)
 
 > m.GetParameters().Length;;
 //val it : int = 3
 
 > m.GetParameters();;
-//val it : ParameterInfo []
-//       = [|System.Object& SaveChanges
-//             {Attributes = In, Optional, HasFieldMarshal;
-//              DefaultValue = System.Reflection.Missing;
-//              IsIn = true;
-//              IsLcid = false;
-//              IsOptional = true;
-//              IsOut = false;
-//              IsRetval = false;
-//              Member =
-//                Void Quit(System.Object ByRef,
-//                            System.Object ByRef, System.Object ByRef);
-//              MetadataToken = 134223449;
-//              Name = "SaveChanges";
-//              ParameterType = System.Object&;
-//              Position = 0;
-//              RawDefaultValue = System.Reflection.Missing;};
-//           ... more ... |]
+//val it : Reflection.ParameterInfo [] =
+//  [|System.Object& SaveChanges
+//      {Attributes = In, Optional, HasFieldMarshal;
+//       CustomAttributes = seq
+//                            [[System.Runtime.InteropServices.InAttribute()];
+//                             [System.Runtime.InteropServices.OptionalAttribute()];
+//                             [System.Runtime.InteropServices.MarshalAsAttribute((System.Runtime.InteropServices.UnmanagedType)27, ArraySubType = 0, SizeParamIndex = 0, SizeConst = 0, IidParameterIndex = 0, SafeArraySubType = 0)]];
+//       DefaultValue = System.Reflection.Missing;
+//       HasDefaultValue = false;
+//       IsIn = true;
+//       IsLcid = false;
+//       IsOptional = true;
+//       IsOut = false;
+//       IsRetval = false;
+//       Member = Void Quit(System.Object ByRef, System.Object ByRef, System.Object ByRef);
+//       MetadataToken = 134223584;
+//       Name = "SaveChanges";
+//       ParameterType = System.Object&;
+//       Position = 0;
+//       RawDefaultValue = System.Reflection.Missing;};
+//    ... more ... |]
 
-> m.Invoke(o, [| null; null; null |]);;
+> m.Invoke(o, [|null; null; null|]);;
 //val it : obj = null
 
 //<OBJECT
