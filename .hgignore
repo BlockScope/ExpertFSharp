@@ -9,3 +9,9 @@ syntax: glob
 *.FileListAbsolute.txt
 */packages/*
 *.snk
+*/Debug/*
+*.vcxproj.filters
+*.sdf
+*.user
+*/ipch/*
+*.opensdf
