@@ -1,4 +1,6 @@
 #I @"C:\Program Files\Reference Assemblies\Microsoft\Framework\v3.5";;
+//--> Added 'C:\Program Files\Reference Assemblies\Microsoft\Framework\v3.5' to library include path
+
 #r "System.Core.dll";;
 
 //Consider the following simple F# program in the Program.fs source file:
@@ -35,7 +37,7 @@ Console.WriteLine(i * v)
 //} // end of method $Program$Main::main@
 
 > open System;;
-> let o = Activator.CreateInstance(Type.GetTypeFromProgID("Word.Application"));;
+> let o = Activator.CreateInstance(Type.GetTypeFromProgID("InternetExplorer.Application"));;
 //val o : obj
 
 > let t = o.GetType();;
@@ -73,18 +75,37 @@ Console.WriteLine(i * v)
 //val it : obj = null
 
 //<OBJECT
-//      classid ="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"
-//      codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab"
-//      width   ="640" height="480"
-//      title   ="My movie">
-//   <param name="movie"   value="MyMovie.swf" />
-//   <param name="quality" value="high" />
+//    classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"
+//    codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab"
+//    title="My movie" width="640" height="480">
+//    <param name="movie" value="MyMovie.swf" />
+//    <param name="quality" value="high" />
 //</OBJECT>
 
-
-C:\> aximp c:\Windows\System32\Macromed\Flash\Flash32_11_3_370_178.ocx
-//Generated Assembly: C:\ShockwaveFlashObjects.dll
-//Generated Assembly: C:\AxShockwaveFlashObjects.dll
+//c:\>aximp c:\Windows\System32\Macromed\Flash\Flash64_11_4_402_265.ocx
+//Microsoft (R) .NET ActiveX Control to Windows Forms Assembly Generator
+//[Microsoft .Net Framework, Version 4.0.30319.17929]
+//Copyright (c) Microsoft Corporation.  All rights reserved.
+//
+//
+//AxImp Error: Unable to locate input ActiveX library: 'c:\Windows\System32\Macromed\Flash\Flash64_11_4_402_265.ocx'.
+//
+//c:\>dir c:\Windows\System32\Macromed\Flash\Flash64_11_4_402_265.ocx
+// Volume in drive C has no label.
+// Volume Serial Number is 64D6-DB09
+//
+// Directory of c:\Windows\System32\Macromed\Flash
+//
+//09/09/2012  08:22 PM        12,994,248 Flash64_11_4_402_265.ocx
+//               1 File(s)     12,994,248 bytes
+//               0 Dir(s)  60,087,279,616 bytes free
+//
+//c:\>copy c:\Windows\System32\Macromed\Flash\Flash64_11_4_402_265.ocx
+//        1 file(s) copied.
+//
+//c:\>aximp Flash64_11_4_402_265.ocx
+//Generated Assembly: c:\ShockwaveFlashObjects.dll
+//Generated Assembly: c:\AxShockwaveFlashObjects.dll
 
 #I @"c:\";;
 //--> Added 'c:\ ' to library include path
@@ -93,30 +114,33 @@ C:\> aximp c:\Windows\System32\Macromed\Flash\Flash32_11_3_370_178.ocx
 //--> Referenced 'c:\AxShockwaveFlashObjects.dll'
 
 > open AxShockwaveFlashObjects;;
-
 > open System.Windows.Forms;;
 
 > let f = new Form();;
-//val f : Form
+//val f : Form = System.Windows.Forms.Form, Text: 
 
 > let flash = new AxShockwaveFlash();;
-//val flash : AxShockwaveFlash
-//Binding session to 'c:\AxShockwaveFlashObjects.dll'...
+//val flash : AxShockwaveFlash = AxShockwaveFlashObjects.AxShockwaveFlash
 
 > f.Show();;
-
 > flash.Dock <- DockStyle.Fill;;
-
 > f.Controls.Add(flash);;
-
 > flash.LoadMovie(0, "http://laptop.org/img/meshDemo18.swf");;
 
-#r "EnvDTE"
+// Reset F# interactive ...
+#r "EnvDTE80"
 open System.Runtime.InteropServices
-let appObj =Marshal.GetActiveObject("VisualStudio.DTE") :?> EnvDTE80.DTE2
-printfn "%s" appObj.ActiveDocument.FullName
 
+let appObj = Marshal.GetActiveObject("VisualStudio.DTE.11.0") :?> EnvDTE80.DTE2
+printfn "%s" appObj.ActiveDocument.FullName
+//--> Referenced 'c:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\PublicAssemblies\EnvDTE80.dll'
+//val appObj : EnvDTE80.DTE2
+//C:\dev\apress\f-3.0code\18Interop\Script.fsx
+//val it : unit = ()
+
+// Reset F# interactive ...
 #r "EnvDTE"
+
 open System.Runtime.InteropServices
 open System.Runtime.InteropServices.ComTypes
 
@@ -126,81 +150,106 @@ extern int internal GetRunningObjectTable(uint32 reserved, IRunningObjectTable& 
 [<DllImport("ole32.dll")>]
 extern int internal CreateBindCtx(uint32 reserved, IBindCtx& pctx)
 
-let FetchVSDTE (pid:int) =
-  let mutable prot : IRunningObjectTable = null 
-  let mutable pmonkenum : IEnumMoniker = null
-  let (monikers:IMoniker[]) =  Array.create 1 null
-  let pfeteched = System.IntPtr.Zero
-  let mutable (ret:obj) = null
-  let endpid = sprintf ":%d" pid
+let FetchVSDTE (pid : int) =
+    let mutable prot : IRunningObjectTable = null 
+    let mutable pmonkenum : IEnumMoniker = null
+    let (monikers : IMoniker[]) =  Array.create 1 null
+    let pfeteched = System.IntPtr.Zero
+    let mutable (ret  :obj) = null
+    let endpid = sprintf ":%d" pid
   
-  try
-    if (GetRunningObjectTable(0u, &prot) <> 0) || (prot = null) then 
-        failwith "Error opening the ROT"
-    prot.EnumRunning(&pmonkenum)
-    pmonkenum.Reset()
-    while pmonkenum.Next(1, monikers, pfeteched) = 0 do
-      let mutable (insname:string) = null
-      let mutable (pctx:IBindCtx) = null
-      CreateBindCtx(0u, &pctx) |> ignore
-      (monikers.[0]).GetDisplayName(pctx, null, &insname);
-      Marshal.ReleaseComObject(pctx) |> ignore
-      if insname.StartsWith("!VisualStudio.DTE") && insname.EndsWith(endpid) then
-        prot.GetObject(monikers.[0], &ret) |> ignore
-  finally
-    if prot <> null then Marshal.ReleaseComObject(prot) |> ignore
-    if pmonkenum <> null then Marshal.ReleaseComObject(pmonkenum) |> ignore
-  (ret :?> EnvDTE.DTE)
+    try
+        if (GetRunningObjectTable(0u, &prot) <> 0) || (prot = null) then 
+            failwith "Error opening the ROT"
+        prot.EnumRunning(&pmonkenum)
+        pmonkenum.Reset()
+        while pmonkenum.Next(1, monikers, pfeteched) = 0 do
+            let mutable (insname : string) = null
+            let mutable (pctx : IBindCtx) = null
+            CreateBindCtx(0u, &pctx) |> ignore
+            (monikers.[0]).GetDisplayName(pctx, null, &insname);
+            Marshal.ReleaseComObject(pctx) |> ignore
+            if insname.StartsWith("!VisualStudio.DTE") && insname.EndsWith(endpid) then
+                prot.GetObject(monikers.[0], &ret) |> ignore
+    finally
+        if prot <> null then Marshal.ReleaseComObject(prot) |> ignore
+        if pmonkenum <> null then Marshal.ReleaseComObject(pmonkenum) |> ignore
+    (ret :?> EnvDTE.DTE)
+//--> Referenced 'c:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\PublicAssemblies\EnvDTE.dll'
+//val GetRunningObjectTable :
+//  reserved:uint32 *
+//  pprot:byref<System.Runtime.InteropServices.ComTypes.IRunningObjectTable> ->
+//    int
+//val CreateBindCtx :
+//  reserved:uint32 *
+//  pctx:byref<System.Runtime.InteropServices.ComTypes.IBindCtx> -> int
+//val FetchVSDTE : pid:int -> EnvDTE.DTE
 
-//#define CINTEROPDLL_API __declspec(dllexport)
-//extern "C" {
-//void CINTEROPDLL_API HelloWorld();
-//}
-
-//void CINTEROPDLL_API HelloWorld()
-//{
-//    printf("Hello C world invoked by F#!\n");
-//}
+// Reset F# interactive ...
+#I @"CInteropDLL\Debug"
+//--> Added 'C:\dev\apress\f-3.0code\18Interop\CInteropDLL\Debug' to library include path
 
 open System.Runtime.InteropServices
 
 module CInterop =
-    [<DllImport("CInteropDLL", CallingConvention=CallingConvention.Cdecl)>]
+    [<DllImport("CInteropDLL", CallingConvention = CallingConvention.Cdecl)>]
     extern void HelloWorld()
+//module CInterop = begin
+//  val HelloWorld : unit -> unit
+//end
 
+System.Environment.CurrentDirectory <- __SOURCE_DIRECTORY__ + @"\CInteropDLL\Debug"
 CInterop.HelloWorld()
 
-//int CINTEROPDLL_API Sum(int i, int j)
-//{
-//    return i + j;
-//}
+// The above doesn't print to the F# interactive window when run in VS2012 so here it is
+// running in fsi from the command line ...
+//> #I @"CInteropDLL\Debug"
+//- open System.Runtime.InteropServices
+//-
+//- module CInterop =
+//-     [<DllImport("CInteropDLL", CallingConvention = CallingConvention.Cdecl)>]
+//-     extern void HelloWorld()
+//-
+//- System.Environment.CurrentDirectory <- __SOURCE_DIRECTORY__ + @"\CInteropDLL\Debug"
+//- CInterop.HelloWorld();;
+//
+//--> Added 'c:\dev\apress\f-3.0code\18Interop\CInteropDLL\Debug' to library include path
+//
+//Hello C world invoked by F#!
+//
+//module CInterop = begin
+//  val HelloWorld : unit -> unit
+//end
+
+// Reset F# interactive ...
+#I @"CInteropDLL\Debug"
+open System.Runtime.InteropServices
+System.Environment.CurrentDirectory <- __SOURCE_DIRECTORY__ + @"\CInteropDLL\Debug"
 
 module CInterop =
-    [<DllImport("CInteropDLL", CallingConvention=CallingConvention.Cdecl)>]
+    [<DllImport("CInteropDLL", CallingConvention = CallingConvention.Cdecl)>]
     extern int Sum(int i, int j)
+//module CInterop = begin
+//  val Sum : i:int * j:int -> int
+//end
+//val it : unit = ()
 
 printf "Sum(1, 1) = %d\n" (CInterop.Sum(1, 1));
+//Sum(1, 1) = 2
+//val it : unit = ()
 
-//typedef struct _Complex {
-//    double re;
-//    double im;
-//} Complex;
-
-//Complex CINTEROPDLL_API SumC(Complex c1, Complex c2)
-//{
-//    Complex ret;
-//    ret.re = c1.re + c2.re;
-//    ret.im = c1.im + c2.im;
-//    return ret;
-//}
+// Reset F# interactive ...
+#I @"CInteropDLL\Debug"
+open System.Runtime.InteropServices
+System.Environment.CurrentDirectory <- __SOURCE_DIRECTORY__ + @"\CInteropDLL\Debug"
 
 module CInterop =
     [<Struct; StructLayout(LayoutKind.Sequential)>]
     type Complex =
-        val mutable re:double
-        val mutable im:double
+        val mutable re : double
+        val mutable im : double
 
-        new(r,i) = { re = r; im = i; }
+        new(r, i) = {re = r; im = i}
 
     [<DllImport("CInteropDLL")>]
     extern Complex SumC(Complex c1, Complex c2)
@@ -209,7 +258,21 @@ let c1 = CInterop.Complex(1.0, 0.0)
 let c2 = CInterop.Complex(0.0, 1.0)
 
 let mutable c3 = CInterop.SumC(c1, c2)
-printf "c3 = SumC(c1, c2) = %f + %fi\n" c3.re c3.im;
+printf "c3 = SumC(c1, c2) = %f + %fi\n" c3.re c3.im
+//warning FS0009: Uses of this construct may result in the generation of unverifiable .NET IL code. This warning can be disabled using '--nowarn:9' or '#nowarn "9"'.
+//
+//module CInterop = begin
+//  type Complex =
+//    struct
+//      new : r:double * i:double -> Complex
+//      val mutable re: double
+//      val mutable im: double
+//    end
+//  val SumC : c1:Complex * c2:Complex -> Complex
+//end
+//
+//c3 = SumC(c1, c2) = 1.000000 + 1.000000i
+//val it : unit = ()
 
 //struct Foo {
 //    int i;
@@ -217,209 +280,176 @@ printf "c3 = SumC(c1, c2) = %f + %fi\n" c3.re c3.im;
 //    short s;
 //};
 
-//void CINTEROPDLL_API ZeroC(Complex* c)
-//{
-//    c->re = 0;
-//    c->im = 0;
-//}
+// Reset F# interactive ...
+#I @"CInteropDLL\Debug"
+open System.Runtime.InteropServices
+System.Environment.CurrentDirectory <- __SOURCE_DIRECTORY__ + @"\CInteropDLL\Debug"
 
-[<DllImport("CInteropDLL")>]
-extern void ZeroC(Complex* c)
+module CInterop =
+    [<Struct; StructLayout(LayoutKind.Sequential)>]
+    type Complex =
+        val mutable re : double
+        val mutable im : double
+
+        new(r, i) = {re = r; im = i}
+
+    [<DllImport("CInteropDLL")>]
+    extern Complex SumC(Complex c1, Complex c2)
+
+    [<DllImport("CInteropDLL")>]
+    extern void ZeroC(Complex* c)
+//warning FS0009: Uses of this construct may result in the generation of unverifiable .NET IL code. This warning can be disabled using '--nowarn:9' or '#nowarn "9"'.
+//
+//module CInterop = begin
+//  type Complex =
+//    struct
+//      new : r:double * i:double -> Complex
+//      val mutable re: double
+//      val mutable im: double
+//    end
+//  val SumC : c1:Complex * c2:Complex -> Complex
+//  val ZeroC : c:nativeptr<Complex> -> unit
+//end
+
+let c1 = CInterop.Complex(1.0, 0.0)
+let c2 = CInterop.Complex(0.0, 1.0)
+//val c1 : CInterop.Complex = FSI_0005+CInterop+Complex
+//val c2 : CInterop.Complex = FSI_0005+CInterop+Complex
 
 let mutable c4 = CInterop.SumC(c1, c2)
+//val mutable c4 : CInterop.Complex = FSI_0005+CInterop+Complex
+
 printf "c4 = SumC(c1, c2) = %f + %fi\n" c4.re c4.im
+//c4 = SumC(c1, c2) = 1.000000 + 1.000000i
 
 CInterop.ZeroC(&&c4)
+//warning FS0051: The use of native pointers may result in unverifiable .NET IL code
+
 printf "c4 = %f + %fi\n" c4.re c4.im
+//c4 = 0.000000 + 0.000000i
+
+// Reset F# interactive ...
+#I @"CInteropDLL\Debug"
+open System.Runtime.InteropServices
+System.Environment.CurrentDirectory <- __SOURCE_DIRECTORY__ + @"\CInteropDLL\Debug"
 
 module CInterop =
     [<StructLayout(LayoutKind.Sequential)>]
     type ObjComplex =
-        val mutable re:double
-        val mutable im:double
+        val mutable re : double
+        val mutable im : double
 
-        new() as x = { re = 0.0; im = 0.0 }
-        new(r:double, i:double) as x = { re = r; im = i }
+        new() = {re = 0.0; im = 0.0}
+        new(r : double, i : double) = {re = r; im = i}
 
-     [<DllImport("CInteropDLL", EntryPoint="ZeroC")>]
+     [<DllImport("CInteropDLL", EntryPoint = "ZeroC")>]
     extern void ObjZeroC(ObjComplex c)
 
 let oc = CInterop.ObjComplex(2.0, 1.0)
 printf "oc = %f + %fi\n" oc.re oc.im
 CInterop.ObjZeroC(oc)
 printf "oc = %f + %fi\n" oc.re oc.im
+//warning FS0009: Uses of this construct may result in the generation of unverifiable .NET IL code. This warning can be disabled using '--nowarn:9' or '#nowarn "9"'.
+//module CInterop = begin
+//  type ObjComplex =
+//    class
+//      new : unit -> ObjComplex
+//      new : r:double * i:double -> ObjComplex
+//      val mutable re: double
+//      val mutable im: double
+//    end
+//  val ObjZeroC : c:ObjComplex -> unit
+//end
+//val oc : CInterop.ObjComplex
+//oc = 2.000000 + 1.000000i
+//oc = 0.000000 + 0.000000i
 
-void CINTEROPDLL_API echo(char* str)
-{
-    puts(str);
-}
 
-[<DllImport("CInteropDLL", CallingConvention=CallingConvention.Cdecl)>]
-extern void echo(string s);
+// Reset F# interactive ...
+#I @"CInteropDLL\Debug"
+open System.Runtime.InteropServices
+System.Environment.CurrentDirectory <- __SOURCE_DIRECTORY__ + @"\CInteropDLL\Debug"
 
-//void CINTEROPDLL_API sayhello(char* str, int sz)
-//{
-//    static char* data = "Hello from C code!";
-//    int len = min(sz, strlen(data));
-//    strncpy(str, data, len);
-//    str[len] = 0;
-//}
+[<DllImport("CInteropDLL", CallingConvention = CallingConvention.Cdecl)>]
+extern void echo(string s)
+//val echo : s:string -> unit
+echo "abc"
 
-[<DllImport("CInteropDLL", CallingConvention=CallingConvention.Cdecl)>]
-extern void sayhello(StringBuilder sb, int sz);
+// The above doesn't print to the F# interactive window, so here it is run from
+// the fsi command line ...
+//> #I @"CInteropDLL\Debug"
+//- open System.Runtime.InteropServices
+//- System.Environment.CurrentDirectory <- __SOURCE_DIRECTORY__ + @"\CInteropDLL\Debug"
+//-
+//- [<DllImport("CInteropDLL", CallingConvention = CallingConvention.Cdecl)>]
+//- extern void echo(string s)
+//- echo "abc"
+//- ;;
+//
+//--> Added 'c:\dev\apress\f-3.0code\18Interop\CInteropDLL\Debug' to library include path
+//
+//abc
 
-let sb = new StringBuilder(50)
+// Reset F# interactive ...
+#I @"CInteropDLL\Debug"
+open System.Runtime.InteropServices
+System.Environment.CurrentDirectory <- __SOURCE_DIRECTORY__ + @"\CInteropDLL\Debug"
 
-CInterop.sayhello(sb, 50)
+[<DllImport("CInteropDLL", CallingConvention = CallingConvention.Cdecl)>]
+extern void sayhello(System.Text.StringBuilder sb, int sz)
+
+let sb = new System.Text.StringBuilder(50)
+sayhello(sb, 50)
 printf "%s\n" (sb.ToString())
+//--> Added 'C:\dev\apress\f-3.0code\18Interop\CInteropDLL\Debug' to library include path
+//
+//Hello from C code!
+//
+//val sayhello : sb:System.Text.StringBuilder * sz:int -> unit
+//val sb : System.Text.StringBuilder = Hello from C code!
+//val it : unit = ()
 
-//void CINTEROPDLL_API sayhellow(wchar_t* str, int sz)
-//{
-//    static wchar_t* data = L"Hello from C code Wide!";
-//    int len = min(sz, wcslen(data));
-//    wcsncpy(str, data, len);
-//    str[len] = 0;
-//}
+// Reset F# interactive ...
+#I @"CInteropDLL\Debug"
+open System.Runtime.InteropServices
+System.Environment.CurrentDirectory <- __SOURCE_DIRECTORY__ + @"\CInteropDLL\Debug"
 
-[<DllImport("CInteropDLL", CallingConvention=CallingConvention.Cdecl)>]
-extern void sayhellow([<MarshalAs(UnmanagedType.LPWStr)>]StringBuilder sb, int sz);
+open System.Text
+[<DllImport("CInteropDLL", CallingConvention = CallingConvention.Cdecl)>]
+extern void sayhellow([<MarshalAs(UnmanagedType.LPWStr)>]StringBuilder sb, int sz)
+//--> Added 'C:\dev\apress\f-3.0code\18Interop\CInteropDLL\Debug' to library include path
+//
+//val sayhellow : sb:System.Text.StringBuilder * sz:int -> unit
 
-typedef int (CALLBACK *TRANSFORM_CALLBACK)(int);
-
-//void CINTEROPDLL_API transformArray(int* data, int count, TRANSFORM_CALLBACK fn)
-//{
-//    int i;
-//    for (i = 0; i < count; i++)
-//        data[i] = fn(data[i]);
-//}
+// Reset F# interactive ...
+#I @"CInteropDLL\Debug"
+open System.Runtime.InteropServices
+System.Environment.CurrentDirectory <- __SOURCE_DIRECTORY__ + @"\CInteropDLL\Debug"
 
 type Callback = delegate of int -> int
 
-[<DllImport("CInteropDLL", CallingConvention=CallingConvention.Cdecl)>]
-extern void transformArray(int[] data, int count, Callback transform);
+[<DllImport("CInteropDLL", CallingConvention = CallingConvention.Cdecl)>]
+extern void transformArray(int[] data, int count, Callback transform)
 
-let data = [| 1; 2; 3 |]
-printf "%s\n" (string.Join("; ", (Array.map any_to_string data)))
+open System
 
-CInterop.transformArray(data, data.Length, new CInterop.Callback(fun x -> x + 1))
-printf "%s\n" (string.Join("; ", (Array.map any_to_string data)))
+let anyToString any = sprintf "%A" any
+let data = [|1; 2; 3|]
+printf "%s\n" (String.Join("; ", (Array.map anyToString data)))
 
-module MMap =
-
-    open System
-    open System.IO
-    open System.Runtime.InteropServices
-    open Microsoft.FSharp.NativeInterop
-    open Printf
-
-    type HANDLE = nativeint
-    type ADDR   = nativeint
-
-    [<DllImport("kernel32", SetLastError=true)>]
-    extern bool CloseHandle(HANDLE handler)
-
-    [<DllImport("kernel32", SetLastError=true, CharSet=CharSet.Auto)>]
-    extern HANDLE CreateFile(string lpFileName,
-                             int dwDesiredAccess,
-                             int dwShareMode,
-                             HANDLE lpSecurityAttributes,
-                             int dwCreationDisposition,
-                             int dwFlagsAndAttributes,
-                             HANDLE hTemplateFile)
-
-    [<DllImport("kernel32", SetLastError=true, CharSet=CharSet.Auto)>]
-    extern HANDLE CreateFileMapping(HANDLE hFile,
-                                    HANDLE lpAttributes,
-                                    int flProtect,
-                                    int dwMaximumSizeLow,
-                                    int dwMaximumSizeHigh,
-                                    string lpName)
-
-    [<DllImport("kernel32", SetLastError=true)>]
-    extern ADDR MapViewOfFile(HANDLE hFileMappingObject,
-                              int dwDesiredAccess,
-                              int dwFileOffsetHigh,
-                              int dwFileOffsetLow,
-                              int dwNumBytesToMap)
-
-    [<DllImport("kernel32", SetLastError=true, CharSet=CharSet.Auto)>]
-    extern HANDLE OpenFileMapping(int dwDesiredAccess,
-                                  bool bInheritHandle,
-                                  string lpName)
-
-    [<DllImport("kernel32", SetLastError=true)>]
-    extern bool UnmapViewOfFile(ADDR lpBaseAddress)
-
-    let INVALID_HANDLE = new IntPtr(-1)
-    let MAP_READ    = 0x0004
-    let GENERIC_READ = 0x80000000
-    let NULL_HANDLE = IntPtr.Zero
-    let FILE_SHARE_NONE = 0x0000
-    let FILE_SHARE_READ = 0x0001
-    let FILE_SHARE_WRITE = 0x0002
-    let FILE_SHARE_READ_WRITE = 0x0003
-    let CREATE_ALWAYS  = 0x0002
-    let OPEN_EXISTING   = 0x0003
-    let OPEN_ALWAYS  = 0x0004
-    let READONLY = 0x00000002
-
-    type MemMap<'a> (fileName) =
-
-        let ok =
-            match typeof<'a>) with
-            | ty when ty = typeof<int>)     -> true
-            | ty when ty = typeof<int32>)   -> true
-            | ty when ty = typeof<byte>)    -> true
-            | ty when ty = typeof<sbyte>)   -> true
-            | ty when ty = typeof<int16>)   -> true
-            | ty when ty = typeof<uint16>)  -> true
-            | ty when ty = typeof<int64>)   -> true
-            | ty when ty = typeof<uint64>)  -> true
-            | _ -> false
-
-        do if not ok then failwithf 
-           "the type %s is not a basic blittable type" ((typeof<'a>).ToString())
-        let hFile =
-           CreateFile (fileName,
-                         GENERIC_READ,
-                         FILE_SHARE_READ_WRITE,
-                         IntPtr.Zero, OPEN_EXISTING, 0, IntPtr.Zero  )
-        do if ( hFile.Equals(INVALID_HANDLE) ) then
-            Marshal.ThrowExceptionForHR(Marshal.GetHRForLastWin32Error());
-        let hMap = CreateFileMapping (hFile, IntPtr.Zero, READONLY, 0,0, null )
-        do CloseHandle(hFile) |> ignore
-        do if hMap.Equals(NULL_HANDLE) then
-            Marshal.ThrowExceptionForHR(Marshal.GetHRForLastWin32Error());
-
-        let start = MapViewOfFile (hMap, MAP_READ,0,0,0)
-
-        do  if ( start.Equals(IntPtr.Zero) ) then
-             Marshal.ThrowExceptionForHR(
-                  Marshal.GetHRForLastWin32Error())
-
-
-        member m.AddressOf(i: int) : 'a nativeptr  =
-             NativePtr.of_nativeint(start + (nativeint i))
-
-        member m.GetBaseAddress (i:int) : int -> 'a =
-            NativePtr.get (m.AddressOf(i))
-
-        member m.Item
-            with get(i : int) : 'a = m.GetBaseAddress 0 i
-
-        member m.Close() =
-           UnmapViewOfFile(start) |> ignore;
-           CloseHandle(hMap) |> ignore
-
-        interface IDisposable with
-          member m.Dispose() =
-             m.Close()
-
-let mm = new MMap.MemMap<byte>("somefile.txt")
-
-printf "%A\n" (mm.[0])
-
-mm.Close()
+transformArray(data, data.Length, new Callback(fun x -> x + 1))
+printf "%s\n" (String.Join("; ", (Array.map anyToString data)))
+//--> Added 'C:\dev\apress\f-3.0code\18Interop\CInteropDLL\Debug' to library include path
+//
+//1; 2; 3
+//2; 3; 4
+//
+//type Callback =
+//  delegate of int -> int
+//val transformArray : data:int [] * count:int * transform:Callback -> unit
+//val anyToString : any:'a -> string
+//val data : int [] = [|2; 3; 4|]
+//val it : unit = ()
 
 //struct __db {
 //        /* ... */
