@@ -7,11 +7,11 @@ open System.Text
 /// A table of MIME content types
 let mimeTypes =
     dict [".html", "text/html";
-          ".htm",  "text/html";
-          ".txt",  "text/plain";
-          ".gif",  "image/gif";
-          ".jpg",  "image/jpeg";
-          ".png",  "image/png"]
+          ".htm", "text/html";
+          ".txt", "text/plain";
+          ".gif", "image/gif";
+          ".jpg", "image/jpeg";
+          ".png", "image/png"]
 
 /// Compute a MIME type from a file extension
 let getMimeType(ext) =
@@ -20,7 +20,7 @@ let getMimeType(ext) =
 
 /// The pattern Regex1 uses a regular expression to match
 /// one element
-let (|Regex1|_|) (patt: string) (inp: string) =
+let (|Regex1|_|) (patt : string) (inp : string) =
     try Some(Regex.Match(inp, patt).Groups.Item(1).Captures.Item(0).Value)
     with _ -> None
 
@@ -30,7 +30,7 @@ let root = @"c:\inetpub\wwwroot"
 /// Handle a TCP connection for an HTTP GET. We use an 
 /// asynchronous task in case any future actions in
 /// handling a request need to be asynchronous.
-let handleRequest(client: TcpClient) =
+let handleRequest(client : TcpClient) =
     async {
         use stream = client.GetStream()
         let out = new StreamWriter(stream)
@@ -72,7 +72,7 @@ let server =
 
 type AsyncTcpServer(addr,port,handleServerRequest) = 
     let socket = new TcpListener(addr, port)
-    member x.Start() = async { do x.Run() } |> Async.Start
+    member x.Start() = async {do x.Run()} |> Async.Start
     member x.Run() = 
         socket.Start()
         while true do
@@ -85,7 +85,7 @@ type AsyncTcpServer(addr,port,handleServerRequest) =
 let quoteSize = 512 // one quote
 let quote = Array.init<byte> quoteSize (fun i -> 1uy)
 
-let handleRequest (client: TcpClient) =
+let handleRequest (client : TcpClient) =
     async {
         // Cleanup the client at the end of the request
         let stream = client.GetStream()
@@ -102,7 +102,7 @@ let handleRequest (client: TcpClient) =
 let server() = 
     AsyncTcpServer(IPAddress.Loopback, 10003, handleRequest)
 
-type AsyncTcpServerSecure(addr,port,handleServerRequest) = 
+type AsyncTcpServerSecure(addr, port, handleServerRequest) = 
 
     let getCertficate() =
         // Instantiate the x509Store object to represent the Certificate Store
@@ -121,7 +121,7 @@ type AsyncTcpServerSecure(addr,port,handleServerRequest) =
         // based on the search criteria.
         cert.[0];
 
-    let handleServerRequestSecure (client: TcpClient) = 
+    let handleServerRequestSecure (client : TcpClient) = 
         async {
             let stream = new SslStream(client.GetStream());
             do! stream.AsyncAuthenticateAsServer(getCertficate());
@@ -140,7 +140,7 @@ type AsyncTcpServerSecure(addr,port,handleServerRequest) =
             return! handleServerRequest stream
         }
 
-    let server = AsyncTcpServer(addr,port,handleServerRequestSecure)
+    let server = AsyncTcpServer(addr, port, handleServerRequestSecure)
 
     member x.Start() = server.Start()
 
@@ -234,17 +234,17 @@ module MySite =
             member this.Sitelet = EntireSite
             member this.Actions = []
 
-[<assembly: Sitelets.Website(typeof<MySite.MyWebsite>)>]
+[<assembly : Sitelets.Website(typeof<MySite.MyWebsite>)>]
 do ()
 
 /// Represents HTML pages with embedded WebSharper controls.
 type Page =
     {
-      Doctype  : string option
-      Title    : string option
+      Doctype : string option
+      Title : string option
       Renderer : string option -> string option -> Writer -> Writer -> HtmlTextWriter -> unit
-      Head     : Element<unit> seq
-      Body     : Element<Control> seq
+      Head : Element<unit> seq
+      Body : Element<Control> seq
     }
 
     static member Default =
@@ -259,8 +259,8 @@ type Page =
 //// Represents HTTP responses
 type Response =
     {
-        Status    : Http.Status
-        Headers   : Http.Header seq
+        Status : Http.Status
+        Headers : Http.Header seq
         WriteBody : System.IO.Stream -> unit
     }
 
@@ -429,22 +429,22 @@ type Order =
         Quantity : int
     }
     static member Dummy() =
-        { ItemName = "N/A"; Quantity = 0 }
+        {ItemName = "N/A"; Quantity = 0}
 
 module Orders =
     let private id = ref 0
     let Store = ref Map.empty
 
-    let Save (id: int) (order: Order) =
+    let Save (id : int) (order : Order) =
         Store := (!Store).Add(id, order)
 
-    let FindById (id: int) =
+    let FindById (id : int) =
         if (!Store).ContainsKey id then
             Some <| (!Store).[id]
         else
             None
 
-    let Delete (id: int) =
+    let Delete (id : int) =
         if (!Store).ContainsKey id then
             Store := (!Store).Remove id
 
@@ -470,7 +470,7 @@ module Skin =
 
     let TemplateLoadFrequency = Content.Template.PerRequest
 
-    type Page = { Body : list<Content.HtmlElement> }
+    type Page = {Body : list<Content.HtmlElement>}
 
     let MainTemplate =
         let path = HttpContext.Current.Server.MapPath("~/Main.html")
@@ -499,7 +499,7 @@ module Client =
 
     [<JavaScript>]
     let OrderForm orderPostUrl =
-        Formlet.Yield (fun title qty -> { ItemName = title; Quantity = qty })
+        Formlet.Yield (fun title qty -> {ItemName = title; Quantity = qty})
         <*> (Controls.Input ""
             |> Validator.IsNotEmpty "Must enter a title"
             |> Enhance.WithTextLabel "Title")
@@ -517,7 +517,7 @@ module Client =
                 Enhance.JsonPostConfiguration.PostUrl = Some orderPostUrl
             }
 
-    type OrderFormControl(orderPostUrl: string) =
+    type OrderFormControl(orderPostUrl : string) =
         inherit Web.Control()
 
         [<JavaScript>]
@@ -532,7 +532,7 @@ module Pages =
     let ( => ) text url =
         A [HRef url] -< [Text text]
 
-    let Links (ctx: Context<Action>) =
+    let Links (ctx : Context<Action>) =
         UL [
             LI ["Home" => ctx.Link Action.ListOrders]
             LI ["New"  => ctx.Link Action.CreateOrderForm]
@@ -594,7 +594,7 @@ module Pages =
 module MySite =
     open UrlHelpers
 
-    let (|PATH|_|) (uri: System.Uri) = Some <| uri.LocalPath
+    let (|PATH|_|) (uri : System.Uri) = Some <| uri.LocalPath
 
     let MySitelet =
         Sitelet.Sum [
@@ -673,7 +673,7 @@ module MySite =
                     | GET (values, SPLIT_BY '/' ["order"; INT id]) ->
                         Some <| Action.GetOrder id
 
-[<assembly: Website(typeof<MySite.MyWebsite>)>]
+[<assembly : Website(typeof<MySite.MyWebsite>)>]
 do ()
 
 //{"$TYPES":[],"$DATA":{"$V":{"ItemName":"Windows Server 2012","Quantity":5}}}
@@ -813,18 +813,18 @@ module MySite =
             member this.Sitelet = EntireSite
             member this.Actions = []
 
-[<assembly: Sitelets.Website(typeof<MySite.MyWebsite>)>]
+[<assembly : Sitelets.Website(typeof<MySite.MyWebsite>)>]
 do ()
 
 [<JavaScript>]
-let input (label: string) (err: string) = 
+let input (label : string) (err : string) = 
     Controls.Input ""
     |> Validator.IsNotEmpty err
     |> Enhance.WithValidationIcon
     |> Enhance.WithTextLabel label
 
 [<JavaScript>]
-let inputInt (label: string) (err: string) = 
+let inputInt (label : string) (err : string) = 
     Controls.Input ""
     |> Validator.IsInt err
     |> Enhance.WithValidationIcon
@@ -880,7 +880,7 @@ let Snippet4b =
             member this.Render ctx writer =
                 writer.WriteLine "<script type=\"javascript\" src=\"lib\\my.js\"></script>"
 
-    [<assembly:System.Web.UI.WebResource("my.js", "text/javascript")>]
+    [<assembly : System.Web.UI.WebResource("my.js", "text/javascript")>]
     do ()
 
     type MyEmbeddedResource() =
