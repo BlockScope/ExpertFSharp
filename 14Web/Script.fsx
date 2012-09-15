@@ -4,7 +4,7 @@ open System.IO
 open System.Text.RegularExpressions
 open System.Text
 
-/// A table of MIME content types
+/// A table of MIME content types.
 let mimeTypes =
     dict [".html", "text/html";
           ".htm", "text/html";
@@ -13,13 +13,12 @@ let mimeTypes =
           ".jpg", "image/jpeg";
           ".png", "image/png"]
 
-/// Compute a MIME type from a file extension
+/// Compute a MIME type from a file extension.
 let getMimeType(ext) =
     if mimeTypes.ContainsKey(ext) then mimeTypes.[ext]
     else "binary/octet"
 
-/// The pattern Regex1 uses a regular expression to match
-/// one element
+/// The pattern Regex1 uses a regular expression to match one element.
 let (|Regex1|_|) (patt : string) (inp : string) =
     try Some(Regex.Match(inp, patt).Groups.Item(1).Captures.Item(0).Value)
     with _ -> None
@@ -27,50 +26,76 @@ let (|Regex1|_|) (patt : string) (inp : string) =
 /// The root for the data we serve
 let root = @"c:\inetpub\wwwroot"
 
-/// Handle a TCP connection for an HTTP GET. We use an 
-/// asynchronous task in case any future actions in
-/// handling a request need to be asynchronous.
-let handleRequest(client : TcpClient) =
-    async {
-        use stream = client.GetStream()
-        let out = new StreamWriter(stream)
-        let inp = new StreamReader(stream)
-        match inp.ReadLine() with
-        | Regex1 "GET (.*?) HTTP/1\\.[01]$" fileName ->
-            let fname = root + @"\" + fileName.Replace("/", @"\")
-            let mimeType = getMimeType(Path.GetExtension(fname))
+/// Handle a TCP connection for an HTTP GET. We use an asynchronous task in
+/// case any future actions in handling a request need to be asynchronous.
+let handleRequest(client : TcpClient) = async {
+    use stream = client.GetStream()
+    let out = new StreamWriter(stream)
+    let headers (lines : seq<string>) =
+        let printLine s = s |> fprintf out "%s\r\n"
+        lines |> Seq.iter printLine
+        // An empty line is required before content, if any.
+        printLine ""
+        out.Flush()
+    let notFound () = headers ["HTTP/1.0 404 Not Found"]
+    let inp = new StreamReader(stream)
+    let request = inp.ReadLine()
+    match request with
+    | "GET / HTTP/1.0" | "GET / HTTP/1.1" ->
+        // From the root, redirect to the start page.
+        headers ["HTTP/1.0 302 Found"; "Location: http://localhost:8090/iisstart.htm"]
+    | Regex1 "GET /(.*?) HTTP/1\\.[01]$" fileName ->
+        let fname = Path.Combine(root, fileName)
+        let mimeType = getMimeType(Path.GetExtension(fname))
+        if not(File.Exists(fname)) then notFound()
+        else
             let content = File.ReadAllBytes fname
-            fprintfn out "HTTP/1.0 200 OK"
-            fprintfn out "Content-Length: %d" content.Length
-            fprintfn out "Content-Type: %s" mimeType
-            fprintfn out ""
-            out.Flush()
+            ["HTTP/1.0 200 OK";
+            sprintf "Content-Length: %d" content.Length;
+            sprintf "Content-Type: %s" mimeType]
+            |> headers
             stream.Write(content, 0, content.Length)
-        | line ->
-            () 
-    }
+    | _ -> notFound()}
 
-/// The server as an asynchronous process. We handle requests
-/// sequentially.
-let server =
-    async { 
-        let socket = new TcpListener(IPAddress.Parse("127.0.0.1"), 8090)
-        socket.Start()
-        while true do
-            use client = socket.AcceptTcpClient()
-            try 
-                Async.Start (handleRequest client) 
-            with _ -> 
-                ()
-    }
+/// The server as an asynchronous process. We handle requests sequentially.
+let server = async { 
+    let socket = new TcpListener(IPAddress.Parse("127.0.0.1"), 8090)
+    socket.Start()
+    while true do
+        use client = socket.AcceptTcpClient()
+        do! handleRequest client}
+//val mimeTypes : System.Collections.Generic.IDictionary<string,string>
+//val getMimeType : ext:string -> string
+//val ( |Regex1|_| ) : patt:string -> inp:string -> string option
+//val root : string = "c:\inetpub\wwwroot"
+//val handleRequest : client:System.Net.Sockets.TcpClient -> Async<unit>
+//val server : Async<unit>
 
 > Async.Start server;;
 //val it : unit = ()
 
+open System.IO
+open System.Net
+
+// From chapter 2, getting started ...
+/// Get the contents of the URL via a web request
+let http (url : string) =
+    let req = WebRequest.Create(url)
+    let resp = req.GetResponse()
+    let stream = resp.GetResponseStream()
+    let reader = new StreamReader(stream)
+    let html = reader.ReadToEnd()
+    resp.Close()
+    html
+//val http : url:string -> string
+
 > http "http://127.0.0.1:8090/iisstart.htm";;
 //val it : string = "..."   // the text of the iisstart.htm file will be shown here
 
-type AsyncTcpServer(addr,port,handleServerRequest) = 
+> http "http://127.0.0.1:8090/";;
+//val it : string = "..."   // the text of the iisstart.htm file will be shown here
+
+type AsyncTcpServer(addr, port, handleServerRequest) = 
     let socket = new TcpListener(addr, port)
     member x.Start() = async {do x.Run()} |> Async.Start
     member x.Run() = 
