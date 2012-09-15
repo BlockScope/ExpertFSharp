@@ -95,6 +95,12 @@ let http (url : string) =
 > http "http://127.0.0.1:8090/";;
 //val it : string = "..."   // the text of the iisstart.htm file will be shown here
 
+// Reset F# interactive here ...
+open System.Net
+open System.Net.Sockets
+open System.IO
+open System.Text
+
 type AsyncTcpServer(addr, port, handleServerRequest) = 
     let socket = new TcpListener(addr, port)
     member x.Start() = async {do x.Run()} |> Async.Start
@@ -102,30 +108,35 @@ type AsyncTcpServer(addr, port, handleServerRequest) =
         socket.Start()
         while true do
             let client = socket.AcceptTcpClient()
-            Async.Start (async { try // Client has lifetime equal to the async request
-                                     use _holder = client
-                                     do! handleServerRequest client 
-                                  with e -> () })
+            async {try do! handleServerRequest client with e -> ()}
+            |> Async.Start
 
 let quoteSize = 512 // one quote
-let quote = Array.init<byte> quoteSize (fun i -> 1uy)
+let quote = Array.init<byte> quoteSize (fun i -> byte(i % 256))
 
-let handleRequest (client : TcpClient) =
-    async {
-        // Cleanup the client at the end of the request
-        let stream = client.GetStream()
-        do! stream.AsyncWrite(quote, 0, 1)  // write header
-        while true do
-            do! stream.AsyncWrite(quote, 0, quote.Length) 
-            // Mock an I/O wait for the next quote
-            do! Async.Sleep 1000
+let handleRequest (client : TcpClient) = async {
+    use stream = client.GetStream()
+    do! stream.AsyncWrite(quote, 0, 1)  // write header
+    while true do
+        do! stream.AsyncWrite(quote, 0, quote.Length) 
+        // Mock an I/O wait for the next quote
+        do! Async.Sleep 1000}
 
-        stream.Close()
-    }
+let server = new AsyncTcpServer(IPAddress.Loopback, 10003, handleRequest)
+server.Start()
+
+let printQuotes = async {
+    let client = new TcpClient()
+    client.Connect(IPAddress.Loopback, 10003)
+    use stream = client.GetStream()
+    while true do
+        let buffer = Array.create quoteSize 0uy
+        let! read = stream.AsyncRead(buffer, 0, quoteSize)
+        printfn "%A" buffer}
+
+Async.Start printQuotes
 
 
-let server() = 
-    AsyncTcpServer(IPAddress.Loopback, 10003, handleRequest)
 
 type AsyncTcpServerSecure(addr, port, handleServerRequest) = 
 
