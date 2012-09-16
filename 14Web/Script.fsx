@@ -219,10 +219,11 @@ module DynamicTemplateSite =
 SOURCE: .\Sitelets-Website\MyTemplate.html
 #endif
 
-MySite.Skin.WithTemplate "Hello World" <| fun ctx ->
-    [
-        Div [new Website.MyControl()]
-    ]
+#if EMBEDDED_CONTROL_SITE
+let EntireSite =
+    let content _ = [Div[new Website.MyControl()]]
+    Sitelet.Content "/" Action.Home (Skin.WithTemplate "Hello World" content)
+#endif
 
 module MySite =
     open IntelliFactory.Html

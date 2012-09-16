@@ -73,6 +73,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\AspNet-Website\AspNet-Website.fsproj">
+      <Project>{ddf9272f-697b-47d8-8f0d-531fc81bf09f}</Project>
+      <Name>AspNet-Website</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Sitelets-Website\Sitelets-Website.fsproj">
       <Project>{327883ee-b78b-46cb-94a5-259bc7cd05cd}</Project>
       <Name>Sitelets-Website</Name>
