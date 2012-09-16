@@ -42,6 +42,7 @@
     <Compile Include="Download.fs" />
     <Compile Include="DynamicTemplate.fs" />
     <Compile Include="EmbeddedControl.fs" />
+    <Compile Include="CombiningSitelets.fs" />
     <Compile Include="Site.fs" />
     <None Include="MyTemplate.html" />
   </ItemGroup>

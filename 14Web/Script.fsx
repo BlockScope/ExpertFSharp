@@ -229,7 +229,8 @@ let EntireSite =
     Sitelet.Content "/" Action.Home
 #endif
 
-module MySite =
+#if COMBINING_SITELETS
+module CombiningSitelets =
     open IntelliFactory.Html
     open IntelliFactory.WebSharper.Sitelets
 
@@ -240,10 +241,8 @@ module MySite =
         | Logout
 
     module Pages =
-
         /// A helper function to create a hyperlink.
-        let ( => ) title href =
-            A [HRef href] -< [Text title]
+        let (=>) title href = A [HRef href] -< [Text title]
 
         /// A helper function to create a 'fresh' URL with a random parameter
         /// in order to make sure that browsers don't show a cached version.
@@ -251,21 +250,20 @@ module MySite =
             url + "?d=" + System.Uri.EscapeUriString (System.DateTime.Now.ToString())
 
         module Utils =
-
             let SimpleContent title content =
                 Content.PageContent <| fun ctx ->
-                    { Page.Default with
-                        Title = Some title
-                        Body =
-                          [
-                            match UserSession.GetLoggedInUser() with
-                            | None ->
-                                yield "Login" => ctx.Link (Action.Login (Some Action.MyPage))
-                            | Some user ->
-                                yield "Log out ["+user+"]" => R (ctx.Link Action.Logout)
-                          ] @ content ctx
+                    {
+                        Page.Default with
+                            Title = Some title
+                            Body =
+                                [
+                                    match UserSession.GetLoggedInUser() with
+                                    | None ->
+                                        yield "Login" => ctx.Link (Action.Login (Some Action.MyPage))
+                                    | Some user ->
+                                        yield "Log out ["+user+"]" => R (ctx.Link Action.Logout)
+                                ] @ content ctx
                     }
-
 
         let MyPage =
             Utils.SimpleContent "My Page" <| fun ctx ->
@@ -285,10 +283,8 @@ module MySite =
             Utils.SimpleContent "Login Page" <| fun ctx ->
                 let redirectUrl =
                     match action with
-                    | None ->
-                        Action.MyPage
-                    | Some action ->
-                        action
+                    | None -> Action.MyPage
+                    | Some action -> action
                     |> ctx.Link
                     |> R
                 [
@@ -296,21 +292,25 @@ module MySite =
                     "Proceed further" => redirectUrl
                 ]
 
-    let NonProtected =
-        Sitelet.Infer <| function
-            | Action.MyPage ->
-                Pages.MyPage
-            | Action.Login action->
-                // Log in a user as "visitor" without requiring anything
-                UserSession.LoginUser "visitor"
-                Pages.LoginPage action
-            | Action.Logout ->
-                // Log out the "visitor" user and redirect to home
-                UserSession.Logout ()
-                Content.Redirect Action.MyPage
-            | Action.Protected ->
-                Content.ServerError
+    let NonProtected = Sitelet.Infer <| function
+        | Action.MyPage ->
+            Pages.MyPage
+        | Action.Login action ->
+            // Log in a user as "visitor" without requiring anything
+            UserSession.LoginUser "visitor"
+            Pages.LoginPage action
+        | Action.Logout ->
+            // Log out the "visitor" user and redirect to home
+            UserSession.Logout ()
+            Content.Redirect Action.MyPage
+        | Action.Protected ->
+            Content.ServerError
 
+    type Website() =
+        interface IWebsite<Action> with
+            member this.Sitelet = NonProtected
+            member this.Actions = []
+#endif
     type Action =
         | [<CompiledName "home">] MyPage
         | Protected
