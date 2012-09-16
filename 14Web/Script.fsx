@@ -197,7 +197,7 @@ module DynamicTemplateSite =
                 }
 
     let EntireSite =
-        let content _ = [P[Text "Dynamic Content"]]
+        let content _ = [P [Text "Dynamic Content"]]
         Sitelet.Content "/" Action.Home (Skin.WithTemplate "Dynamic Title" content)
 
     type Website() =
@@ -221,8 +221,12 @@ SOURCE: .\Sitelets-Website\MyTemplate.html
 
 #if EMBEDDED_CONTROL_SITE
 let EntireSite =
-    let content _ = [Div[new Website.MyControl()]]
-    Sitelet.Content "/" Action.Home (Skin.WithTemplate "Hello World" content)
+    Skin.WithTemplate "Hello World" <| fun ctx ->
+        [
+            Div [new Website.MyControl()]
+        ]
+    |>
+    Sitelet.Content "/" Action.Home
 #endif
 
 module MySite =

@@ -30,8 +30,12 @@ module EmbeddedControlSite =
                 }
 
     let EntireSite =
-        let content _ = [Div[new Website.MyControl()]]
-        Sitelet.Content "/" Action.Home (Skin.WithTemplate "Hello World" content)
+        Skin.WithTemplate "Hello World" <| fun ctx ->
+            [
+                Div [new Website.MyControl()]
+            ]
+        |>
+        Sitelet.Content "/" Action.Home
 
     type Website() =
         interface IWebsite<Action> with

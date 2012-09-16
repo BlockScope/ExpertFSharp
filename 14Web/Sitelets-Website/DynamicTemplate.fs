@@ -30,7 +30,7 @@ module DynamicTemplateSite =
                 }
 
     let EntireSite =
-        let content _ = [P[Text "Dynamic Content"]]
+        let content _ = [P [Text "Dynamic Content"]]
         Sitelet.Content "/" Action.Home (Skin.WithTemplate "Dynamic Title" content)
 
     type Website() =
