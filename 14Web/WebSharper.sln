@@ -14,6 +14,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Script.fsx = Script.fsx
 	EndProjectSection
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Orders-Website", "Orders-Website\Orders-Website.fsproj", "{07BAF308-B9A4-462C-BBAF-199B243B328C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orders-Web", "Orders-Web\Orders-Web.csproj", "{D11A8903-9193-408A-ACCD-2228E725435D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,6 +40,14 @@ Global
 		{327883EE-B78B-46CB-94A5-259BC7CD05CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{327883EE-B78B-46CB-94A5-259BC7CD05CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{327883EE-B78B-46CB-94A5-259BC7CD05CD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{07BAF308-B9A4-462C-BBAF-199B243B328C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{07BAF308-B9A4-462C-BBAF-199B243B328C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{07BAF308-B9A4-462C-BBAF-199B243B328C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{07BAF308-B9A4-462C-BBAF-199B243B328C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D11A8903-9193-408A-ACCD-2228E725435D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D11A8903-9193-408A-ACCD-2228E725435D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D11A8903-9193-408A-ACCD-2228E725435D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D11A8903-9193-408A-ACCD-2228E725435D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

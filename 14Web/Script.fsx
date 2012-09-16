@@ -368,7 +368,6 @@ module Orders =
         id := !id + 1
         !id
 
-
 open IntelliFactory.WebSharper
 
 type Action =
