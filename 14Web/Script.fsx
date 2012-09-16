@@ -161,8 +161,8 @@ let DownloadPage =
                 Headers = [Http.Header.Custom "Content-Disposition" cd]
                 WriteBody = streamFile("~/myfile.zip")
         }
-#endif
 //SOURCE: .\Sitelets-Website\Download.fs
+#endif
 
 #if DYNAMIC_TEMPLATE
 namespace Website
@@ -227,6 +227,7 @@ let EntireSite =
         ]
     |>
     Sitelet.Content "/" Action.Home
+// SOURCE: .\Sitelets-Website\EmbeddedControl.fs
 #endif
 
 #if COMBINING_SITELETS
@@ -246,70 +247,70 @@ module CombiningSitelets =
 
         /// A helper function to create a 'fresh' URL with a random parameter
         /// in order to make sure that browsers don't show a cached version.
-        let R url =
-            url + "?d=" + System.Uri.EscapeUriString (System.DateTime.Now.ToString())
+        let R url = url + "?d=" + System.Uri.EscapeUriString (System.DateTime.Now.ToString())
 
         module Utils =
-            let SimpleContent title content =
-                Content.PageContent <| fun ctx ->
-                    {
-                        Page.Default with
-                            Title = Some title
-                            Body =
-                                [
-                                    match UserSession.GetLoggedInUser() with
-                                    | None ->
-                                        yield "Login" => ctx.Link (Action.Login (Some Action.MyPage))
-                                    | Some user ->
-                                        yield "Log out ["+user+"]" => R (ctx.Link Action.Logout)
-                                ] @ content ctx
-                    }
+            let SimpleContent title content = Content.PageContent <| fun ctx ->
+                {
+                    Page.Default with
+                        Title = Some title
+                        Body =
+                            [
+                                match UserSession.GetLoggedInUser() with
+                                | None ->
+                                    yield "Login" => ctx.Link (Action.Login (Some Action.MyPage))
+                                | Some user ->
+                                    yield "Log out ["+user+"]" => R (ctx.Link Action.Logout)
+                            ] @ content ctx
+                }
 
-        let MyPage =
-            Utils.SimpleContent "My Page" <| fun ctx ->
-                [
-                    H1 [Text "Hello world!"]
-                    "Protected content" => R (ctx.Link Action.Protected)
-                ]
+        let MyPage = Utils.SimpleContent "My Page" <| fun ctx ->
+            [
+                H1 [Text "Hello world!"]
+                "Protected content" => R (ctx.Link Action.Protected)
+            ]
 
-        let ProtectedPage =
-            Utils.SimpleContent "Protected Page" <| fun ctx ->
-                [
-                    H1 [Text "This is protected content!"]
-                    "Go back" => (ctx.Link Action.MyPage)
-                ]
+        let ProtectedPage = Utils.SimpleContent "Protected Page" <| fun ctx ->
+            [
+                H1 [Text "This is protected content!"]
+                "Go back" => (ctx.Link Action.MyPage)
+            ]
 
-        let LoginPage action =
-            Utils.SimpleContent "Login Page" <| fun ctx ->
-                let redirectUrl =
-                    match action with
-                    | None -> Action.MyPage
-                    | Some action -> action
-                    |> ctx.Link
-                    |> R
-                [
-                    H1 [Text "You have been logged in magically..."]
-                    "Proceed further" => redirectUrl
-                ]
+        let LoginPage action = Utils.SimpleContent "Login Page" <| fun ctx ->
+            let redirectUrl =
+                match action with
+                | None -> Action.MyPage
+                | Some action -> action
+                |> ctx.Link
+                |> R
+            [
+                H1 [Text "You have been logged in magically..."]
+                "Proceed further" => redirectUrl
+            ]
 
     let NonProtected = Sitelet.Infer <| function
-        | Action.MyPage ->
-            Pages.MyPage
+        | Action.MyPage -> Pages.MyPage
+
+        // Log in a user as "visitor" without requiring anything
         | Action.Login action ->
-            // Log in a user as "visitor" without requiring anything
             UserSession.LoginUser "visitor"
             Pages.LoginPage action
+
+        // Log out the "visitor" user and redirect to home
         | Action.Logout ->
-            // Log out the "visitor" user and redirect to home
             UserSession.Logout ()
             Content.Redirect Action.MyPage
+
         | Action.Protected ->
-            Content.ServerError
+            match UserSession.GetLoggedInUser() with
+            | None -> Content.ServerError
+            | Some _ -> Pages.ProtectedPage
 
     type Website() =
         interface IWebsite<Action> with
             member this.Sitelet = NonProtected
             member this.Actions = []
+// SOURCE: .\Sitelets-Website\CombiningSitelets.fs
 #endif
     type Action =
         | [<CompiledName "home">] MyPage

@@ -1,11 +1,11 @@
 ﻿namespace Website
 
-module CombiningSitelets =
+module CompiledNameOfAction =
     open IntelliFactory.Html
     open IntelliFactory.WebSharper.Sitelets
 
     type Action =
-        | MyPage
+        | [<CompiledName "home">] MyPage
         | Protected
         | Login of Action option
         | Logout
@@ -79,3 +79,5 @@ module CombiningSitelets =
         interface IWebsite<Action> with
             member this.Sitelet = NonProtected
             member this.Actions = []
+
+
