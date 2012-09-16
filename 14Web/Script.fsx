@@ -78,39 +78,81 @@
 //SOURCE: .\Sitelets-Website\Site.fs
 
 /// Represents HTML pages with embedded WebSharper controls.
-type Page =
-    {
-      Doctype : string option
-      Title : string option
-      Renderer : string option -> string option -> Writer -> Writer -> HtmlTextWriter -> unit
-      Head : Element<unit> seq
-      Body : Element<Control> seq
-    }
+//type Page =
+//    {
+//      Doctype : string option
+//      Title : string option
+//      Renderer : string option -> string option -> Writer -> Writer -> HtmlTextWriter -> unit
+//      Head : Element<unit> seq
+//      Body : Element<Control> seq
+//    }
+//
+//    static member Default =
+//        {
+//          Doctype = Some "<!DOCTYPE html>"
+//          Title = None
+//          Head = []
+//          Renderer = ...
+//          Body = []
+//        }
+// SOURCE: .\IntelliFactory.WebSharper.Sitelets\Page.fs as below
+//type Page =
+//    {
+//        Doctype : option<string>
+//        Title : option<string>
+//        Renderer : option<string> -> option<string> -> Writer -> Writer ->
+//            HtmlTextWriter -> unit
+//        Head : seq<Element<unit>>
+//        Body : seq<Element<Control>>
+//    }
+//
+//    static member Default =
+//        let renderer (doctype : option<string>) (title: option<string>)
+//            writeHead writeBody (writer: System.Web.UI.HtmlTextWriter) =
+//            ...
+//        {
+//            Doctype = Some "<!DOCTYPE html>"
+//            Title = None
+//            Head = []
+//            Renderer = renderer
+//            Body = []
+//        }
 
-    static member Default =
-        {
-          Doctype = Some "<!DOCTYPE html>"
-          Title = None
-          Head = []
-          Renderer = ...
-          Body = []
-        }
+/// Represents HTTP responses
+//type Response =
+//    {
+//        Status : Http.Status
+//        Headers : Http.Header seq
+//        WriteBody : System.IO.Stream -> unit
+//    }
+// SOURCE: IntelliFactory.WebSharper.Sitelets\Http.fs as below ...
+//    type Response =
+//        {
+//            Status      : Status
+//            Headers     : seq<Header>
+//            WriteBody   : System.IO.Stream -> unit
+//        }
 
-//// Represents HTTP responses
-type Response =
-    {
-        Status : Http.Status
-        Headers : Http.Header seq
-        WriteBody : System.IO.Stream -> unit
-    }
-
-Content.CustomContent <| fun ctx ->
-    let cd = "attachment; filename=\"myfile.zip\""
-    {
-         Status = Http.Status.Ok
-         Headers = [Http.Header.Custom "Content-Disposition" cd]
-         WriteBody = ...
-    }
+//let streamFile virtualPath (stream : Stream) =
+//    let filename = System.Web.HttpContext.Current.Server.MapPath(virtualPath)
+//    use fs = File.OpenRead(filename)
+//    use bs = new BufferedStream(fs)
+//    let rec loop() =
+//        let b = bs.ReadByte()
+//        if b >= 0 then
+//            stream.WriteByte((byte)b)
+//            loop()
+//    loop()
+//
+//let DownloadPage =
+//    Content.CustomContent <| fun ctx ->
+//        let cd = "attachment; filename=\"myfile.zip\""
+//        {
+//                Status = Http.Status.Ok
+//                Headers = [Http.Header.Custom "Content-Disposition" cd]
+//                WriteBody = streamFile("~/myfile.zip")
+//        }
+//SOURCE: .\Sitelets-Website\Download.fs
 
 open System.IO
 open IntelliFactory.WebSharper.Sitelets
