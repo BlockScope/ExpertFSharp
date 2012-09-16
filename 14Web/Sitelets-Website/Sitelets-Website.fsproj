@@ -35,6 +35,15 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
+  <Import Project="WebSharper.targets" Condition="Exists('WebSharper.targets')" />
+  <Import Project="$(WEBSHARPER_HOME)/IntelliFactory.WebSharper.Sitelets.targets" />
+  <ItemGroup>
+    <Compile Include="OnePage.fs" />
+    <Compile Include="Download.fs" />
+    <Compile Include="DynamicTemplate.fs" />
+    <Compile Include="Site.fs" />
+    <None Include="MyTemplate.html" />
+  </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
     <Reference Include="FSharp.Core" />
@@ -42,11 +51,4 @@
     <Reference Include="System.Numerics" />
     <Reference Include="System.Web" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="OnePage.fs" />
-    <Compile Include="Download.fs" />
-    <Compile Include="Site.fs" />
-  </ItemGroup>
-  <Import Project="WebSharper.targets" Condition="Exists('WebSharper.targets')" />
-  <Import Project="$(WEBSHARPER_HOME)/IntelliFactory.WebSharper.Sitelets.targets" />
 </Project>

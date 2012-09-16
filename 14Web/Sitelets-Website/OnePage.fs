@@ -1,6 +1,6 @@
 ﻿namespace Website
 
-module MySite =
+module OnePageSite =
     open IntelliFactory.Html
     open IntelliFactory.WebSharper.Sitelets
 

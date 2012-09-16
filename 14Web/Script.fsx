@@ -1,25 +1,26 @@
-//namespace Website
-//
-//open IntelliFactory.WebSharper
-//open IntelliFactory.WebSharper.Html
-//
-//[<AutoOpen>]
-//module HelloWorld =
-//    [<JavaScript>]
-//    let HelloWorld () =
-//        let welcome = P [Text "Welcome"]
-//        Div [
-//            welcome
-//            Input [Attr.Type "Button"; Attr.Value "Click me!"]
-//            |>! OnClick (fun e args ->
-//                welcome.Text <- "Hello, world!")
-//        ]
-//
-//type MyControl() =
-//    inherit Web.Control()
-//
-//    [<JavaScript>]
-//    override this.Body = HelloWorld () :> _
+#if USER_CONTROL
+namespace Website
+
+open IntelliFactory.WebSharper
+open IntelliFactory.WebSharper.Html
+
+[<AutoOpen>]
+module HelloWorld =
+    [<JavaScript>]
+    let HelloWorld () =
+        let welcome = P [Text "Welcome"]
+        Div [
+            welcome
+            Input [Attr.Type "Button"; Attr.Value "Click me!"]
+            |>! OnClick (fun e args ->
+                welcome.Text <- "Hello, world!")
+        ]
+
+type MyControl() =
+    inherit Web.Control()
+
+    [<JavaScript>]
+    override this.Body = HelloWorld () :> _
 //SOURCE: .\AspNet-Website\HelloWorld.fs
 
 //<configuration><system.web><pages><controls>
@@ -43,58 +44,62 @@
 //  </body>
 //</html>
 // SOURCE: .\AspNet\Web\Default.aspx
+#endif
 
-//namespace Website
-//
-//open IntelliFactory.WebSharper
-//
-//module MySite =
-//    open IntelliFactory.Html
-//    open IntelliFactory.WebSharper.Sitelets
-//
-//    type Action = | MyPage
-//
-//    module Pages =
-//        let MyPage =
-//            Content.PageContent <| fun ctx ->
-//                {
-//                    Page.Default with
-//                        Title = Some "My page"
-//                        Body =
-//                            [
-//                                H1 [Text "Hello world!"]
-//                            ]
-//                }
-//
-//    let EntireSite = Sitelet.Content "/" Action.MyPage Pages.MyPage
-//
-//    type MyWebsite() =
-//        interface IWebsite<Action> with
-//            member this.Sitelet = EntireSite
-//            member this.Actions = []
-//
-//[<assembly : Sitelets.Website(typeof<MySite.MyWebsite>)>]
-//do ()
+#if ONE_PAGE
+namespace Website
+
+module OnePageSite =
+    open IntelliFactory.Html
+    open IntelliFactory.WebSharper.Sitelets
+
+    type Action = | MyPage
+
+    module Pages =
+        let MyPage =
+            Content.PageContent <| fun ctx ->
+                {
+                    Page.Default with
+                        Title = Some "My page"
+                        Body =
+                            [
+                                H1 [Text "Hello world!"]
+                            ]
+                }
+
+    let EntireSite = Sitelet.Content "/" Action.MyPage Pages.MyPage
+
+    type Website() =
+        interface IWebsite<Action> with
+            member this.Sitelet = EntireSite
+            member this.Actions = []
+
+open IntelliFactory.WebSharper
+
+[<assembly : Sitelets.Website(typeof<OnePageSite.Website>)>]
+do ()
 //SOURCE: .\Sitelets-Website\Site.fs
+#endif
 
+#if WEBSHARPER_PAGE_TYPE
 /// Represents HTML pages with embedded WebSharper controls.
-//type Page =
-//    {
-//      Doctype : string option
-//      Title : string option
-//      Renderer : string option -> string option -> Writer -> Writer -> HtmlTextWriter -> unit
-//      Head : Element<unit> seq
-//      Body : Element<Control> seq
-//    }
-//
-//    static member Default =
-//        {
-//          Doctype = Some "<!DOCTYPE html>"
-//          Title = None
-//          Head = []
-//          Renderer = ...
-//          Body = []
-//        }
+type Page =
+    {
+      Doctype : string option
+      Title : string option
+      Renderer : string option -> string option -> Writer -> Writer -> HtmlTextWriter -> unit
+      Head : Element<unit> seq
+      Body : Element<Control> seq
+    }
+
+    static member Default =
+        {
+          Doctype = Some "<!DOCTYPE html>"
+          Title = None
+          Head = []
+          Renderer = ...
+          Body = []
+        }
 // SOURCE: .\IntelliFactory.WebSharper.Sitelets\Page.fs as below
 //type Page =
 //    {
@@ -117,14 +122,16 @@
 //            Renderer = renderer
 //            Body = []
 //        }
+#endif
 
+#if WEBSHARPER_RESPONSE_TYPE
 /// Represents HTTP responses
-//type Response =
-//    {
-//        Status : Http.Status
-//        Headers : Http.Header seq
-//        WriteBody : System.IO.Stream -> unit
-//    }
+type Response =
+    {
+        Status : Http.Status
+        Headers : Http.Header seq
+        WriteBody : System.IO.Stream -> unit
+    }
 // SOURCE: IntelliFactory.WebSharper.Sitelets\Http.fs as below ...
 //    type Response =
 //        {
@@ -132,38 +139,42 @@
 //            Headers     : seq<Header>
 //            WriteBody   : System.IO.Stream -> unit
 //        }
+#endif
 
-//let streamFile virtualPath (stream : Stream) =
-//    let filename = System.Web.HttpContext.Current.Server.MapPath(virtualPath)
-//    use fs = File.OpenRead(filename)
-//    use bs = new BufferedStream(fs)
-//    let rec loop() =
-//        let b = bs.ReadByte()
-//        if b >= 0 then
-//            stream.WriteByte((byte)b)
-//            loop()
-//    loop()
-//
-//let DownloadPage =
-//    Content.CustomContent <| fun ctx ->
-//        let cd = "attachment; filename=\"myfile.zip\""
-//        {
-//                Status = Http.Status.Ok
-//                Headers = [Http.Header.Custom "Content-Disposition" cd]
-//                WriteBody = streamFile("~/myfile.zip")
-//        }
+#if DOWNLOAD
+let streamFile virtualPath (stream : Stream) =
+    let filename = System.Web.HttpContext.Current.Server.MapPath(virtualPath)
+    use fs = File.OpenRead(filename)
+    use bs = new BufferedStream(fs)
+    let rec loop() =
+        let b = bs.ReadByte()
+        if b >= 0 then
+            stream.WriteByte((byte)b)
+            loop()
+    loop()
+
+let DownloadPage =
+    Content.CustomContent <| fun ctx ->
+        let cd = "attachment; filename=\"myfile.zip\""
+        {
+                Status = Http.Status.Ok
+                Headers = [Http.Header.Custom "Content-Disposition" cd]
+                WriteBody = streamFile("~/myfile.zip")
+        }
+#endif
 //SOURCE: .\Sitelets-Website\Download.fs
+
+#if DYNAMIC_TEMPLATE
+namespace Website
 
 open System.IO
 open IntelliFactory.WebSharper.Sitelets
 
-module MySite =
+module DynamicTemplateSite =
     open IntelliFactory.WebSharper
     open IntelliFactory.Html
 
-    // Your sitelet action type
-    type Action =
-        | Home
+    type Action = | Home
 
     module Skin =
         type Placeholders =
@@ -185,6 +196,16 @@ module MySite =
                     Body = body context
                 }
 
+    let EntireSite =
+        let content _ = [P[Text "Dynamic Content"]]
+        Sitelet.Content "/" Action.Home (Skin.WithTemplate "Dynamic Title" content)
+
+    type Website() =
+        interface IWebsite<Action> with
+            member this.Sitelet = EntireSite
+            member this.Actions = []
+//SOURCE: .\Sitelets-Website\DynamicTemplate.fs
+
 //<!DOCTYPE html>
 //<html>
 //  <head>
@@ -195,6 +216,8 @@ module MySite =
 //    <div data-hole="body"></div>
 //  </body>
 //</html>
+SOURCE: .\Sitelets-Website\MyTemplate.html
+#endif
 
 MySite.Skin.WithTemplate "Hello World" <| fun ctx ->
     [
