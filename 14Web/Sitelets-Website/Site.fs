@@ -1,77 +1,31 @@
 ﻿namespace Website
 
-open IntelliFactory.Html
 open IntelliFactory.WebSharper
-open IntelliFactory.WebSharper.Sitelets
 
-type Action =
-    | Home
-    | About
+module MySite =
+    open IntelliFactory.Html
+    open IntelliFactory.WebSharper.Sitelets
 
-module Skin =
-    open System.Web
+    type Action = | MyPage
 
-    let TemplateLoadFrequency =
-        #if DEBUG
-        Content.Template.PerRequest
-        #else
-        Content.Template.Once
-        #endif
+    module Pages =
+        let MyPage =
+            Content.PageContent <| fun ctx ->
+                {
+                    Page.Default with
+                        Title = Some "My page"
+                        Body =
+                            [
+                                H1 [Text "Hello world!"]
+                            ]
+                }
 
-    type Page =
-        {
-            Title : string
-            Body : list<Content.HtmlElement>
-        }
+    let EntireSite = Sitelet.Content "/" Action.MyPage Pages.MyPage
 
-    let MainTemplate =
-        let path = HttpContext.Current.Server.MapPath("~/Main.html")
-        Content.Template<Page>(path, TemplateLoadFrequency)
-            .With("title", fun x -> x.Title)
-            .With("body", fun x -> x.Body)
+    type MyWebsite() =
+        interface IWebsite<Action> with
+            member this.Sitelet = EntireSite
+            member this.Actions = []
 
-    let WithTemplate title body : Content<Action> =
-        Content.WithTemplate MainTemplate <| fun context ->
-            {
-                Title = title
-                Body = body context
-            }
-
-module Site =
-
-    let ( => ) text url =
-        A [HRef url] -< [Text text]
-
-    let Links (ctx: Context<Action>) =
-        UL [
-            LI ["Home" => ctx.Link Home]
-            LI ["About" => ctx.Link About]
-        ]
-
-    let HomePage =
-        Skin.WithTemplate "HomePage" <| fun ctx ->
-            [
-                Div [Text "HOME"]
-                Links ctx
-            ]
-
-    let AboutPage =
-        Skin.WithTemplate "AboutPage" <| fun ctx ->
-            [
-                Div [Text "ABOUT"]
-                Links ctx
-            ]
-
-    let Main =
-        Sitelet.Sum [
-            Sitelet.Content "/" Home HomePage
-            Sitelet.Content "/About" About AboutPage
-        ]
-
-type Website() =
-    interface IWebsite<Action> with
-        member this.Sitelet = Site.Main
-        member this.Actions = [Home; About]
-
-[<assembly: WebsiteAttribute(typeof<Website>)>]
+[<assembly : Sitelets.Website(typeof<MySite.MyWebsite>)>]
 do ()
