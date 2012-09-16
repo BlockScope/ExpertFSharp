@@ -74,7 +74,9 @@ module CombiningSitelets =
             UserSession.Logout ()
             Content.Redirect Action.MyPage
         | Action.Protected ->
-            Content.ServerError
+            match UserSession.GetLoggedInUser() with
+            | None -> Content.ServerError
+            | Some _ -> Pages.ProtectedPage
 
     type Website() =
         interface IWebsite<Action> with
