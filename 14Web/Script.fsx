@@ -312,13 +312,17 @@ module CombiningSitelets =
             member this.Actions = []
 // SOURCE: .\Sitelets-Website\CombiningSitelets.fs
 #endif
+
+#if COMPILED_NAME_OF_ACTION
     type Action =
         | [<CompiledName "home">] MyPage
         | Protected
         | Login of Action option
         | Logout
+// SOURCE: .\Sitelets-Website\CompiledNameOfAction.fs
+#endif
 
-
+#if SITELET_SUM_COMBINATOR
     let Protected =
         let filter : Sitelet.Filter<Action> =
             {
@@ -330,7 +334,8 @@ module CombiningSitelets =
             Sitelet.Content "/protected" Action.Protected Pages.ProtectedPage
 
     let EntireSite = Protected <|> NonProtected
-
+// SOURCE: .\Sitelets-Website\SiteletSumCombinator.fs
+#endif
 
 namespace Website
 
