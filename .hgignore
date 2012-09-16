@@ -15,3 +15,6 @@ syntax: glob
 *.user
 */ipch/*
 *.opensdf
+*/build.tmp
+*/Website.dll.*.js
+14Web/AspNet-Web/Scripts/Website.dll.js

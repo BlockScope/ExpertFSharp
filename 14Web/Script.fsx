@@ -1,65 +1,48 @@
-namespace Website
-
-open IntelliFactory.WebSharper
-open IntelliFactory.WebSharper.Html
-
-[<JavaScript>]
-let HelloWorld () =
-    let welcome = P [Text "Welcome"]
-    Div [
-        welcome
-        Input [Attr.Type "Button"; Attr.Value "Click me!"]
-        |>! OnClick (fun e args ->
-            welcome.Text <- "Hello, world!")
-    ]
-
-Div [Attr.Class "your-css-class"] -< [ … ]
-
-type MyControl() =
-    inherit Web.Control()
-
-    [<JavaScript>]
-    override this.Body = HelloWorld () :> _
-
-//<configuration>
-//  <system.web>
-//    <pages>
-//      <controls>
-//        <add tagPrefix="WebSharper"
-//             namespace="IntelliFactory.WebSharper.Web
-//             assembly="IntelliFactory.WebSharper.Web" />
-//        <add tagPrefix="ws"
-//             namespace="Website"
-//             assembly="Website" />
-//      </controls>
-//...
+//namespace Website
 //
+//open IntelliFactory.WebSharper
+//open IntelliFactory.WebSharper.Html
+//
+//[<AutoOpen>]
+//module HelloWorld =
+//    [<JavaScript>]
+//    let HelloWorld () =
+//        let welcome = P [Text "Welcome"]
+//        Div [
+//            welcome
+//            Input [Attr.Type "Button"; Attr.Value "Click me!"]
+//            |>! OnClick (fun e args ->
+//                welcome.Text <- "Hello, world!")
+//        ]
+//
+//type MyControl() =
+//    inherit Web.Control()
+//
+//    [<JavaScript>]
+//    override this.Body = HelloWorld () :> _
+//SOURCE: .\AspNet-Website\HelloWorld.fs
+
+//<configuration><system.web><pages><controls>
+//    <add tagPrefix="WebSharper"
+//         namespace="IntelliFactory.WebSharper.Web"
+//         assembly="IntelliFactory.WebSharper.Web" />
+//    <add tagPrefix="ws" namespace="Website" assembly="Website" />
+//</controls></pages></system.web></configuration>
+//SOURCE: .\AspNet\Web\Web.config
+
+//<%@ Page Language="C#" %>
+//<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+//	  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 //<html xmlns="http://www.w3.org/1999/xhtml">
 //  <head runat="server">
-//    <title>Your WebSharper Application</title>
+//    <title>WebSharper Application</title>
 //    <WebSharper:ScriptManager runat="server" />
 //  </head>
 //  <body>
 //    <ws:MyControl runat="server"/>
 //  </body>
 //</html>
-
-module YourWebApplication =
-    open IntelliFactory.WebSharper 
-    
-    module Server =
-
-        [<Rpc>]
-        let YourServerFunction (...) =
-            ...
-
-    module Client =
-
-        [<JavaScript>]
-        let YourClientFunction (...) =
-            ...
-            let data = Server.YourServerFunction (...)
-            ...
+// SOURCE: .\AspNet\Web\Default.aspx
 
 open IntelliFactory.WebSharper
 
