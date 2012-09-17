@@ -50,7 +50,8 @@
     <Compile Include="ResourceTracking.fs" />
     <Compile Include="Site.fs" />
     <None Include="MyTemplate.html" />
-    <Content Include="my.js" />
+    <Content Include="my-render-resource.js" />
+    <Content Include="my-assembly-resource.js" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />

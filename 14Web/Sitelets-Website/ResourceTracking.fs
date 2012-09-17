@@ -6,16 +6,16 @@ open IntelliFactory.WebSharper.Core
 type MyResource() =
     interface Resources.IResource with
         member this.Render ctx writer =
-            writer.WriteLine "<script type=\"javascript\" src=\"lib\\my.js\"></script>"
+            writer.WriteLine "<script src='lib/my-render-resource.js' type='javascript'></script>"
 
-[<assembly : System.Web.UI.WebResource("my.js", "text/javascript")>]
+[<assembly : System.Web.UI.WebResource("my-assembly-resource.js", "text/javascript")>]
 do ()
 
 type MyEmbeddedResource() =
-    inherit Resources.BaseResource("my.js")
+    inherit Resources.BaseResource("my-embedded-resource.js")
 
 type MyExternalResource() =
-    inherit Resources.BaseResource(@"http:\\your.domain.net", "lib.js", "style.css")
+    inherit Resources.BaseResource("http://your.domain.net/", "my-external-resource.js", "style.css")
 
 [<Require(typeof<MyResource>)>]
 [<Require(typeof<MyEmbeddedResource>)>]
@@ -53,7 +53,7 @@ module ResourceTrackingSite =
 
 // Load the site and you should see in the console that the following
 // resources failed to load, where 53025 is the port IIS express is running on ...
-//GET http://localhost:53025/lib/my-resource.js 404 (Not Found)
 //GET http://localhost:53025/my-embedded-resource.js 404 (Not Found)
-//GET http://your.domain.netmy-external.js/
-//GET http://your.domain.netstyle.css/
+//GET http://localhost:53025/lib/my-render-resource.js 404 (Not Found)
+//GET http://your.domain.net/my-external-resource.js
+//GET http://your.domain.net/style.css  
