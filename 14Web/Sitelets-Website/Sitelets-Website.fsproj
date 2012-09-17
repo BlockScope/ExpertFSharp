@@ -45,6 +45,7 @@
     <Compile Include="CombiningSitelets.fs" />
     <Compile Include="CompiledNameOfAction.fs" />
     <Compile Include="SiteletSumCombinator.fs" />
+    <Compile Include="VariousFormletSnippets.fs" />
     <Compile Include="Site.fs" />
     <None Include="MyTemplate.html" />
   </ItemGroup>
