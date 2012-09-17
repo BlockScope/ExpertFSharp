@@ -1,8 +1,228 @@
 (function()
 {
- var Global=this,Runtime=this.IntelliFactory.Runtime,WebSharper,Html,Default,List,T,Operators,Formlet,Formlet1,Website,FormletSnippets,Controls,Data,Enhance;
+ var Global=this,Runtime=this.IntelliFactory.Runtime,WebSharper,Html,Default,List,String,Website,FormletSnippets,T,Formlet,Data,Formlet1,DependentFormletSnippets,Enhance,Controls,Operators;
  Runtime.Define(Global,{
   Website:{
+   DependentFormletSnippets:{
+    RunSnippet:function(title,formlet)
+    {
+     var f,f1;
+     f=(f1=Runtime.Tupled(function(tupledArg)
+     {
+      var s,i,x,f2;
+      s=tupledArg[0];
+      i=tupledArg[1];
+      return Default.Div(List.ofArray([Default.P(List.ofArray([(x="You entered: "+s+" "+String(i),(f2=function(x1)
+      {
+       return Default.Text(x1);
+      },f2(x)))]))]));
+     }),function(formlet1)
+     {
+      return FormletSnippets.RunInBlock(title,f1,formlet1);
+     });
+     return f(formlet);
+    },
+    RunSnippetList:function(title,formlet)
+    {
+     var showOne,ShowMany,f1,f2;
+     showOne=Runtime.Tupled(function(x)
+     {
+      var s,i,x1,f;
+      s=x[0];
+      i=x[1];
+      return Default.Div(List.ofArray([Default.P(List.ofArray([(x1="You entered: "+s+" "+String(i),(f=function(x2)
+      {
+       return Default.Text(x2);
+      },f(x1)))]))]));
+     });
+     ShowMany=function(xs)
+     {
+      var ys,y,a,b;
+      if(xs.$==1)
+       {
+        ys=xs.$1;
+        y=xs.$0;
+        a=List.ofArray([showOne(y)]);
+        b=ShowMany(ys);
+        return List.append(a,b);
+       }
+      else
+       {
+        return Runtime.New(T,{
+         $:0
+        });
+       }
+     };
+     f1=(f2=function(l)
+     {
+      var x;
+      x=ShowMany(l);
+      return Default.Div(x);
+     },function(formlet1)
+     {
+      return FormletSnippets.RunInBlock(title,f2,formlet1);
+     });
+     return f1(formlet);
+    },
+    Snippet2:Runtime.Field(function()
+    {
+     var x,x1,x2,f1,f2;
+     x=(x1=Data.$(Data.$((x2=function(name)
+     {
+      return function(age)
+      {
+       var f;
+       return[name,(f=function(value)
+       {
+        return value<<0;
+       },f(age))];
+      };
+     },Formlet1.Return(x2)),DependentFormletSnippets.input("Name","Please enter your name")),DependentFormletSnippets.inputInt("Age","Please enter a valid age")),(f1=function(formlet)
+     {
+      return Enhance.WithSubmitAndResetButtons(formlet);
+     },f1(x1)));
+     f2=function(formlet)
+     {
+      return Enhance.WithFormContainer(formlet);
+     };
+     return f2(x);
+    }),
+    Snippet3a:Runtime.Field(function()
+    {
+     var x,x1,x2,x3,x4,x5,x6,f1,f2,f3,f4,f5,f6;
+     x=(x1=(x2=(x3=(x4=(x5=Data.$(Data.$((x6=function(name)
+     {
+      return function(age)
+      {
+       var f;
+       return[name,(f=function(value)
+       {
+        return value<<0;
+       },f(age))];
+      };
+     },Formlet1.Return(x6)),DependentFormletSnippets.input("Name","Please enter your name")),DependentFormletSnippets.inputInt("Age","Please enter a valid age")),(f1=function(formlet)
+     {
+      return Enhance.WithLegend("Person",formlet);
+     },f1(x5))),(f2=function(formlet)
+     {
+      return Enhance.WithTextLabel("Person",formlet);
+     },f2(x4))),(f3=function(formlet)
+     {
+      return Enhance.Many(formlet);
+     },f3(x3))),(f4=function(formlet)
+     {
+      return Enhance.WithLegend("People",formlet);
+     },f4(x2))),(f5=function(formlet)
+     {
+      return Enhance.WithSubmitAndResetButtons(formlet);
+     },f5(x1)));
+     f6=function(formlet)
+     {
+      return Enhance.WithFormContainer(formlet);
+     };
+     return f6(x);
+    }),
+    Snippet4:Runtime.Field(function()
+    {
+     var x,x1,_builder_,f1,f2;
+     x=(x1=(_builder_=Formlet1.Do(),_builder_.Delay(function()
+     {
+      return _builder_.Bind(DependentFormletSnippets.input("Name","Please enter your name"),function(_arg1)
+      {
+       return _builder_.Bind(DependentFormletSnippets.inputInt("Age","Please enter a valid age"),function(_arg2)
+       {
+        var f;
+        return _builder_.Return([_arg1,(f=function(value)
+        {
+         return value<<0;
+        },f(_arg2))]);
+       });
+      });
+     })),(f1=function(formlet)
+     {
+      return Enhance.WithSubmitAndResetButtons(formlet);
+     },f1(x1)));
+     f2=function(formlet)
+     {
+      return Enhance.WithFormContainer(formlet);
+     };
+     return f2(x);
+    }),
+    Snippet4b:Runtime.Field(function()
+    {
+     var x,_builder_,f5;
+     x=(_builder_=Formlet1.Do(),_builder_.Delay(function()
+     {
+      var x1,x2,f,f1;
+      return _builder_.Bind((x1=(x2=DependentFormletSnippets.input("Name","Please enter your name"),(f=function(formlet)
+      {
+       return Enhance.WithSubmitAndResetButtons(formlet);
+      },f(x2))),(f1=function(formlet)
+      {
+       return Enhance.WithFormContainer(formlet);
+      },f1(x1))),function(_arg1)
+      {
+       var x3,x4,f2,f3;
+       return _builder_.Bind((x3=(x4=DependentFormletSnippets.inputInt("Age","Please enter a valid age"),(f2=function(formlet)
+       {
+        return Enhance.WithSubmitAndResetButtons(formlet);
+       },f2(x4))),(f3=function(formlet)
+       {
+        return Enhance.WithFormContainer(formlet);
+       },f3(x3))),function(_arg2)
+       {
+        var f4;
+        return _builder_.Return([_arg1,(f4=function(value)
+        {
+         return value<<0;
+        },f4(_arg2))]);
+       });
+      });
+     }));
+     f5=function(formlet)
+     {
+      return Formlet1.Flowlet(formlet);
+     };
+     return f5(x);
+    }),
+    input:function(label,err)
+    {
+     var x,x1,x2,f,f1,f2;
+     x=(x1=(x2=Controls.Input(""),(f=function(arg10)
+     {
+      return Data.Validator().IsNotEmpty(err,arg10);
+     },f(x2))),(f1=function(formlet)
+     {
+      return Enhance.WithValidationIcon(formlet);
+     },f1(x1)));
+     f2=function(formlet)
+     {
+      return Enhance.WithTextLabel(label,formlet);
+     };
+     return f2(x);
+    },
+    inputInt:function(label,err)
+    {
+     var x,x1,x2,f,f1,f2;
+     x=(x1=(x2=Controls.Input(""),(f=Data.Validator().IsInt(err),f(x2))),(f1=function(formlet)
+     {
+      return Enhance.WithValidationIcon(formlet);
+     },f1(x1)));
+     f2=function(formlet)
+     {
+      return Enhance.WithTextLabel(label,formlet);
+     };
+     return f2(x);
+    }
+   },
+   DependentFormlets:{
+    Snippets:Runtime.Class({
+     get_Body:function()
+     {
+      return Default.Div(List.ofArray([DependentFormletSnippets.RunSnippet("Snippet2",DependentFormletSnippets.Snippet2()),DependentFormletSnippets.RunSnippet("Snippet4",DependentFormletSnippets.Snippet4()),DependentFormletSnippets.RunSnippet("Snippet4b",DependentFormletSnippets.Snippet4b()),Default.Div(List.ofArray([DependentFormletSnippets.RunSnippetList("Snippet3a",DependentFormletSnippets.Snippet3a())]))]));
+     }
+    })
+   },
    FormletSnippets:{
     RunInBlock:function(title,f,formlet)
     {
@@ -188,15 +408,17 @@
   Html=Runtime.Safe(WebSharper.Html);
   Default=Runtime.Safe(Html.Default);
   List=Runtime.Safe(WebSharper.List);
-  T=Runtime.Safe(List.T);
-  Operators=Runtime.Safe(Html.Operators);
-  Formlet=Runtime.Safe(WebSharper.Formlet);
-  Formlet1=Runtime.Safe(Formlet.Formlet);
+  String=Runtime.Safe(Global.String);
   Website=Runtime.Safe(Global.Website);
   FormletSnippets=Runtime.Safe(Website.FormletSnippets);
-  Controls=Runtime.Safe(Formlet.Controls);
+  T=Runtime.Safe(List.T);
+  Formlet=Runtime.Safe(WebSharper.Formlet);
   Data=Runtime.Safe(Formlet.Data);
-  return Enhance=Runtime.Safe(Formlet.Enhance);
+  Formlet1=Runtime.Safe(Formlet.Formlet);
+  DependentFormletSnippets=Runtime.Safe(Website.DependentFormletSnippets);
+  Enhance=Runtime.Safe(Formlet.Enhance);
+  Controls=Runtime.Safe(Formlet.Controls);
+  return Operators=Runtime.Safe(Html.Operators);
  });
  Runtime.OnLoad(function()
  {
@@ -207,5 +429,9 @@
   FormletSnippets.Snippet1b();
   FormletSnippets.Snippet1a();
   FormletSnippets.Snippet1();
+  DependentFormletSnippets.Snippet4b();
+  DependentFormletSnippets.Snippet4();
+  DependentFormletSnippets.Snippet3a();
+  DependentFormletSnippets.Snippet2();
  });
 }());

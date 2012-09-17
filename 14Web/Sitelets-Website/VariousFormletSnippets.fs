@@ -130,7 +130,7 @@ module VariousFormletSnippets =
                 }
 
     let EntireSite =
-        Sitelet.Content "/home" Action.Home Pages.SnippetsPage
+        Sitelet.Content "/" Action.Home Pages.SnippetsPage
 
     type Website() =
         interface IWebsite<Action> with
