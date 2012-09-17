@@ -11,6 +11,7 @@ open IntelliFactory.WebSharper
 //[<assembly : Sitelets.Website(typeof<CompiledNameOfAction.Website>)>]
 //[<assembly : Sitelets.Website(typeof<SiteletSumCombinator.Website>)>]
 //[<assembly : Sitelets.Website(typeof<VariousFormletSnippets.Website>)>]
-[<assembly : Sitelets.Website(typeof<VariousDependentFormletSnippets.Website>)>]
+//[<assembly : Sitelets.Website(typeof<VariousDependentFormletSnippets.Website>)>]
+[<assembly : Sitelets.Website(typeof<ResourceTrackingSite.Website>)>]
 do ()
 

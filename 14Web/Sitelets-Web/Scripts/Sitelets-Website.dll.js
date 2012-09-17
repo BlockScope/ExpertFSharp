@@ -1,6 +1,6 @@
 (function()
 {
- var Global=this,Runtime=this.IntelliFactory.Runtime,WebSharper,Html,Default,List,String,Website,FormletSnippets,T,Formlet,Data,Formlet1,DependentFormletSnippets,Enhance,Controls,Operators;
+ var Global=this,Runtime=this.IntelliFactory.Runtime,WebSharper,Html,Default,List,String,Website,FormletSnippets,T,Formlet,Data,Formlet1,DependentFormletSnippets,Enhance,Controls,Operators,HelloWorld;
  Runtime.Define(Global,{
   Website:{
    DependentFormletSnippets:{
@@ -399,7 +399,13 @@
       return Default.Div(List.ofArray([FormletSnippets.RunSnippet("Snippet1",FormletSnippets.Snippet1()),FormletSnippets.RunSnippet("Snippet1a",FormletSnippets.Snippet1a()),FormletSnippets.RunSnippet("Snippet1b",FormletSnippets.Snippet1b()),FormletSnippets.RunSnippet("Snippet1c",FormletSnippets.Snippet1c()),FormletSnippets.RunSnippet("Snippet1d",FormletSnippets.Snippet1d()),FormletSnippets.RunSnippet("Snippet1e",FormletSnippets.Snippet1e()),FormletSnippets.RunSnippet("Snippet1f",FormletSnippets.Snippet1f())]));
      }
     })
-   }
+   },
+   Hello:Runtime.Class({
+    get_Body:function()
+    {
+     return HelloWorld.HelloWorld();
+    }
+   })
   }
  });
  Runtime.OnInit(function()
@@ -418,7 +424,8 @@
   DependentFormletSnippets=Runtime.Safe(Website.DependentFormletSnippets);
   Enhance=Runtime.Safe(Formlet.Enhance);
   Controls=Runtime.Safe(Formlet.Controls);
-  return Operators=Runtime.Safe(Html.Operators);
+  Operators=Runtime.Safe(Html.Operators);
+  return HelloWorld=Runtime.Safe(Website.HelloWorld);
  });
  Runtime.OnLoad(function()
  {

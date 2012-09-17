@@ -47,8 +47,10 @@
     <Compile Include="SiteletSumCombinator.fs" />
     <Compile Include="VariousFormletSnippets.fs" />
     <Compile Include="DependentFormlet.fs" />
+    <Compile Include="ResourceTracking.fs" />
     <Compile Include="Site.fs" />
     <None Include="MyTemplate.html" />
+    <Content Include="my.js" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
@@ -56,8 +58,6 @@
     <Reference Include="System" />
     <Reference Include="System.Numerics" />
     <Reference Include="System.Web" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\AspNet-Website\AspNet-Website.fsproj">
       <Name>AspNet-Website</Name>
       <Project>{ddf9272f-697b-47d8-8f0d-531fc81bf09f}</Project>
