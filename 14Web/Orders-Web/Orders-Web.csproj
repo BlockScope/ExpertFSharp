@@ -65,12 +65,11 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AspNet-Website\AspNet-Website.fsproj">
-      <Project>{ddf9272f-697b-47d8-8f0d-531fc81bf09f}</Project>
+    <ProjectReference Include="..\Orders-Website\Orders-Website.fsproj">
+      <Project>{07baf308-b9a4-462c-bbaf-199b243b328c}</Project>
       <Name>Orders-Website</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>

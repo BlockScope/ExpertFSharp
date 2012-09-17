@@ -337,6 +337,7 @@ module CombiningSitelets =
 // SOURCE: .\Sitelets-Website\SiteletSumCombinator.fs
 #endif
 
+#if ORDERS_SITE
 namespace Website
 
 type Order =
@@ -592,6 +593,7 @@ module MySite =
 do ()
 
 //{"$TYPES":[],"$DATA":{"$V":{"ItemName":"Windows Server 2012","Quantity":5}}}
+#endif
 
 open IntelliFactory.WebSharper
 open IntelliFactory.WebSharper.Formlet

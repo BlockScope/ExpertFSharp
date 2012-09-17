@@ -94,6 +94,7 @@ module Client =
 
 module Pages =
     open IntelliFactory.Html
+    open IntelliFactory.WebSharper.Sitelets
 
     let ( => ) text url =
         A [HRef url] -< [Text text]
@@ -157,6 +158,7 @@ module Pages =
             Content.NotFound
 
 module MySite =
+    open IntelliFactory.WebSharper.Sitelets
     open UrlHelpers
 
     let (|PATH|_|) (uri : System.Uri) = Some <| uri.LocalPath
