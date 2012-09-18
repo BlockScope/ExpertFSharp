@@ -882,24 +882,35 @@ do ()
 // SOURCE: .\Sitelets-Website\DependentFormlet.fs
 #endif
 
-    open IntelliFactory.WebSharper.Core
+#if RESOURCE_TRACKING
+namespace Website
 
-    type MyResource() =
-        interface Resources.IResource with
-            member this.Render ctx writer =
-                writer.WriteLine "<script type=\"javascript\" src=\"lib\\my.js\"></script>"
+open IntelliFactory.WebSharper
+open IntelliFactory.WebSharper.Core
 
-    [<assembly : System.Web.UI.WebResource("my.js", "text/javascript")>]
-    do ()
+// Put "my-render-resource.js" in the root of the web project.
+type MyResource() =
+    interface Resources.IResource with
+        member this.Render ctx writer =
+            writer.WriteLine "<script src='my-render-resource.js' type='javascript'></script>"
 
-    type MyEmbeddedResource() =
-        inherit Resources.BaseResource("my.js")
+// Choose a build action for "my-assembly-resource.js" of embedded resource.
+[<assembly : System.Web.UI.WebResource("my-assembly-resource.js", "text/javascript")>]
+do ()
 
-    type MyExternalResource() =
-        inherit Resources.BaseResource(@"http:\\your.domain.net", "lib.js", "style.css")
+// Choose a build action for "my-embedded-resource.js" of embedded resource.
+type MyEmbeddedResource() =
+    inherit Resources.BaseResource("my-embedded-resource.js")
 
-    [<Require(typeof<MyExternalResource>)>]
-    type Hello = ..
+// Unless you own your.domain.net, these resources will render to the page but fail to load.
+type MyExternalResource() =
+    inherit Resources.BaseResource("http://your.domain.net/", "my-external-resource.js", "style.css")
+
+[<Require(typeof<MyResource>)>]
+[<Require(typeof<MyEmbeddedResource>)>]
+[<Require(typeof<MyExternalResource>)>]
+type Hello() = ...
+#endif
 
 open IntelliFactory.WebSharper
 
