@@ -910,8 +910,10 @@ type MyExternalResource() =
 [<Require(typeof<MyEmbeddedResource>)>]
 [<Require(typeof<MyExternalResource>)>]
 type Hello() = ...
+// SOURCE: .\Sitelets-Website\ResourceTracking.fs
 #endif
 
+#if PROXIES
 open IntelliFactory.WebSharper
 
 [<Proxy(typeof<System.Int32>)>]
@@ -922,3 +924,13 @@ type private Int32 =
 
     [<Inline "parseInt($s)">]
     static member Parse(s: string) = X<int>
+
+// Here's the full listing from the WebSharper source. There's no min and max values.
+//namespace IntelliFactory.WebSharper
+//
+//[<Proxy(typeof<int>)>]
+//type private Int32Proxy =
+//
+//    [<Inline "parseInt($s)">]
+//    static member Parse(s: string) = X<int>
+#endif
