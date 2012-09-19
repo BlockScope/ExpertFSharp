@@ -102,7 +102,7 @@ module Pages =
     let Links (ctx : Context<Action>) =
         UL [
             LI ["Home" => ctx.Link Action.ListOrders]
-            LI ["New"  => ctx.Link Action.CreateOrderForm]
+            LI ["New" => ctx.Link Action.CreateOrderForm]
         ]
 
     let CreateOrderFormPage =
