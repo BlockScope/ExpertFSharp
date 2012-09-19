@@ -43,7 +43,7 @@ module HasJs =
     [<JavaScript>]
     let Test () =
         Div [
-            P [Text "This is a test"]
+            P [Text "This is a test using has.js ..."]
             report "activex"
             report "canvas"
             report "canvas-text"
@@ -75,7 +75,7 @@ module Pages =
         Content.PageContent <| fun ctx ->
             {
                 Page.Default with
-                    Title = Some "Feature Detection"
+                    Title = Some "Has.js Feature Detection"
                     Body =
                         [
                             Div [new HasTester()]

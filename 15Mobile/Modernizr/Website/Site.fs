@@ -3,12 +3,12 @@
 open IntelliFactory.WebSharper
 
 module MyResources =
-    type HasJs() =
+    type ModernizrJs() =
         inherit Resources.BaseResource("modernizr.custom.17231.js")
 
 type Action = | Root
 
-module HasJs =
+module ModernizrJs =
     open IntelliFactory.WebSharper.Html
 
     [<Inline("Modernizr[$s] ? $ifyes() : $ifno()")>]
@@ -34,12 +34,12 @@ module HasJs =
             report "geolocation"
         ]
 
-[<Require(typeof<MyResources.HasJs>)>]
-type HasTester() =
+[<Require(typeof<MyResources.ModernizrJs>)>]
+type ModernizrTester() =
     inherit Web.Control()
 
     [<JavaScript>]
-    override this.Body = HasJs.Test() :> _
+    override this.Body = ModernizrJs.Test() :> _
 
 module Pages =
     open IntelliFactory.WebSharper.Sitelets
@@ -49,10 +49,10 @@ module Pages =
         Content.PageContent <| fun ctx ->
             {
                 Page.Default with
-                    Title = Some "Feature Detection"
+                    Title = Some "Modernizer Feature Detection"
                     Body =
                         [
-                            Div [new HasTester()]
+                            Div [new ModernizrTester()]
                         ]
             }
 

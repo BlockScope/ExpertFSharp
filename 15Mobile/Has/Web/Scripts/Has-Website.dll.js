@@ -6,7 +6,7 @@
    HasJs:{
     Test:function()
     {
-     return Default.Div(List.ofArray([Default.P(List.ofArray([Default.Text("This is a test")])),HasJs.report("activex"),HasJs.report("canvas"),HasJs.report("canvas-text"),HasJs.report("canvas-webgl"),HasJs.report("audio"),HasJs.report("audio-m4a"),HasJs.report("audio-mp3"),HasJs.report("audio-ogg"),HasJs.report("audio-wav"),HasJs.report("video"),HasJs.report("video-h264-baseline"),HasJs.report("video-ogg-theora"),HasJs.report("video-webm")]));
+     return Default.Div(List.ofArray([Default.P(List.ofArray([Default.Text("This is a test using has.js ...")])),HasJs.report("activex"),HasJs.report("canvas"),HasJs.report("canvas-text"),HasJs.report("canvas-webgl"),HasJs.report("audio"),HasJs.report("audio-m4a"),HasJs.report("audio-mp3"),HasJs.report("audio-ogg"),HasJs.report("audio-wav"),HasJs.report("video"),HasJs.report("video-h264-baseline"),HasJs.report("video-ogg-theora"),HasJs.report("video-webm")]));
     },
     report:function(s)
     {

@@ -1,12 +1,12 @@
 (function()
 {
- var Global=this,Runtime=this.IntelliFactory.Runtime,WebSharper,Html,Default,List,Website,HasJs,Operators,Modernizr;
+ var Global=this,Runtime=this.IntelliFactory.Runtime,WebSharper,Html,Default,List,Website,ModernizrJs,Operators,Modernizr;
  Runtime.Define(Global,{
   Website:{
-   HasJs:{
+   ModernizrJs:{
     Test:function()
     {
-     return Default.Div(List.ofArray([Default.P(List.ofArray([Default.Text("This is a test using modernizr ...")])),HasJs.report("canvas"),HasJs.report("canvastext"),HasJs.report("webgl"),HasJs.report("audio"),HasJs.report("webaudio"),HasJs.report("video"),HasJs.report("websockets"),HasJs.report("geolocation")]));
+     return Default.Div(List.ofArray([Default.P(List.ofArray([Default.Text("This is a test using modernizr ...")])),ModernizrJs.report("canvas"),ModernizrJs.report("canvastext"),ModernizrJs.report("webgl"),ModernizrJs.report("audio"),ModernizrJs.report("webaudio"),ModernizrJs.report("video"),ModernizrJs.report("websockets"),ModernizrJs.report("geolocation")]));
     },
     report:function(s)
     {
@@ -31,10 +31,10 @@
       }
     }
    },
-   HasTester:Runtime.Class({
+   ModernizrTester:Runtime.Class({
     get_Body:function()
     {
-     return HasJs.Test();
+     return ModernizrJs.Test();
     }
    })
   }
@@ -46,7 +46,7 @@
   Default=Runtime.Safe(Html.Default);
   List=Runtime.Safe(WebSharper.List);
   Website=Runtime.Safe(Global.Website);
-  HasJs=Runtime.Safe(Website.HasJs);
+  ModernizrJs=Runtime.Safe(Website.ModernizrJs);
   Operators=Runtime.Safe(Html.Operators);
   return Modernizr=Runtime.Safe(Global.Modernizr);
  });
