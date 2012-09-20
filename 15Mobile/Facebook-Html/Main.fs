@@ -38,7 +38,7 @@ module MySite =
          inherit IntelliFactory.WebSharper.Web.Control()
 
          [<JavaScript>]
-         let (||?) (x: 'a) (y: 'a) =
+         let (||?) (x : 'a) (y : 'a) =
             if As<bool> x then x else y
 
          [<JavaScript>]
@@ -143,5 +143,5 @@ type MyWebsite() =
       member this.Sitelet = MySite.MySitelet
       member this.Actions = [MySite.Action.Index]
 
-[<assembly: Website(typeof<MyWebsite>)>]
+[<assembly : Website(typeof<MyWebsite>)>]
 do ()

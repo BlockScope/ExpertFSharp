@@ -65,5 +65,5 @@ module Site =
             member this.Sitelet = Main
             member this.Actions = [Root]
 
-[<assembly: Sitelets.Website(typeof<Site.Website>)>]
+[<assembly : Sitelets.Website(typeof<Site.Website>)>]
 do ()

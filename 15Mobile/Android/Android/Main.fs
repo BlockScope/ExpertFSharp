@@ -131,5 +131,5 @@ module MySite =
                 Sitelet.Content "/index" Action.Home Pages.Home
             member this.Actions = [ Action.Home ]
 
-[<assembly: Website(typeof<MySite.MyWebsite>)>]
+[<assembly : Website(typeof<MySite.MyWebsite>)>]
 do ()

@@ -34,10 +34,10 @@ module MySite =
 
       type State =
          {
-            mutable x: float
-            mutable y: float
-            mutable scale: float
-            mutable angle: float
+            mutable x : float
+            mutable y : float
+            mutable scale : float
+            mutable angle : float
          }
 
       type MyControl() =
@@ -55,8 +55,8 @@ module MySite =
                   let ctx = canvas.GetContext "2d"
                   Img [Attr.Src "map.jpg"; Attr.Class "pan-image"]
                   |> Events.OnLoad (fun img ->
-                     let state = { x = 0.; y = 0.; scale = 1.; angle = 0. }
-                     let delta = { x = 0.; y = 0.; scale = 1.; angle = 0. }
+                     let state = {x = 0.; y = 0.; scale = 1.; angle = 0.}
+                     let delta = {x = 0.; y = 0.; scale = 1.; angle = 0.}
                      let redraw() =
                         // Reset the transformation matrix and clear the canvas.
                         ctx.SetTransform(1., 0., 0., 1., 0., 0.)
@@ -103,13 +103,13 @@ module MySite =
                            panStartPosition := None
                            ev.Event.PreventDefault())
                      // iOS-only rotozoom events
-                     e.Body.AddEventListener("gesturechange", (fun (ev: Dom.Event) ->
+                     e.Body.AddEventListener("gesturechange", (fun (ev : Dom.Event) ->
                         delta.scale <- ev?scale
                         delta.angle <- ev?rotation * System.Math.PI / 180.
                         redraw()
                         ev.PreventDefault()
                         ), false)
-                     e.Body.AddEventListener("gestureend", (fun (ev: Dom.Event) ->
+                     e.Body.AddEventListener("gestureend", (fun (ev : Dom.Event) ->
                         settleDelta()
                         ev.PreventDefault()
                         ), false)
@@ -132,5 +132,5 @@ type MyWebsite() =
         member this.Sitelet = MySite.MySitelet
         member this.Actions = [MySite.Action.Index]
 
-[<assembly: Website(typeof<MyWebsite>)>]
+[<assembly : Website(typeof<MyWebsite>)>]
 do ()
