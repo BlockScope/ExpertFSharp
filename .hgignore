@@ -20,3 +20,4 @@ syntax: glob
 14Web/AspNet-Web/Scripts/Website.dll.js
 */AspNet-Website.dll.js
 */AspNet-Website.dll.min.js
+*/bin/*

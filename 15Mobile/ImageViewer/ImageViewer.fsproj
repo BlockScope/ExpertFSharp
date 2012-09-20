@@ -5,6 +5,8 @@
     <Platform Condition="'$(Platform)' == ''">AnyCPU</Platform>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{cbc0e600-1fe2-4ceb-8420-1c43d29714c5}</ProjectGuid>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">.\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -30,19 +32,21 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <WarningLevel>3</WarningLevel>
   </PropertyGroup>
+  <Import Project="WebSharper.targets" Condition="Exists('WebSharper.targets')" />
+  <Import Project="$(WEBSHARPER_HOME)/IntelliFactory.WebSharper.Sitelets.targets" />
   <ItemGroup>
     <Content Include="extra.files" />
     <Compile Include="Main.fs" />
     <Content Include="Main.html" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="IntelliFactory.WebSharper.JQuery.Mobile">
+      <HintPath>..\..\..\..\..\Program Files (x86)\IntelliFactory\WebSharper\Extensions\WebSharper Extensions for jQuery Mobile\IntelliFactory.WebSharper.JQuery.Mobile.dll</HintPath>
+    </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="FSharp.Core" />
     <Reference Include="System" />
     <Reference Include="System.Numerics" />
     <Reference Include="System.Web" />
   </ItemGroup>
-  <ItemGroup />
-  <Import Project="WebSharper.targets" Condition="Exists('WebSharper.targets')" />
-  <Import Project="$(WEBSHARPER_HOME)/IntelliFactory.WebSharper.Sitelets.targets" />
 </Project>
