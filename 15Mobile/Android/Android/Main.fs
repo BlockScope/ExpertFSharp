@@ -1,115 +1,135 @@
-﻿namespace Android
+﻿namespace MyApplication
 
 open IntelliFactory.WebSharper
 open IntelliFactory.WebSharper.Sitelets
 
-module Client =
-    open IntelliFactory.WebSharper.Html
+module MySite =
+    type Action = | Home
 
-//    /// Uncomment this code if you plan to call
-//    /// a public website via Remote / RPC methods.
-//    [<JavaScript>]
-//    let EndPoint =
-//        let endPoint = "http://example.com"
-//        Remoting.EndPoint <- endPoint
-//        endPoint
+    module Skin =
+        open System.IO
 
-    [<JavaScript>]
-    let Main (canvas: Html.Element) =
-        match Android.Context.Get() with
-        | None -> canvas.Text <- "No Android context"
-        | Some ctx ->
-            ctx.Trace(Mobile.Priority.Info, "Website", "Starting the mobile app..")
-            canvas.Text <- "Android started"
-
-module Controls =
-    open IntelliFactory.WebSharper.Html
-
-    [<Sealed>]
-    type MainControl() =
-        inherit Web.Control()
-
-        [<JavaScript>]
-        override this.Body =
-            Div []
-            |>! OnAfterRender Client.Main
-            :> _
-
-module Actions =
-    type Action =
-        | Index
-        | Page1
-        | Page2
-
-module Skin =
-    open System.IO
-
-    type Page =
-        {
-            Title : string
-            Body : list<Content.HtmlElement>
-        }
-
-    let MainTemplate =
-        let path = Path.Combine(__SOURCE_DIRECTORY__, "Main.html")
-        Content.Template<Page>(path)
-            .With("title", fun x -> x.Title)
-            .With("body", fun x -> x.Body)
-
-    let WithTemplate title body : Content<Actions.Action> =
-        Content.WithTemplate MainTemplate <| fun context ->
+        type Page =
             {
-                Title = title
-                Body = body context
+                Body : list<Content.HtmlElement>
             }
 
-module Pages =
-    open IntelliFactory.Html
+        let MainTemplate =
+            let path = Path.Combine(__SOURCE_DIRECTORY__, "Main.html")
+            Content.Template<Page>(path)
+                .With("body", fun x -> x.Body)
 
-    let Index =
-        Skin.WithTemplate "Index page" <| fun ctx ->
-            [
-                H1 [Text "Pages"]
-                UL [
-                    LI [A [HRef (ctx.Link Actions.Page1)] -< [Text "Page 1"]]
-                    LI [A [HRef (ctx.Link Actions.Page2)] -< [Text "Page 2"]]
+        let WithTemplate body : Content<Action> =
+            Content.WithTemplate MainTemplate <| fun context ->
+                {
+                    Body = body context
+                }
+
+    module Client =
+        open IntelliFactory.WebSharper.Html
+        open IntelliFactory.WebSharper.Bing
+        open IntelliFactory.WebSharper.JQuery
+        open IntelliFactory.WebSharper.JQuery.Mobile
+        open IntelliFactory.WebSharper.Formlet
+        open IntelliFactory.WebSharper.Formlets.JQueryMobile
+
+        [<JavaScript>]
+        let BingMapsKey = "<put-your-bing-maps-key-here>"
+
+        [<JavaScript>]
+        let ShowMap () =
+            let screenWidth = JQuery.Of("body").Width()
+            let MapOptions = Bing.MapViewOptions(
+                                Credentials = BingMapsKey,
+                                Width = screenWidth - 20,
+                                Height = screenWidth - 40,
+                                Zoom = 16)
+            let label = Span []
+            let setMap (map : Bing.Map) =
+                let updateLocation() =
+                    // Gets the current location
+                    match Android.Context.Get() with
+                    | Some ctx ->
+                        if ctx.Geolocator.IsSome then
+                            async {
+                                let! loc = ctx.Geolocator.Value.GetLocation()
+                                // Sets the label to be the address of the current location
+                                Rest.RequestLocationByPoint(
+                                    BingMapsKey,
+                                    loc.Latitude, loc.Longitude, [ "Address" ],
+                                    fun result ->
+                                        let locInfo = result.ResourceSets.[0].Resources.[0]
+                                        label.Text <-
+                                            "You are currently at " +
+                                            JavaScript.Get "name" locInfo)
+                                // Sets the map to point at the current location
+                                let loc = Bing.Location(loc.Latitude, loc.Longitude)
+                                let pin = Bing.Pushpin loc
+                                map.Entities.Clear()
+                                map.Entities.Push pin
+                                map.SetView(Bing.ViewOptions(Center = loc))
+                            }
+                            |> Async.Start
+                        else
+                            ()
+                    | None ->
+                        ()
+                JavaScript.SetInterval updateLocation 1000 |> ignore
+            let map =
+                Div []
+                |>! OnAfterRender (fun this ->
+                    let map = Bing.Map(this.Body, MapOptions)
+                    map.SetMapType(Bing.MapTypeId.Road)
+                    setMap map)
+            Div [
+                label
+                Br []
+                map
+            ]
+
+        [<JavaScript>]
+        let LoginSequence () =
+            Formlet.Do {
+                let! username, password =
+                    Formlet.Yield (fun user pass -> user, pass)
+                    <*> (Controls.TextField "" Enums.Theme.C
+                        |> Enhance.WithTextLabel "Username"
+                        |> Validator.IsNotEmpty "Username cannot be empty!")
+                    <*> (Controls.Password "" Enums.Theme.C
+                        |> Enhance.WithTextLabel "Password: "
+                        |> Validator.IsRegexMatch "^[1-4]{4,}[5-9]$" "The password is wrong!")
+                    |> Enhance.WithSubmitButton "Log in" Enums.Theme.C
+                do! Formlet.OfElement (fun _ ->
+                    Div [
+                        H3 [Text ("Welcome " + username + "!")]
+                        ShowMap()
+                    ])
+            }
+            |> Formlet.Flowlet
+
+        type ApplicationControl() =
+            inherit Web.Control()
+
+            [<JavaScript>]
+            override this.Body =
+                Div [LoginSequence ()] :> _
+
+    module Pages =
+        open IntelliFactory.Html
+
+        let Home =
+            Skin.WithTemplate <| fun ctx ->
+                [
+                    Div [HTML5.Data "role" "page"; Id "main"; HTML5.Data "url" "main"] -< [
+                        new Client.ApplicationControl()
+                    ]
                 ]
-                Div [new Controls.MainControl()]
-            ]
 
-    let Page1 =
-        Skin.WithTemplate "Title of Page1" <| fun ctx ->
-            let url =  ctx.Link Actions.Page2
-            [
-                H1 [Text "Page 1"]
-                A [HRef url] -< [Text "Page 2"]
-            ]
+    type MyWebsite() =
+        interface IWebsite<Action> with
+            member this.Sitelet =
+                Sitelet.Content "/index" Action.Home Pages.Home
+            member this.Actions = [ Action.Home ]
 
-    let Page2 =
-        Skin.WithTemplate "Title of Page2" <| fun ctx ->
-            [
-                H1 [Text "Page 2"]
-                A [HRef <| ctx.Link Actions.Page1] -< [Text "Page 1"]
-                Div [new Controls.MainControl()]
-            ]
-
-type Website() =
-    interface IWebsite<Actions.Action> with
-        member this.Sitelet =
-            Sitelet.Sum [
-                Sitelet.Content "/index" Actions.Index Pages.Index
-                Sitelet.Folder "/pages" [
-                    Sitelet.Content "/page1" Actions.Page1 Pages.Page1
-                    Sitelet.Content "/page2" Actions.Page2 Pages.Page2
-                ]
-            ]
-
-        member this.Actions =
-            [
-                Actions.Index
-                Actions.Page1
-                Actions.Page2
-            ]
-
-[<assembly: WebsiteAttribute(typeof<Website>)>]
+[<assembly: Website(typeof<MySite.MyWebsite>)>]
 do ()

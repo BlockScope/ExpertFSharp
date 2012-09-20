@@ -53,13 +53,24 @@
     <Content Include="Main.html" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="IntelliFactory.WebSharper.Bing">
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\IntelliFactory\WebSharper\Extensions\WebSharper Extensions for Bing Maps\IntelliFactory.WebSharper.Bing.dll</HintPath>
+    </Reference>
+    <Reference Include="IntelliFactory.WebSharper.Bing.Rest">
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\IntelliFactory\WebSharper\Extensions\WebSharper Extensions for Bing Maps\IntelliFactory.WebSharper.Bing.Rest.dll</HintPath>
+    </Reference>
+    <Reference Include="IntelliFactory.WebSharper.Formlets.JQueryMobile">
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\IntelliFactory\WebSharper\Extensions\WebSharper Extensions for Formlets for jQuery Mobile\IntelliFactory.WebSharper.Formlets.JQueryMobile.dll</HintPath>
+    </Reference>
+    <Reference Include="IntelliFactory.WebSharper.JQuery.Mobile">
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\IntelliFactory\WebSharper\Extensions\WebSharper Extensions for jQuery Mobile\IntelliFactory.WebSharper.JQuery.Mobile.dll</HintPath>
+    </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="FSharp.Core" />
     <Reference Include="System" />
     <Reference Include="System.Numerics" />
     <Reference Include="System.Web" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="WebSharper.targets" Condition="Exists('WebSharper.targets')" />
   <Import Project="$(WEBSHARPER_HOME)/IntelliFactory.WebSharper.Android.targets" />
 </Project>
