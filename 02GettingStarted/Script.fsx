@@ -196,7 +196,7 @@ open System.IO
 open System.Net
 
 /// Get the contents of the URL via a web request
-let http (url:string) =
+let http (url : string) =
     let req = WebRequest.Create(url)
     let resp = req.GetResponse()
     let stream = resp.GetResponseStream()
