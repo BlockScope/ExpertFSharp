@@ -717,10 +717,14 @@ let empties = Array.create 100 []
 //>     val empties : '_a list []    
 //Either define 'empties' as a simple data term, make it a function with explicit arguments or, if you do not intend for it to be generic, add a type annotation.
 
+let empties _ = Array.create 100 []
+//val empties : 'a -> 'b list []
+
 let empties () = Array.create 100 []
+//val empties : unit -> 'a list []
+
 let intEmpties : int list [] = empties ()
 let stringEmpties : string list [] = empties ()
-//val empties : unit -> 'a list []
 //val intEmpties : int list [] =
 //  [|[]; []; []; []; []; []; []; []; []; []; []; []; []; []; []; []; []; []; [];
 //    []; []; []; []; []; []; []; []; []; []; []; []; []; []; []; []; []; []; [];
