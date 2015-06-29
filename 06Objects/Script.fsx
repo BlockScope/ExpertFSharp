@@ -684,7 +684,7 @@ let simpleOutputSink writeCharFunction =
          member x.WriteChar(c) = writeCharFunction c
          member x.WriteString(s) = s |> String.iter x.WriteChar}
 
-let stringBuilderOuputSink (buf : System.Text.StringBuilder) =
+let stringBuilderOuputSink (buf : StringBuilder) =
     simpleOutputSink (fun c -> buf.Append(c) |> ignore)
 
 //type ITextOutputSink =
