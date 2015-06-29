@@ -667,7 +667,7 @@ circle2.Radius
 //                                    X = -10;
 //                                    Y = -10;}
 
-// TODO: Open System.Text to avoid qualified names in the following snippets.
+open System.Text
 
 /// An object interface type that consumes characters and strings
 type ITextOutputSink =
@@ -693,15 +693,16 @@ let stringBuilderOuputSink (buf : System.Text.StringBuilder) =
 //    abstract member WriteString : string -> unit
 //  end
 //val simpleOutputSink : writeCharFunction:(char -> unit) -> ITextOutputSink
-//val stringBuilderOuputSink : buf:System.Text.StringBuilder -> ITextOutputSink
+//val stringBuilderOuputSink : buf:StringBuilder -> ITextOutputSink
 
-let buf = new System.Text.StringBuilder()
-//val buf : System.Text.StringBuilder = 
+let buf = new StringBuilder()
+//val buf : StringBuilder = 
 
 let c = stringBuilderOuputSink(buf)
 //val c : ITextOutputSink
 
 ["Incy"; " "; "Wincy"; " "; "Spider"] |> List.iter c.WriteString
+//val it : unit = ()
 
 buf.ToString()
 //val it : string = "Incy Wincy Spider"
