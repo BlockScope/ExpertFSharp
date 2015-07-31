@@ -17,4 +17,3 @@ let orca = "Orca, Pacific", Killer
 
 /// The collected whales
 let whales = [|moby; bluey; orca|]
-

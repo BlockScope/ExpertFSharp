@@ -1,4 +1,4 @@
-﻿namespace Acme.NumberTheory
+namespace Acme.NumberTheory
 
 [<AutoOpen>]
 module NumberTheoryExtensions =
@@ -10,6 +10,3 @@ module NumberTheoryExtensions =
 
     type System.Int32 with
         member i.IsPrime = isPrime i
-    
-[<assembly:AutoOpen("Acme.NumberTheory")>]
-do()

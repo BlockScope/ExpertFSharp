@@ -1,4 +1,4 @@
-﻿namespace Acme.Widgets
+namespace Acme.Widgets
     type Lever = PlasticLever | WoodenLever
 
 namespace Acme.Suppliers

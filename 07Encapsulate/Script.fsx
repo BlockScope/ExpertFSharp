@@ -13,10 +13,10 @@ type IPeekPoke =
 //  end
 
 let makeCounter initialState =
-    let state = ref initialState
+    let mutable state = initialState
     {new IPeekPoke with
-        member x.Poke n = state := !state + n
-        member x.Peek() = !state}
+        member x.Poke n = state <- state + n
+        member x.Peek() = state}
 //val makeCounter : initialState:int -> IPeekPoke
 
 type TicketGenerator() =
@@ -46,12 +46,14 @@ type IStatistic<'T, 'U> =
 //    abstract member Value : 'U
 //  end
 
-let makeAverager(toFloat : 'T -> float) =
-    let count = ref 0
-    let total = ref 0.0
+let makeAverager(toFloat: 'T -> float ) =
+
+    let mutable count = 0
+    let mutable total = 0.0
+
     {new IStatistic<'T, float> with
-        member stat.Record(x) = incr count; total := !total + toFloat x
-        member stat.Value = (!total / float !count)}
+          member stat.Record(x) = count <- count + 1; total <- total + toFloat x
+          member stat.Value = (total / float count)}
 //val makeAverager : toFloat:('T -> float) -> IStatistic<'T,float>
 
 open System
@@ -116,10 +118,16 @@ module internal TickTockDriver =
 //end
 
 module TickTockListener =
-   do GlobalClock.tickEvent.Add(function
-       | GlobalClock.Tick -> printf "tick!"
-       | GlobalClock.Tock -> System.Windows.Forms.MessageBox.Show "tock!" |> ignore)
-//Throws up a never ending series of tocking message boxes!
+   GlobalClock.tickEvent.Add(function
+       | GlobalClock.Tick -> printfn "tick!"
+       | GlobalClock.Tock -> printfn "tock!")
+//> tick!
+//tock!
+//tick!
+//tock!
+//tick!
+//tock!
+//...
 
 open System.Collections.Generic
 
@@ -127,15 +135,24 @@ type public SparseVector () =
 
     let elems = new SortedDictionary<int, float>()
 
-    member internal vec.Add (k, v) = elems.Add(k, v)
+    member internal vec.Add (k, v) = elems.Add(k ,v)
 
     member public vec.Count = elems.Keys.Count
+
     member vec.Item
         with public get i =
             if elems.ContainsKey(i) then elems.[i]
             else 0.0
         and internal set i v =
             elems.[i] <- v
+//type SparseVector =
+//  class
+//    new : unit -> SparseVector
+//    member internal Add : k:int * v:float -> unit
+//    member Count : int
+//    member Item : i:int -> float with get
+//    member internal Item : i:int -> float with set
+//  end
 
 type Vector2D =
     {DX : float; DY : float}
@@ -145,159 +162,180 @@ module Vector2DOps =
     let scale k v = {DX = k * v.DX; DY = k * v.DY}
     let shiftX x v = {v with DX = v.DX + x}
     let shiftY y v = {v with DY = v.DY + y}
-    let shiftXY (x,y) v = {DX = v.DX + x; DY = v.DY + y}
+    let shiftXY (x, y) v = {DX = v.DX + x; DY = v.DY + y}
     let zero = {DX = 0.0; DY = 0.0}
     let constX dx = {DX = dx; DY = 0.0}
-    let constY dy = {DX = 0.0; DY = dy}
+    let constY dy = {DX = 0.0; DY = dy} 
+//type Vector2D =
+//  {DX: float;
+//   DY: float;}
+//module Vector2DOps = begin
+//  val length : v:Vector2D -> float
+//  val scale : k:float -> v:Vector2D -> Vector2D
+//  val shiftX : x:float -> v:Vector2D -> Vector2D
+//  val shiftY : y:float -> v:Vector2D -> Vector2D
+//  val shiftXY : x:float * y:float -> v:Vector2D -> Vector2D
+//  val zero : Vector2D = {DX = 0.0;
+//                         DY = 0.0;}
+//  val constX : dx:float -> Vector2D
+//  val constY : dy:float -> Vector2D
+//end
 
-namespace Acme.Widgets
-    type Wheel = Square | Round | Triangle
-    type Widget = {id : int; wheels : Wheel list; size : string}
+#load "AcmeWidgetsTwoTypes.fs"
+//[Loading C:\...\AcmeWidgetsTwoTypes.fs]
+//
+//namespace FSI_0007.Acme.Widgets
+//  type Wheel =
+//    | Square
+//    | Round
+//    | Triangle
+//  type Widget =
+//    {id: int;
+//     wheels: Wheel list;
+//     size: string;}
 
-namespace Acme.Widgets
-    type Lever = PlasticLever | WoodenLever
+#load "AcmeWidgetsTwoNamespacesFail.fs"
+//[Loading C:\...\AcmeWidgetsTwoNamespacesFail.fs]
+//
+//
+//AcmeWidgetsTwoNamespacesFail.fs(5,54): error FS0039: The namespace or module 'Acme' is not defined
 
-namespace Acme.Suppliers
-    type LeverSupplier = {name : string; leverKind : Acme.Widgets.Lever}
+#load "AcmeWidgetsTwoNamespaces1Of2.fs"
+#load "AcmeWidgetsTwoNamespaces2Of2.fs"
+//[Loading C:\...\AcmeWidgetsTwoNamespaces1Of2.fs]
+//
+//namespace FSI_0002.Acme.Widgets
+//  type Lever =
+//    | PlasticLever
+//    | WoodenLever
+//
+//[Loading C:\...\AcmeWidgetsTwoNamespaces2Of2.fs]
+//
+//namespace FSI_0003.Acme.Suppliers
+//  type LeverSupplier =
+//    {name: string;
+//     leverKind: Acme.Widgets.Lever;}
 
-type TickTock = Tick | Tock
-
-let ticker x =
-    match x with
-    | Tick -> Tock
-    | Tock -> Tick
-
-module Clock =
-    type TickTock = Tick | Tock
-    val ticker : TickTock -> TickTock
-
-// The contents of vector.fsi
-namespace Acme.Collections
-    type SparseVector =
-        new: unit -> SparseVector
-        member Add: int * float -> unit
-        member Item : int -> float with get
-
-
-// The contents of vector.fs
-namespace Acme.Collections
-    open System.Collections.Generic
-    type SparseVector() =
-        let elems = new SortedDictionary<int,float>()
-        member vec.Add(k,v) = elems.Add(k,v)
-        member vec.Item
-            with get i =
-                if elems.ContainsKey(i) then elems.[i]
-                else 0.0
-            and  set i v =
-                elems.[i] <- v
+#load "NamespacesVersusLayout.fs"
+//[Loading C:\...\NamespacesVersusLayout.fs]
+//
+//namespace FSI_0002.WithoutIndent
+//  type WatchFace =
+//    | Digital
+//    | Analogue
+//namespace FSI_0002.WithIndent
+//  type WatchPower =
+//    | Battery
+//    | Spring
+//namespace FSI_0002.EmptyOuter.Inner
+//  type WatchKind =
+//    | Wrist
+//    | Fob
 
 type Vector2D =
-    { DX: float; DY: float }
+    {DX: float; DY: float}
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Vector2D =
      let length v = sqrt(v.DX * v.DX + v.DY * v.DY)
 
-[<RequireQualifiedAccess(true)>]
+//type Vector2D =
+//  {DX: float;
+//   DY: float;}
+//module Vector2D = begin
+//  val length : v:Vector2D -> float
+//end
+
+[<RequireQualifiedAccess>]
 module Vector2D =
      let length v = sqrt(v.DX * v.DX + v.DY * v.DY)
-     let zero = { DX=0.0; DY=0.0 }
+     let zero = {DX=0.0; DY=0.0}
+//module Vector2D = begin
+//  val length : v:Vector2D -> float
+//  val zero : Vector2D = {DX = 0.0;
+//                         DY = 0.0;}
+//end
 
 open Vector2D 
-//  Error: This declaration opens the module 'Vector2D', which is 
-//  marked as 'RequireQualifiedAccess'. Adjust your code to use qualified 
-//  references to the elements of the module instead, e.g. 'List.map' 
-//  instead of 'map'. This change will ensure that your code is robust 
-//  as new constructs are added to libraries.
+//error FS0892: This declaration opens the module 'FSI_0004.Vector2D', which is marked as 'RequireQualifiedAccess'. Adjust your code to use qualified references to the elements of the module instead, e.g. 'List.map' instead of 'map'. This change will ensure that your code is robust as new constructs are added to libraries.
 
-module Acme.Widgets.WidgetWheels
+#load "Acme.Widgets.WidgetWheels.fs"
+//[Loading C:\...\Acme.Widgets.WidgetWheels.fs]
+//
+//namespace FSI_0006.Acme.Widgets
+//  type Wheel =
+//    | Square
+//    | Triangle
+//    | Round
+//  val wheelCornerCount : System.Collections.Generic.IDictionary<Wheel,int>
 
-let wheelCornerCount = 
-    dict [ (Wheel.Square,   4)
-           (Wheel.Triangle, 3)
-           (Wheel.Round,    0) ]
-
-namespace Acme.Compenents
-
-[<AutoOpen>]
-module private Utilities =
-    let swap (x,y) = (y,x)
+#load "Acme.Components.fs"
 
 swap (3,4)
+//[Loading C:\...\Acme.Components.fs]
+//
+//namespace FSI_0011.Acme.Compenents
+//  val swap : x:'a * y:'b -> 'b * 'a
+//
+//
+//
+// error FS0039: The value or constructor 'swap' is not defined
 
-[<AutoOpen>]
-module NumberTheoryExtensions =
-    let private isPrime i =
-        let lim = int (sqrt (float i))
-        let rec check j =
-           j > lim || (i % j <> 0 && check (j+1))
-        check 2
+#load "AutoOpenModule.fs"
+open Acme.NumberTheory
 
-    type System.Int32 with
-        member i.IsPrime = isPrime i
+(7).IsPrime
+//[Loading C:\...\AutoOpenModule.fs]
+//
+//namespace FSI_0002.Acme.NumberTheory
+//  val private isPrime : i:int -> bool
+//  type Int32 with
+//    member IsPrime : bool
+//
+//
+//val it : bool = true
+
+5.IsPrime
+// error FS1156: This is not a valid numeric literal. Sample formats include 4, 0x4, 0b0100, 4L, 4UL, 4u, 4s, 4us, 4y, 4uy, 4.0, 4.0f, 4I.
+
+#load "AutoOpenAssembly.fs"
+open Acme.NumberTheory
+
+(3).IsPrime
+// error FS0039: The field, constructor or member 'IsPrime' is not defined
  
-[<assembly: AutoOpen("Acme.NumberTheory")>]
+#I "Vector"
+//--> Added 'C:\...\Vector' to library include path
+
 #load "vector.fs"
+//[Loading C:\...\vector.fs]
+//
+//namespace FSI_0002.Acme.Collections
+//  type SparseVector =
+//    class
+//      new : unit -> SparseVector
+//      member Add : k:int * v:float -> unit
+//      member Item : i:int -> float with get
+//      member Item : i:int -> float with set
+//    end
+
 #load "vector.fsi" "vector.fs"
+//[Loading C:\...\vector.fsi
+// Loading C:\...\vector.fs]
+//
+//namespace FSI_0003.Acme.Collections
+//  type SparseVector =
+//    class
+//      new : unit -> SparseVector
+//      member Add : int * float -> unit
+//      member Item : int -> float with get
+//      member Item : i:int -> float with set
+//    end
+
+//TODO: Add these source files to  /Charting
+#I "Charting"
 #load "charting.fsi" "charting.fs" "charting.fsx"
+
+//TODO: Add these source files to  /Matrix
+#I "Matrix"
 #load "matrix.fsi" "matrix.fs" "vector.fsi" "vector.fs"
-
-//Listing 7-9. File dolphins.fs
-let longBeaked = "Delphinus capensis"
-let shortBeaked = "Delphinus delphis"
-let dolphins = [ longBeaked; shortBeaked ]
-printfn "Known Dolphins:  %A" dolphins
-
-C:\fsharp> fsc dolphins.fs
-
-C:\fsharp> dir dolphins.exe
-//...
-//05/04/2010  19:21             3,124 dolphins.exe
-
-C:\fsharp> dolphins.exe
-
-//Known Dolphins: ["Delphinus capensis"; "Delphinus delphis"]
-
-module Whales.Fictional
-
-/// The three kinds of whales we cover in this release
-type WhaleKind =
-    | Blue
-    | Killer
-    | GreatWhale
-
-/// The main whale
-let moby = "Moby Dick, Pacific", GreatWhale
-
-/// The backup whale
-let bluey = "Blue, Southern Ocean", Blue
-
-/// This whale is for experimental use only
-let orca = "Orca, Pacific", Killer
-
-/// The collected whales
-let whales = [| moby; bluey; orca |]
-
-C:\test> fsc -g -a whales.fs
-C:\test> dir whales.dll
-//...
-//05/04/2010  19:18             6,656 whales.dll
-
-open Whales
-open System
-
-let idx = Int32.Parse(Environment.GetCommandLineArgs().[1])
-let spotted = Fictional.whales.[idx]
-
-printfn "You spotted %A!" spotted
-
-C:\fsharp> fsc -g -r whales.dll -o watcher.exe whaleWatcher.fs
-C:\fsharp> dir watcher.exe
-
-//...
-//05/04/2010  19:25             3,584 watcher.exe
-
-C:\fsharp> watcher.exe 1
-
-//You spotted ("Blue, Southern Ocean", Blue)!
