@@ -1,4 +1,4 @@
-﻿let buf = new System.Text.StringBuilder()
+﻿let buf = System.Text.StringBuilder ()
 //val buf : System.Text.StringBuilder = 
 
 buf.Append("Humpty Dumpty")
