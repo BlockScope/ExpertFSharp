@@ -1,37 +1,45 @@
-> let buf = new System.Text.StringBuilder();;
+﻿let buf = new System.Text.StringBuilder()
 //val buf : System.Text.StringBuilder = 
 
-> buf.Append("Humpty Dumpty");;
-> buf.Append(" sat on the wall");;
-> buf.ToString();;
+buf.Append("Humpty Dumpty")
+buf.Append(" sat on the wall")
+buf.ToString()
 //val it : string = "Humpty Dumpty sat on the wall"
 
-//Table 3-6. String and Character Literals
 "Humpty Dumpty"
-"c:\\Program Files"
-@"c:\Program Files"
-"""I "like" you"""
-"xyZy3d2"B
-'c'	
+//val it : string = "Humpty Dumpty"
 
-> "MAGIC"B;;
+"c:\\Program Files"
+//val it : string = "c:\Program Files"
+
+@"c:\Program Files"
+//val it : string = "c:\Program Files"
+
+"""I "like" you"""
+//val it : string = "I "like" you"
+
+"xyZy3d2"B
+//val it : byte [] = [|120uy; 121uy; 90uy; 121uy; 51uy; 100uy; 50uy|]
+
+'c'
+//val it : char = 'c'
+
+"MAGIC"B
 //val it : byte [] = [|77uy; 65uy; 71uy; 73uy; 67uy|]
 
-> let dir = @"c:\Program Files";;
+let dir = @"c:\Program Files"
 //val dir : string = "c:\Program Files"
 
-> let text = """I "like" you""";;
+let text = """I "like" you"""
 //val text : string = "I "like" you"
 
-> let s = "All the kings horses
-- and all the kings men";;
-
+let s = "All the kings horses
+- and all the kings men"
 //val s : string = "All the kings horses
 //- and all the kings men"
 
-> let s2 = """All the kings' "horses"
-- and all the kings men""";;
-
+let s2 = """All the kings' "horses"
+- and all the kings men"""
 //val s2 : string = "All the kings' "horses"
 //- and all the kings men"
 
@@ -44,147 +52,155 @@
 //"
 
 "\t"
-val it : string = "	"
+//val it : string = "	"
 
 "\b"
-val it : string = ""
+//val it : string = ""
 
 "a\b"
+//val it : string = "a"
 
 "\032"
-val it : string = ""
+//val it : string = ""
 
 "\u00a9" 
-val it : string = " "
+//val it : string = "©"
 
 "\U00002260"
-// unicode character output
+//val it : string = "≠"
 
-> sprintf "Name: %s, Age: %d" "Anna" 3;;
+sprintf "Name: %s, Age: %d" "Anna" 3
 //val it : string = "Name: Anna, Age: 3"
 
-> sprintf "Name: %s, Age: %d" 3 10;;
+sprintf "Name: %s, Age: %d" 3 10
 //error FS0001: This expression was expected to have type
 //    string    
 //but here has type
 //    int    
 
-// This section shows sprintf with the various format codes. It is an expansion of table 4-5.
-// --- START TABLE ----
->sprintf "%b";;
+// This section shows sprintf with the various format codes.
+sprintf "%b"
 //val it : (bool -> string) = <fun:it@72-6>
 
->sprintf "%b" true;;
+sprintf "%b" true
 //val it : string = "true"
 
->sprintf "%s";;
+sprintf "%s"
 //val it : (string -> string) = <fun:it@78-7>
 
->sprintf "%s" "Hello";;
+sprintf "%s" "Hello"
 //val it : string = "Hello"
 
->sprintf "%d";;
+sprintf "%d"
 //val it : (int -> string) = <fun:it@84-8>
 
->sprintf "%d" 42;;
+sprintf "%d" 42
 //val it : string = "42"
 
->sprintf "%x";;
+sprintf "%x"
 //val it : (int -> string) = <fun:it@90-9>
 
->sprintf "%x" 42;;
+sprintf "%x" 42
 //val it : string = "2a"
 
->sprintf "%X";;
+sprintf "%X"
 //val it : (int -> string) = <fun:it@96-10>
 
->sprintf "%X" 42;;
+sprintf "%X" 42
 //val it : string = "2A"
 
->sprintf "%o";;
+sprintf "%o"
 //val it : (int -> string) = <fun:it@102-11>
 
->sprintf "%o" 42;;
+sprintf "%o" 42
 //val it : string = "52"
 
->sprintf "%u";;
+sprintf "%u"
 //val it : (int -> string) = <fun:it@108-12>
 
->sprintf "%u" 42;;
+sprintf "%u" 42
 //val it : string = "42"
 
->open System;;
+open System
 
->sprintf "%e";;
+sprintf "%e"
 //val it : (float -> string) = <fun:it@116-13>
 
->sprintf "%e" Math.PI;;
+sprintf "%e" Math.PI
 //val it : string = "3.141593e+000"
 
->sprintf "%E";;
+sprintf "%E"
 //val it : (float -> string) = <fun:it@122-14>
 
->sprintf "%E" Math.PI;;
+sprintf "%E" Math.PI
 //val it : string = "3.141593E+000"
 
->sprintf "%f";;
+sprintf "%f"
 //val it : (float -> string) = <fun:it@128-15>
 
->sprintf "%f" Math.PI;;
+sprintf "%f" Math.PI
 //val it : string = "3.141593"
 
->sprintf "%g";;
+sprintf "%g"
 //val it : (float -> string) = <fun:it@134-16>
 
->sprintf "%g" Math.PI;;
+sprintf "%g" Math.PI
 //val it : string = "3.14159"
 
-sprintf "%M" (Decimal Math.PI);;
-//val it : string = "3.14159265358979"
+printf "%M" (Decimal Math.PI)
+//3.14159265358979val it : unit = ()
 
->let f : (DateTime -> _) = sprintf "%A";;
+let f : (DateTime -> _) = sprintf "%A"
 //val f : (DateTime -> string)
 
->(sprintf "%A" : DateTime -> _);;
+(sprintf "%A" : DateTime -> _)
+//val it : (DateTime -> string) = <fun:it@156-58>
 
->sprintf "%A" DateTime.Now;;
-//val it : string = "5/07/2012 4:52:46 p.m."
+sprintf "%A" DateTime.Now
+//val it : string = "4/08/2015 1:47:29 a.m."
 
->sprintf "%+A" DateTime.Now;;
-//val it : string = "5/07/2012 4:54:17 p.m."
+sprintf "%+A" DateTime.Now
+//val it : string = "4/08/2015 1:47:13 a.m."
 
->let f : (DateTime -> string) = sprintf "%O";;
+let f : (DateTime -> string) = sprintf "%O"
 //val f : (DateTime -> string)
 
->sprintf "%O" DateTime.Now;;
-val it : string = "5/07/2012 4:55:30 p.m."
+sprintf "%O" DateTime.Now
+//val it : string = "4/08/2015 1:46:57 a.m."
 
->open System;;
->(sprintf "%a" : (_ -> DateTime -> string) -> _ -> _);;
-sprintf "%a" (fun () -> (fun (d:DateTime) -> sprintf "%A" d.DayOfWeek)) DateTime.Now;;
+(sprintf "%a" : (_ -> DateTime -> string) -> _ -> _)
+//val it : ((unit -> DateTime -> string) -> DateTime -> string) =
+//  <fun:it@170-50>
 
->sprintf "%t" (fun () -> "Hello");;
+sprintf "%a" (fun () -> (fun (d : DateTime) -> sprintf "%A" d.DayOfWeek)) DateTime.Now
+//val it : string = "Monday"
+
+sprintf "%t" (fun () -> "Hello")
 //val it : string = "Hello"
 
->sprintf;;
-//val it : (Printf.StringFormat<'a> -> 'a) = <fun:clo@167-1>
-// --- STOP TABLE ----
+sprintf
+//val it : (Printf.StringFormat<'a -> 'a) = <fun:clo@167-1>
 
-> System.DateTime.Now.ToString();;
-//val it : string = "28/06/20.. 17:14:07 PM"
+Printf.bprintf
+//val it : (Text.StringBuilder -> Printf.BuilderFormat<'a> -> 'a) =
+//  <fun:clo@184-2>
 
-> sprintf "It is now %O" System.DateTime.Now;;
-//val it : string = "It is now 28/06/20... 17:14:09"
+System.DateTime.Now.ToString()
+//val it : string = "4/08/2015 1:47:55 a.m."
 
-> printf "The result is %A\n" [1; 2; 3];;
+sprintf "It is now %O" System.DateTime.Now
+//val it : string = "It is now 4/08/2015 1:48:09 a.m."
+
+printf "The result is %A\n" [1; 2; 3]
 //The result is [1; 2; 3]
 //val it : unit = ()
 
-> System.String.Format("{0} {1} {2}", 12, "a", 1.23);;
+System.String.Format("{0} {1} {2}", 12, "a", 1.23)
 //val it : string = "12 a 1.23"
 
-> open System;;
-> DateTime.Parse("13 July 1968");;
+open System
+
+DateTime.Parse("13 July 1968")
 
 //val it : DateTime = 13/07/1968 12:00:00 a.m. {Date = 13/07/1968 12:00:00 a.m.;
 //                                              Day = 13;
@@ -200,24 +216,16 @@ sprintf "%a" (fun () -> (fun (d:DateTime) -> sprintf "%A" d.DayOfWeek)) DateTime
 //                                              TimeOfDay = 00:00:00;
 //                                              Year = 1968;}
 
-> let date x = DateTime.Parse(x);;
+let date x = DateTime.Parse(x)
 //val date : x:string -> DateTime
 
-> let ciNZ = new System.Globalization.CultureInfo(name = "en-NZ");;
-> let ciUS = new System.Globalization.CultureInfo(name = "en-US");;
-> System.Threading.Thread.CurrentThread.CurrentUICulture <- ciNZ;;
-> System.Threading.Thread.CurrentThread.CurrentUICulture <- ciUS;;
-> printfn "date = %A" (date "13 July 1968");;
-//date = 13/07/1968 12:00:00 a.m.
-//val it : unit = ()
-
-> printfn "birth = %A" (date "18 March 2003, 6:21:01pm");;
+printfn "birth = %A" (date "18 March 2003, 6:21:01pm")
 //birth = 18/03/2003 6:21:01 p.m.
 //val it : unit = ()
 
-> open System;;
+open System
 
-> Uri.TryCreate("http://www.thebritishmuseum.ac.uk/", UriKind.Absolute);;
+Uri.TryCreate("http://www.thebritishmuseum.ac.uk/", UriKind.Absolute)
 //val it : bool * Uri =
 //  (true,
 //   http://www.thebritishmuseum.ac.uk/
@@ -243,21 +251,22 @@ sprintf "%a" (fun () -> (fun (d:DateTime) -> sprintf "%A" d.DayOfWeek)) DateTime
 //      UserEscaped = false;
 //      UserInfo = "";})
 
-> Uri.TryCreate("e3�%//ww.gibberish.com", UriKind.Absolute);;
+Uri.TryCreate("e3£%//ww.gibberish.com", UriKind.Absolute)
 //val it : bool * Uri = (false, null)
 
-> let line = "Smith, John, 20 January 1986, Software Developer";;
+let line = "Smith, John, 20 January 1986, Software Developer"
 //val line : string = "Smith, John, 20 January 1986, Software Developer"
 
-> line.Split ',';;
-//val it : string [] = [|"Smith"; " John"; " 20 January 1986"; " Software Developer"|]
+line.Split ','
+//val it : string [] =
+//  [|"Smith"; " John"; " 20 January 1986"; " Software Developer"|]
 
-> line.Split ',' |> Array.map (fun s -> s.Trim());;
-//val it : string [] = [|"Smith"; "John"; "20 January 1986"; "Software Developer"|]
+line.Split ',' |> Array.map (fun s -> s.Trim())
+//val it : string [] =
+//  [|"Smith"; "John"; "20 January 1986"; "Software Developer"|]
 
 let splitLine (line : string) =
     line.Split [|','|] |> Array.map (fun s -> s.Trim())
-//val splitLine : line:string -> string []
 
 let parseEmployee (line : string) =
     match splitLine line with
@@ -265,9 +274,10 @@ let parseEmployee (line : string) =
         last, first, System.DateTime.Parse(startDate), title
     | _ ->
         failwithf "invalid employee format: '%s'" line
+//val splitLine : line:string -> string []
 //val parseEmployee : line:string -> string * string * DateTime * string
 
-> parseEmployee line;;
+parseEmployee line
 //val it : string * string * DateTime * string =
 //  ("Smith", "John", 20/01/1986 12:00:00 a.m. {Date = 20/01/1986 12:00:00 a.m.;
 //                                              Day = 20;
@@ -291,7 +301,7 @@ File.WriteAllLines("employees.txt", Array.create 10000 line)
 let readEmployees (fileName : string) = 
     fileName |> File.ReadLines |> Seq.map parseEmployee
 //val readEmployees :
-//  fileName:string -> seq<string * string * DateTime * string>
+//  fileName:string -seq<string * string * DateTime * string>
 
 let firstThree = readEmployees "employees.txt" |> Seq.truncate 3 |> Seq.toList
 //val firstThree : (string * string * DateTime * string) list =
@@ -299,8 +309,8 @@ let firstThree = readEmployees "employees.txt" |> Seq.truncate 3 |> Seq.toList
 //   ("Smith", "John", 20/01/1986 12:00:00 a.m., "Software Developer");
 //   ("Smith", "John", 20/01/1986 12:00:00 a.m., "Software Developer")]
 
-> firstThree |> Seq.iter (fun (last, first, startDate, title)  -> 
-      printfn "%s %s started on %A" first last startDate);;
+firstThree |> Seq.iter (fun (last, first, startDate, title)  -> 
+      printfn "%s %s started on %A" first last startDate)
 //John Smith started on 20/01/1986 12:00:00 a.m.
 //John Smith started on 20/01/1986 12:00:00 a.m.
 //John Smith started on 20/01/1986 12:00:00 a.m.
@@ -320,47 +330,47 @@ let regex s = new Regex(s)
 let (=~) s (re : Regex) = re.IsMatch(s)
 let (<>~) s (re : Regex) = not (s =~ re)
 //val regex : s:string -> Regex
-//val ( =~ ) : s:string -> re:Regex -> bool
-//val ( <>~ ) : s:string -> re:Regex -> bool
+//val ( =~ ) : s:string -re:Regex -> bool
+//val ( <>~ ) : s:string -re:Regex -> bool
 
-> let samplestring = "This is a string";;
+let samplestring = "This is a string"
 //val samplestring : string = "This is a string"
 
-> if samplestring =~ regex "his" then
-       printfn "A Match! ";;
+if samplestring =~ regex "his" then
+       printfn "A Match! "
 //A Match! 
 //val it : unit = ()
 
-> "This is a string" =~ regex "(is )+";;
+"This is a string" =~ regex "(is )+"
 //val it : bool = true
 
-> regex(" ").Split("This is a string");;
+regex(" ").Split("This is a string")
 //val it : string [] = [|"This"; "is"; "a"; "string"|]
 
-> regex(@"\s+").Split("I'm a little      teapot");;
+regex(@"\s+").Split("I'm a little      teapot")
 //val it : string [] = [|"I'm"; "a"; "little"; "teapot"|]
 
-> regex(@"\s+").Split("I'm a little  \t\t\n\t\n\t teapot");;
+regex(@"\s+").Split("I'm a little  \t\t\n\t\n\t teapot")
 //val it : string [] = [|"I'm"; "a"; "little"; "teapot"|]
 
-> let m = regex("joe").Match("maryjoewashere");;
+let m = regex("joe").Match("maryjoewashere")
 //val m : Match = joe
 
-> if m.Success then
-     printfn "Matched at position %d" m.Index;;
+if m.Success then
+     printfn "Matched at position %d" m.Index
 //Matched at position 4
 //val it : unit = ()
 
-> let text = "was a dark and stormy night";;
+let text = "was a dark and stormy night"
 //val text : string = "was a dark and stormy night"
 
-> let t2 = regex(@"\w+").Replace(text, "WORD");;
+let t2 = regex(@"\w+").Replace(text, "WORD")
 //val t2 : string = "WORD WORD WORD WORD WORD WORD"
 
-> samplestring =~ regex "(?i)HIS";;
+samplestring =~ regex "(?i)HIS"
 //val it : bool = true
 
-> samplestring =~ regex "HIS";;
+samplestring =~ regex "HIS"
 //val it : bool = false
 
 let entry = @"
@@ -379,23 +389,23 @@ let re =
 //val re : Regex =
 //  (?<=\n)\s*(?<city>[^\n]+)\s*,\s*(?<county>\w+)\s+(?<pcode>.{3}\s*.{3}).*$
 
-> let r = re.Match(entry);;
+let r = re.Match(entry)
 //val r : Match = Cambridge, Cambs CB2 1TJ
 
-> r.Groups.["city"].Value;;
+r.Groups.["city"].Value
 //val it : string = "Cambridge"
 
-> r.Groups.["county"].Value;;
+r.Groups.["county"].Value
 //val it : string = "Cambs"
 
-> r.Groups.["pcode"].Value;;
+r.Groups.["pcode"].Value
 //val it : string = "CB2 1TJ"
 
 let (|IsMatch|_|) (re : string) (inp : string) = 
     if Regex(re).IsMatch(inp)  then Some() else None
 //val ( |IsMatch|_| ) : re:string -> inp:string -> unit option
     
-> match "This is a string" with 
+match "This is a string" with 
 | IsMatch "(?i)HIS" -> "yes, it matched"
 | IsMatch "ABC" -> "this would not match"
 | _ -> "nothing matched"
@@ -408,9 +418,9 @@ let firstAndSecondWord (inp : string) =
         Some (results.Groups.["word1"].Value, results.Groups.["word2"].Value)
     else 
         None
-//val firstAndSecondWord : inp:string -> (string * string) option
+//val firstAndSecondWord : inp:string -(string * string) option
 
-> firstAndSecondWord "This is a super string"
+firstAndSecondWord "This is a super string"
 //val it : (string * string) option = Some ("This", "is")
 
 let (?) (results : Match) (name : string) = 
@@ -426,43 +436,21 @@ let firstAndSecondWord (inp : string) =
         None
 //val firstAndSecondWord : inp:string -> (string * string) option
 
-let inp = """
-    <?xml version=\"1.0\" encoding=\"utf-8\" ?>
-           <Scene>
-                 <Composite>
-                 <Circle radius='2' x='1' y='0'/>
-                 <Composite>
-                   <Circle radius='2' x='4' y='0'/>
-                   <Square side='2' left='-3' top='0'/>
-                 </Composite>
-                 <Ellipse top='2' left='-2' width='3' height='4'/>
-              </Composite>
-           </Scene>"""
-//val inp : string =
-//  "
-//    <?xml version=\"1.0\" encoding=\"utf-8\" ?>
-//           <"+[366 chars]
+#r @"packages/FSharp.Text.RegexProvider/lib/net40/FSharp.Text.RegexProvider.dll"
+//--> Referenced 'C:\...\packages/FSharp.Text.RegexProvider/lib/net40/FSharp.Text.RegexProvider.dll'
 
-> open System.Xml;;
-> let doc = new XmlDocument();;
-//val doc : XmlDocument
+open FSharp.Text.RegexProvider
 
-> doc.LoadXml(inp);;
-//System.Xml.XmlException: Unexpected XML declaration. The XML declaration must be the first node in the document, and no white space characters are allowed to appear before it. Line 2, position 7.
-//   at System.Xml.XmlTextReaderImpl.Throw(Exception e)
-//   at System.Xml.XmlTextReaderImpl.Throw(String res, String arg)
-//   at System.Xml.XmlTextReaderImpl.ParsePI(StringBuilder piInDtdStringBuilder)
-//   at System.Xml.XmlTextReaderImpl.ParseDocumentContent()
-//   at System.Xml.XmlTextReaderImpl.Read()
-//   at System.Xml.XmlLoader.LoadNode(Boolean skipOverWhitespace)
-//   at System.Xml.XmlLoader.LoadDocSequence(XmlDocument parentDoc)
-//   at System.Xml.XmlLoader.Load(XmlDocument doc, XmlReader reader, Boolean preserveWhitespace)
-//   at System.Xml.XmlDocument.Load(XmlReader reader)
-//   at System.Xml.XmlDocument.LoadXml(String xml)
-//   at <StartupCode$FSI_0007>.$FSI_0007.main@()
-//Stopped due to error
+type PhoneRegex = Regex< @"(?<AreaCode>^\d{3})-(?<PhoneNumber>\d{3}-\d{4}$)">
+let results = PhoneRegex().Match("425-123-2345")
+let areaCode = results.AreaCode.Value
+//type PhoneRegex = Regex<...>
+//val results : Regex<...>.MatchType2 = 425-123-2345
+//val areaCode : string = "425"
 
-// Closed triple quotes, no line break on first line and no backslash escaping within triple quoted string.
+type FaultyAreaCodeRegex = Regex< @"(?<AreaCode>^\d{3}">
+//error FS3033: The type provider 'FSharp.Text.RegexProvider.RegexProvider' reported an error: parsing "(?<AreaCode>^\d{3}" - Not enough )'s.
+
 let inp = """<?xml version="1.0" encoding="utf-8" ?>
            <Scene>
                  <Composite>
@@ -474,35 +462,43 @@ let inp = """<?xml version="1.0" encoding="utf-8" ?>
                  <Ellipse top='2' left='-2' width='3' height='4'/>
               </Composite>
            </Scene>"""
+//val inp : string =
+//  "<?xml version="1.0" encoding="utf-8" ?>
+//           <Scene>
+//  "+[357 chars]
 
-> doc.LoadXml(inp);;
+open System.Xml
+let doc = new XmlDocument()
+//val doc : XmlDocument
+
+doc.LoadXml(inp)
 //val it : unit = ()
 
-> doc.ChildNodes;;
+doc.ChildNodes
 //val it : XmlNodeList =
 //  seq [seq []; seq [seq [seq []; seq [seq []; seq []]; seq []]]]
 
-> fsi.AddPrinter(fun (x : XmlNode) -> x.OuterXml);;
+fsi.AddPrinter(fun (x : XmlNode) -> x.OuterXml)
 //val it : unit = ()
 
-> doc.ChildNodes;;
+doc.ChildNodes
 //val it : XmlNodeList =
 //  seq
 //    [<?xml version="1.0" encoding="utf-8"?>;
 //     <Scene><Composite><Circle radius="2" x="1" y="0" /><Composite><Circle radius="2" x="4" y="0" /><Square side="2" left="-3" top="0" /></Composite><Ellipse top="2" left="-2" width="3" height="4" /></Composite></Scene>]
 
-> doc.ChildNodes.Item(1);;
+doc.ChildNodes.Item(1)
 //val it : XmlNode =
 //  <Scene><Composite><Circle radius="2" x="1" y="0" /><Composite><Circle radius="2" x="4" y="0" /><Square side="2" left="-3" top="0" /></Composite><Ellipse top="2" left="-2" width="3" height="4" /></Composite></Scene>
 
-> doc.ChildNodes.Item(1).ChildNodes.Item(0);;
+doc.ChildNodes.Item(1).ChildNodes.Item(0)
 //val it : XmlNode =
 //  <Composite><Circle radius="2" x="1" y="0" /><Composite><Circle radius="2" x="4" y="0" /><Square side="2" left="-3" top="0" /></Composite><Ellipse top="2" left="-2" width="3" height="4" /></Composite>
 
-> doc.ChildNodes.Item(1).ChildNodes.Item(0).ChildNodes.Item(0);;
+doc.ChildNodes.Item(1).ChildNodes.Item(0).ChildNodes.Item(0)
 //val it : XmlNode = <Circle radius="2" x="1" y="0" />
 
-> doc.ChildNodes.Item(1).ChildNodes.Item(0).ChildNodes.Item(0).Attributes;;
+doc.ChildNodes.Item(1).ChildNodes.Item(0).ChildNodes.Item(0).Attributes
 //val it : XmlAttributeCollection = seq [radius="2"; x="1"; y="0"]
 
 open System.Drawing
@@ -573,21 +569,21 @@ let extractScenes (doc : XmlDocument) =
 //  | Rect of RectangleF
 //  | Composite of Scene list
 //  with
-//    static member Circle : center:PointF * radius:float32 -> Scene
-//    static member Square : left:float32 * top:float32 * side:float32 -> Scene
+//    static member Circle : center:PointF * radius:float32 -Scene
+//    static member Square : left:float32 * top:float32 * side:float32 -Scene
 //  end
 //val extractFloat32 :
-//  attrName:string -> attribs:XmlAttributeCollection -> float32
-//val extractPointF : attribs:XmlAttributeCollection -> PointF
-//val extractRectangleF : attribs:XmlAttributeCollection -> RectangleF
-//val extractScene : node:XmlNode -> Scene
-//val extractScenes : doc:XmlDocument -> Scene list
+//  attrName:string -attribs:XmlAttributeCollection -> float32
+//val extractPointF : attribs:XmlAttributeCollection -PointF
+//val extractRectangleF : attribs:XmlAttributeCollection -RectangleF
+//val extractScene : node:XmlNode -Scene
+//val extractScenes : doc:XmlDocument -Scene list
 
-> fsi.AddPrinter(fun (r : RectangleF) ->
-      sprintf "[%A,%A,%A,%A]" r.Left r.Top r.Width r.Height);;
+fsi.AddPrinter(fun (r : RectangleF) ->
+      sprintf "[%A,%A,%A,%A]" r.Left r.Top r.Width r.Height)
 //val it : unit = ()
 
-> extractScenes doc;;
+extractScenes doc
 //val it : Scene list =
 //  [Composite
 //     [Composite
@@ -596,18 +592,114 @@ let extractScenes (doc : XmlDocument) =
 //           [Ellipse [2.0f,-2.0f,4.0f,4.0f]; Rect [-3.0f,0.0f,2.0f,2.0f]];
 //         Ellipse [-2.0f,2.0f,3.0f,4.0f]]]]
 
+#r @"packages\FSharp.Data\lib\net40\FSharp.Data.dll"
+//--> Referenced 'C:\...\packages\FSharp.Data\lib\net40\FSharp.Data.dll'
+#r "System.Xml.Linq"
+//--> Referenced 'C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5.1\System.Xml.Linq.dll'
+
+open FSharp.Data
+
+[<Literal>]
+let customersXmlSample = """
+  <Customers>
+    <Customer name="ACME">
+      <Order Number="A012345">
+        <OrderLine Item="widget" Quantity="1"/>
+      </Order>
+      <Order Number="A012346">
+        <OrderLine Item="trinket" Quantity="2"/>
+      </Order>
+    </Customer>
+    <Customer name="Southwind">
+      <Order Number="A012347">
+        <OrderLine Item="skyhook" Quantity="3"/>
+        <OrderLine Item="gizmo" Quantity="4"/>
+      </Order>
+    </Customer>
+  </Customers>"""
+
+type InputXml = XmlProvider<customersXmlSample>
+//val customersXmlSample : string =
+//  "
+//  <Customers>
+//    <Customer name="ACME">
+//      <Order Number"+[390 chars]
+//type InputXml = XmlProvider<...>
+
+let inputs = InputXml.GetSample().Customers
+//val inputs : XmlProvider<...>.Customer [] =
+//  [|<Customer name="ACME">
+//  <Order Number="A012345">
+//    <OrderLine Item="widget" Quantity="1" />
+//  </Order>
+//  <Order Number="A012346">
+//    <OrderLine Item="trinket" Quantity="2" />
+//  </Order>
+//</Customer>;
+//    <Customer name="Southwind">
+//  <Order Number="A012347">
+//    <OrderLine Item="skyhook" Quantity="3" />
+//    <OrderLine Item="gizmo" Quantity="4" />
+//  </Order>
+//</Customer>|]
+
+let orders = 
+  [ for customer in inputs do
+      for order in customer.Orders do
+        for line in order.OrderLines do
+          yield (customer.Name,order.Number,line.Item,line.Quantity) ]
+//val orders : (string * string * string * int) list =
+//  [("ACME", "A012345", "widget", 1); ("ACME", "A012346", "trinket", 2);
+//   ("Southwind", "A012347", "skyhook", 3);
+//   ("Southwind", "A012347", "gizmo", 4)]
+
+[<Literal>]
+let orderLinesXmlSample = """
+  <OrderLines>
+    <OrderLine Customer="ACME" Order="A012345" Item="widget" Quantity="1"/>
+    <OrderLine Customer="ACME" Order="A012346" Item="trinket" Quantity="2"/>
+    <OrderLine Customer="Southwind" Order="A012347" Item="skyhook" Quantity="3"/>
+    <OrderLine Customer="Southwind" Order="A012347" Item="gizmo" Quantity="4"/>
+  </OrderLines>"""
+
+type OutputXml = XmlProvider<orderLinesXmlSample>
+//val orderLinesXmlSample : string =
+//  "
+//  <OrderLines>
+//    <OrderLine Customer="ACME" Order="A012345"+[285 chars]
+//type OutputXml = XmlProvider<...>
+
+let orderLines = 
+   OutputXml.OrderLines 
+      [| for (name, number, item, quantity) in orders do
+            yield OutputXml.OrderLine(name, number, item, quantity) |]
+
+orderLines.XElement.ToString()
+//val orderLines : XmlProvider<...>.OrderLines =
+//  <OrderLines>
+//  <OrderLine Customer="ACME" Order="A012345" Item="widget" Quantity="1" />
+//  <OrderLine Customer="ACME" Order="A012346" Item="trinket" Quantity="2" />
+//  <OrderLine Customer="Southwind" Order="A012347" Item="skyhook" Quantity="3" />
+//  <OrderLine Customer="Southwind" Order="A012347" Item="gizmo" Quantity="4" />
+//</OrderLines>
+//val it : string =
+//  "<OrderLines>
+//  <OrderLine Customer="ACME" Order="A012345" It"+[281 chars]
+
 type Term =
     | Term of int * string * int
     | Const of int
+
+type Polynomial = Term list
+
+[Term (1,"x",5); Term (-2,"x",3); Const 20]
 //type Term =
 //  | Term of int * string * int
 //  | Const of int
-
-type Polynomial = Term list
 //type Polynomial = Term list
-
-[Term (1,"x",5); Term (-2,"x",3); Const 20]
 //val it : Term list = [Term (1,"x",5); Term (-2,"x",3); Const 20]
+
+open System.Text.RegularExpressions
 
 type Token = 
     | ID of string 
@@ -615,19 +707,9 @@ type Token =
     | HAT
     | PLUS 
     | MINUS
-//type Token =
-//  | ID of string
-//  | INT of int
-//  | HAT
-//  | PLUS
-//  | MINUS
 
-open System.Text.RegularExpressions
 let regex s = new Regex(s)
-//val regex : s:string -> Regex
-
 let tokenR = regex @"((?<token>(\d+|\w+|\^|\+|-))\s*)*"
-//val tokenR : Regex = ((?<token>(\d+|\w+|\^|\+|-))\s*)*
 
 let tokenize (s : string) = 
     [for x in tokenR.Match(s).Groups.["token"].Captures do 
@@ -639,13 +721,19 @@ let tokenize (s : string) =
              | s when System.Char.IsDigit s.[0] -> INT (int s)
              | s -> ID s 
          yield token]
-//val tokenize : s:string -> Token list
 
-> tokenize "x^5 - 2x^3 + 20";;
+tokenize "x^5 - 2x^3 + 20"
+//type Token =
+//  | ID of string
+//  | INT of int
+//  | HAT
+//  | PLUS
+//  | MINUS
+//val regex : s:string -> Regex
+//val tokenR : Regex = ((?<token>(\d+|\w+|\^|\+|-))\s*)*
+//val tokenize : s:string -> Token list
 //val it : Token list =
 //  [ID "x"; HAT; INT 5; MINUS; INT 2; ID "x"; HAT; INT 3; PLUS; INT 20]
-
-[ID "x"; HAT; INT 5; MINUS; INT 2; ID "x"; HAT; INT 3; PLUS; INT 20]
 
 type Term =
     | Term of int * string * int
@@ -706,18 +794,10 @@ let parse input =
 //val parsePolynomial : src:TokenStream -> Term list * Token list
 //val parse : input:string -> Term list
 
-let parse input =
-    let src = tokenize input
-    let result, src = parsePolynomial src
-    match tryToken src with
-    | Some _ -> failwith "unexpected input at end of token stream!"
-    | None -> result
-//val parse : input:string -> Term list
-
-> parse "1+3";;
+parse "1+3"
 //val it : Term list = [Const 1; Const 3]
 
-> parse "2x^2+3x+5";;
+parse "2x^2+3x+5"
 //val it : Term list = [Term (2,"x",2); Term (3,"x",1); Const 5]
 
 type OutState = System.IO.BinaryWriter
@@ -745,8 +825,8 @@ let int32U st =
     let b3 = int (byteU st)
     b0 ||| (b1 <<< 8) ||| (b2 <<< 16) ||| (b3 <<< 24)
 
-//type OutState = BinaryWriter
-//type InState = BinaryReader
+//type OutState = System.IO.BinaryWriter
+//type InState = System.IO.BinaryReader
 //type Pickler<'T> = 'T -> OutState -> unit
 //type Unpickler<'T> = InState -> 'T
 //val byteP : b:byte -> st:OutState -> unit
@@ -779,7 +859,7 @@ let tup3U p1 p2 p3 (st : InState) =
 // Outputs a list into the given output stream by pickling each element via f.
 let rec listP f lst st =
     match lst with
-    | [] ->     byteP 0uy st
+    | [] -> byteP 0uy st
     | h :: t -> byteP 1uy st; f h st; listP f t st
 
 // Reads a list from a given input stream by unpickling each element via f.
@@ -791,7 +871,6 @@ let listU f st =
         | 1uy -> let a = f st in loop (a :: acc)
         | n -> failwithf "listU: found number %d" n
     loop []
-
 //val tup2P :
 //  p1:('a -> OutState -> unit) ->
 //    p2:('b -> OutState -> unit) -> a:'a * b:'b -> st:OutState -> unit
@@ -827,8 +906,8 @@ let readData file  =
 //val writeData : file:string -> data:(int * bool) list -> unit
 //val readData : file:string -> (int * bool) list
 
-> writeData "out.bin" [(102, true); (108, false)] ;;
+writeData "out.bin" [(102, true); (108, false)] 
 //val it : unit = ()
 
-> readData "out.bin";;
+readData "out.bin"
 //val it : (int * bool) list = [(102, true); (108, false)]
