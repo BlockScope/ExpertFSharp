@@ -159,7 +159,7 @@ let people =
 /// Extract information from the table of people 
 let namesOfPeopleStartingWithA =
     people 
-      |> Seq.map (fun (name, age, dept) -> name)
+      |> Seq.map (fun (name, _, _) -> name)
       |> Seq.filter (fun name -> name.StartsWith "A")
       |> Seq.toList
 
@@ -252,22 +252,24 @@ Seq.map
 // Take the first 10 numbers and build a triangle 1, 1, 2, 1, 2, 3, 1, 2, 3, 4, …
 let triangleNumbers = 
     [ 1 .. 10 ] 
-      |> Seq.collect (fun i -> [ 1 .. i ] ) 
-      |> Seq.toList 
+    |> Seq.collect (fun i -> [ 1 .. i ]) 
+    |> Seq.toList 
 //val triangleNumbers : int list =
 //  [1; 1; 2; 1; 2; 3; 1; 2; 3; 4; 1; 2; 3; 4; 5; 1; 2; 3; 4; 5; 6; 1; 2; 3; 4;
 //   5; 6; 7; 1; 2; 3; 4; 5; 6; 7; 8; 1; 2; 3; 4; 5; 6; 7; 8; 9; 1; 2; 3; 4; 5;
 //   6; 7; 8; 9; 10]
 
 let gameBoard = 
-    [ for i in 0 .. 7 do 
-          for j in 0 .. 7 do 
-              yield (i,j,rand.Next(10)) ] 
+    [
+        for i in 0 .. 7 do 
+        for j in 0 .. 7 do 
+        yield (i,j,rand.Next(10))
+    ] 
 
 let evenPositions = 
-   gameBoard
-     |> Seq.choose (fun (i,j,v) -> if v % 2 = 0 then Some (i,j) else None) 
-     |> Seq.toList 
+    gameBoard
+    |> Seq.choose (fun (i,j,v) -> if v % 2 = 0 then Some (i,j) else None) 
+    |> Seq.toList 
 
 //val gameBoard : (int * int * int) list =
 //  [(0, 0, 2); (0, 1, 1); (0, 2, 6); (0, 3, 9); (0, 4, 3); (0, 5, 4); (0, 6, 0);
@@ -314,20 +316,20 @@ let firstPositionScoringZero =
 //val firstPositionScoringZero : (int * int) option = Some (0, 6)
 
 let positionsGroupedByGameValue = 
-   gameBoard 
-       |> Seq.groupBy (fun (i, j, v) -> v) 
-       |> Seq.sortBy (fun (k, v) -> k)
-       |> Seq.toList 
+    gameBoard 
+    |> Seq.groupBy (fun (i, j, v) -> v) 
+    |> Seq.sortBy (fun (k, v) -> k)
+    |> Seq.toList 
 //val positionsGroupedByGameValue : (int * seq<int * int * int>) list =
 //  [(0, <seq>); (1, <seq>); (2, <seq>); (3, <seq>); (4, <seq>); (5, <seq>);
 //   (6, <seq>); (7, <seq>); (8, <seq>); (9, <seq>)] 
 
 let positionsIndexedByGameValue = 
-   gameBoard 
-       |> Seq.groupBy (fun (i, j, v) -> v) 
-       |> Seq.sortBy (fun (k, v) -> k)
-       |> Seq.map (fun (k, v) -> (k, Seq.toList v))
-       |> dict
+    gameBoard 
+    |> Seq.groupBy (fun (i, j, v) -> v) 
+    |> Seq.sortBy (fun (k, v) -> k)
+    |> Seq.map (fun (k, v) -> (k, Seq.toList v))
+    |> dict
 
 let worstPositions = positionsIndexedByGameValue.[0]
 let bestPositions = positionsIndexedByGameValue.[9]
@@ -441,7 +443,7 @@ let flatten3 scene =
         match s with
         | Composite(scenes) -> scenes |> List.iter flattenAux
         | Ellipse _ | Rect _ -> acc.Add s
-    flattenAux scene;
+    flattenAux scene
     Seq.readonly acc
 
 //type Scene =
