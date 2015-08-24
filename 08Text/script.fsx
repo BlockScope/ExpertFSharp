@@ -688,6 +688,7 @@ orderLines.XElement.ToString()
 
 #r @"packages\FSharp.Data\lib\net40\FSharp.Data.dll"
 
+open System.IO
 open FSharp.Data
 open FSharp.Data.JsonExtensions
 
@@ -700,7 +701,9 @@ let animals = JsonValue.Parse """
          """
 
 let data2 = 
-  JsonValue.Load (__SOURCE_DIRECTORY__ + "./acme.json")
+  Path.Combine(__SOURCE_DIRECTORY__, "acme.json")
+  |> Path.GetFullPath
+  |> JsonValue.Load
 
 //--> Referenced '.\packages\FSharp.Data\lib\net40\FSharp.Data.dll'
 //
@@ -772,8 +775,7 @@ let data3 =
 //  ]
 //]
 
-let dogs =
-    [ for dog in animals?dogs  -> dog?name ]
+let dogs = [ for dog in animals?dogs  -> dog?name ]
 
 type Customers = JsonProvider<"""
   { "customers" : 
