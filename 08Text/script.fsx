@@ -686,6 +686,186 @@ orderLines.XElement.ToString()
 //  "<OrderLines>
 //  <OrderLine Customer="ACME" Order="A012345" It"+[281 chars]
 
+#r @"packages\FSharp.Data\lib\net40\FSharp.Data.dll"
+
+open FSharp.Data
+open FSharp.Data.JsonExtensions
+
+let animals = JsonValue.Parse """
+        { "dogs": 
+            [ { "category": "Companion dogs",
+                "name": "Chihuahua" },
+              { "category": "Hounds",
+                "name": "Foxhound" } ] }
+         """
+
+let data2 = 
+  JsonValue.Load (__SOURCE_DIRECTORY__ + "./acme.json")
+
+//--> Referenced '.\packages\FSharp.Data\lib\net40\FSharp.Data.dll'
+//
+//
+//val animals : FSharp.Data.JsonValue =
+//  {
+//  "dogs": [
+//    {
+//      "category": "Companion dogs",
+//      "name": "Chihuahua"
+//    },
+//    {
+//      "category": "Hounds",
+//      "name": "Foxhound"
+//    }
+//  ]
+//}
+//val data2 : FSharp.Data.JsonValue =
+//  {
+//  "customers": [
+//    {
+//      "name": "ACME",
+//      "orders": [
+//        {
+//          "number": "A012345",
+//          "item": "widget",
+//          "quantity": 1
+//        }
+//      ]
+//    }
+//  ]
+//}
+
+let data3 = 
+  JsonValue.Load
+     "http://api.worldbank.org/country/cz/indicator/GC.DOD.TOTL.GD.ZS?format=json"
+
+//val data3 : JsonValue =
+//  [
+//  {
+//    "page": 1,
+//    "pages": 2,
+//    "per_page": "50",
+//    "total": 55
+//  },
+//  [
+//    {
+//      "indicator": {
+//        "id": "GC.DOD.TOTL.GD.ZS",
+//        "value": "Central government debt, total (% of GDP)"
+//      },
+//      "country": {
+//        "id": "CZ",
+//        "value": "Czech Republic"
+//      },
+//      "value": "29.5898824705934",
+//      "decimal": "1",
+//      "date": "2009"
+//    },
+//    ...
+//      "country": {
+//        "id": "CZ",
+//        "value": "Czech Republic"
+//      },
+//      "value": null,
+//      "decimal": "1",
+//      "date": "1960"
+//    }
+//  ]
+//]
+
+let dogs =
+    [ for dog in animals?dogs  -> dog?name ]
+
+type Customers = JsonProvider<"""
+  { "customers" : 
+      [ { "name" : "ACME",
+          "orders" : 
+             [ { "number" : "A012345", 
+                 "item" : "widget", 
+                 "quantity" : 1 } ] } ] }
+""">
+
+let customers = Customers.Parse """
+  { "customers" : 
+      [ { "name" : "Apple Store",
+          "orders" : 
+              [ { "number" : "B73284", 
+                  "item" : "iphone5", 
+                  "quantity" : 18373 },
+                { "number" : "B73238", 
+                  "item" : "iphone6", 
+                  "quantity" : 3736 } ] },
+        { "name" : "Samsung Shop",
+          "orders" : 
+              [ { "number" : "N36214", 
+                  "item" : "nexus7", 
+                  "quantity" : 18373 } ] } ] }
+"""
+
+let customerNames = [ for c in customers.Customers -> c.Name ]
+
+let newOrder = Customers.Order(number = "N36214", item = "nexus7", quantity = 1636)
+
+let newCustomer = Customers.Customer(name = "FabPhone", orders = [| newOrder|])
+
+let jsonText = newCustomer.JsonValue.ToString()
+
+//val dogs : JsonValue list = ["Chihuahua"; "Foxhound"]
+//type Customers = JsonProvider<...>
+//val customers : JsonProvider<...>.Root =
+//  {
+//  "customers": [
+//    {
+//      "name": "Apple Store",
+//      "orders": [
+//        {
+//          "number": "B73284",
+//          "item": "iphone5",
+//          "quantity": 18373
+//        },
+//        {
+//          "number": "B73238",
+//          "item": "iphone6",
+//          "quantity": 3736
+//        }
+//      ]
+//    },
+//    {
+//      "name": "Samsung Shop",
+//      "orders": [
+//        {
+//          "number": "N36214",
+//          "item": "nexus7",
+//          "quantity": 18373
+//        }
+//      ]
+//    }
+//  ]
+//}
+//val customerNames : string list = ["Apple Store"; "Samsung Shop"]
+//val newOrder : JsonProvider<...>.Order =
+//  {
+//  "number": "N36214",
+//  "item": "nexus7",
+//  "quantity": 1636
+//}
+//val newCustomer : JsonProvider<...>.Customer =
+//  {
+//  "name": "FabPhone",
+//  "orders": [
+//    {
+//      "number": "N36214",
+//      "item": "nexus7",
+//      "quantity": 1636
+//    }
+//  ]
+//}
+//val jsonText : string =
+//  "{
+//  "name": "FabPhone",
+//  "orders": [
+//    {
+//      "number"+[76 chars]
+
 type Term =
     | Term of int * string * int
     | Const of int
