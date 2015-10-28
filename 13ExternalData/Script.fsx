@@ -60,10 +60,16 @@ open FSharp.Data
 
 type CountriesXml = XmlProvider<"http://api.worldbank.org/country">
 let sampleCountries = CountriesXml.GetSample()
+let sampleCountries' = CountriesXml.Load("http://api.worldbank.org/country")
 //--> Added 'C:\...\13ExternalData\./packages/FSharp.Data/lib/net40' to library include path
 //--> Referenced 'C:\...\13ExternalData\./packages/FSharp.Data/lib/net40\FSharp.Data.dll'
 //type CountriesXml = FSharp.Data.XmlProvider<...>
 //val sampleCountries : FSharp.Data.XmlProvider<...>.Countries =
+//  <wb:countries page="1" pages="6" per_page="50" total="264" xmlns:wb="http://www.worldbank.org">
+//  <wb:country id="ABW">
+//  </wb:country>
+//</wb:countries>
+//val sampleCountries' : XmlProvider<...>.Countries =
 //  <wb:countries page="1" pages="6" per_page="50" total="264" xmlns:wb="http://www.worldbank.org">
 //  <wb:country id="ABW">
 //  </wb:country>
@@ -81,6 +87,7 @@ let worldBankCountriesJsonPage1 = http "http://api.worldbank.org/country?format=
 
 type CountriesJson = JsonProvider<"http://api.worldbank.org/country?format=json">
 let sampleCountriesFromJson = CountriesJson.GetSample()
+let sampleCountriesFromJson' = CountriesJson.Load("http://api.worldbank.org/country?format=json")
 //type CountriesJson = JsonProvider<...>
 //val sampleCountriesFromJson : JsonProvider<...>.Root =
 //  [
@@ -110,7 +117,7 @@ sampleCountriesFromJson.Array.[0].Name
 #r "System.Xml.Linq.dll"
 
 let worldBankCountriesXmlPage2 = http "http://api.worldbank.org/country?page=2"
-let loadPageFromXml n = CountriesXml.Load("http://api.worldbank.org/country?page=" + string n)
+let loadPageFromXml n = CountriesXml.Load(sprintf "http://api.worldbank.org/country?page=%d" n)
 
 let countries = 
     let page1 = loadPageFromXml 1
@@ -167,8 +174,7 @@ countries.Length
 //   "Equatorial Guinea"; "Greece"; "Grenada"; "Greenland"; "Guatemala"; "Guam";
 //   "Guyana"; "High income"; ...]
 
-let loadPageFromJson n = 
-    CountriesJson.Load("http://api.worldbank.org/country?format=json&page=" + string n)
+let loadPageFromJson n = CountriesJson.Load(sprintf "http://api.worldbank.org/country?format=json&page=%d" n)
 
 let countriesFromJson = 
     let page1 = loadPageFromJson 1
