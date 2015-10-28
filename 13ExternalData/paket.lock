@@ -3,4 +3,5 @@ NUGET
   specs:
     FSharp.Data (2.2.5)
       Zlib.Portable (>= 1.10.0) - framework: portable-net40+sl50+wp80+win80
+    FSharp.Data.SqlClient (1.7.7)
     Zlib.Portable (1.11.0) - framework: portable-net40+sl50+wp80+win80

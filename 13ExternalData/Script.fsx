@@ -232,43 +232,32 @@ let loadPageFromJson1000 =
 //  ]
 //]
 
+// NOTE: The northwind database can be downloaded from Microsoft. The download page is described as
+// "Northwind and pubs Sample Databases for SQL Server 2000". The MSI installs both *.mdf/*.ldf and
+// scripts for this database and the pubs database by default, to the file system at
+// C:\SQL Server 2000 Sample Databases. If installing into a later version of SQL server then
+// the install script will error but a workaround is available,
+// SEE: http://www.howtosolutions.net/2013/07/solving-install-northwind-database-on-sql-server-problem.
+// NOTE: The fix is to replace the following two lines with the third line ...
+//exec sp_dboption 'Northwind','trunc. log on chkpt.','true'
+//exec sp_dboption 'Northwind','select into/bulkcopy','true'
+//alter database Northwind set recovery simple
+
 #r "System.Data.Linq.dll"
 #r "FSharp.Data.TypeProviders.dll"
 
 open Microsoft.FSharp.Linq
 open Microsoft.FSharp.Data.TypeProviders
 
-type NorthwndDb = 
-    SqlDataConnection<ConnectionString = 
-                         @"AttachDBFileName  = 'C:\Scripts\northwnd.mdf';
-                           Server='.\SQLEXPRESS';User Instance=true;Integrated Security=SSPI",
-                      Pluralize=true>
-//type NorthwndDb =
-//  class
-//    static member GetDataContext : unit -> NorthwndDb.ServiceTypes.SimpleDataContextTypes.Northwind
-//     + 1 overload
-//    nested type ServiceTypes
-//  end
-
+type NorthwndDb = SqlDataConnection<ConnectionString = @"Server=.;Database=Northwind;Trusted_Connection=True;", Pluralize=true>
 let db = NorthwndDb.GetDataContext()
+db.DataContext.Log <- System.Console.Out
 
 let customersSortedByCountry = 
     query { for c in db.Customers do 
             sortBy c.Country
             select (c.Country, c.CompanyName) }
     |> Seq.toList
-//val customersSortedByCountry : (string * string) list =
-//  [("Argentina", "Cactus Comidas para llevar");
-//   ("Argentina", "Océano Atlántico Ltda."); ("Argentina", "Rancho grande");
-//   ...
-//   ("Venezuela", "LINO-Delicateses"); ("Venezuela", "HILARION-Abastos");
-//   ("Venezuela", "GROSELLA-Restaurante")]
-
-db.DataContext.Log <- System.Console.Out
-//SELECT [t0].[Country] AS [Item1], [t0].[ContactName] AS [Item2]
-//FROM [dbo].[Customers] AS [t0]
-//ORDER BY [t0].[Country]
-//-- Context: SqlProvider(Sql2008) Model: AttributedMetaModel Build: 4.0.30319.17929
 
 let selectedEmployees = 
     query { for emp in db.Employees do
@@ -277,14 +266,6 @@ let selectedEmployees =
             select (emp.FirstName, emp.LastName) 
             take 5 }
     |> Seq.toList
-//SELECT TOP (5) [t0].[FirstName] AS [Item1], [t0].[LastName] AS [Item2]
-//FROM [dbo].[Employees] AS [t0]
-//WHERE ([t0].[LastName] LIKE @p0) AND (DATEPART(Year, [t0].[BirthDate]) > @p1)
-//-- @p0: Input NVarChar (Size = 4000; Prec = 0; Scale = 0) [S%]
-//-- @p1: Input Int (Size = -1; Prec = 0; Scale = 0) [1960]
-//-- Context: SqlProvider(Sql2008) Model: AttributedMetaModel Build: 4.0.30319.17626
-
-//val selectedEmployees : (string * string) list = [("Michael", "Suyama")]
 
 let customersSortedTwoColumns = 
     query { for c in db.Customers do 
@@ -292,21 +273,6 @@ let customersSortedTwoColumns =
             thenBy c.Region
             select (c.Country, c.Region, c.CompanyName) }
     |> Seq.toList
-//SELECT [t0].[Country] AS [Item1], [t0].[Region] AS [Item2], [t0].[CompanyName] AS [Item3]
-//FROM [dbo].[Customers] AS [t0]
-//ORDER BY [t0].[Country], [t0].[Region]
-//-- Context: SqlProvider(Sql2008) Model: AttributedMetaModel Build: 4.0.30319.17626
-
-//val customersSortedTwoColumns : (string * string * string) list =
-//  [("Argentina", null, "Cactus Comidas para llevar");
-//   ("Argentina", null, "Océano Atlántico Ltda.");
-//   ("Argentina", null, "Rancho grande"); ("Austria", null, "Piccolo und mehr");
-//   ("Austria", null, "Ernst Handel"); ("Belgium", null, "Maison Dewey");
-//   ...
-//   ("Venezuela", "DF", "GROSELLA-Restaurante");
-//   ("Venezuela", "Lara", "LILA-Supermercado");
-//   ("Venezuela", "Nueva Esparta", "LINO-Delicateses");
-//   ("Venezuela", "Táchira", "HILARION-Abastos")]
 
 let totalOrderQuantity =
     query { for order in db.OrderDetails do
@@ -316,35 +282,12 @@ let customersAverageOrders =
     query { for c in db.Customers do 
             averageBy (float c.Orders.Count) }
 
-//SELECT SUM(CONVERT(Int,[t0].[Quantity])) AS [value]
-//FROM [dbo].[Order Details] AS [t0]
-//-- Context: SqlProvider(Sql2008) Model: AttributedMetaModel Build: 4.0.30319.17626
-//
-//SELECT AVG([t2].[value]) AS [value]
-//FROM (
-//    SELECT CONVERT(Float,(
-//        SELECT COUNT(*)
-//        FROM [dbo].[Orders] AS [t1]
-//        WHERE [t1].[CustomerID] = [t0].[CustomerID]
-//        )) AS [value]
-//    FROM [dbo].[Customers] AS [t0]
-//    ) AS [t2]
-//-- Context: SqlProvider(Sql2008) Model: AttributedMetaModel Build: 4.0.30319.17626
-
-//val totalOrderQuantity : int = 51317
-//val customersAverageOrders : float = 9.120879121
-
 let averagePriceOverProductRange =
     query { for p in db.Products do
             averageByNullable p.UnitPrice }
-//SELECT AVG([t0].[UnitPrice]) AS [value]
-//FROM [dbo].[Products] AS [t0]
-//-- Context: SqlProvider(Sql2008) Model: AttributedMetaModel Build: 4.0.30319.17626
-
-//val averagePriceOverProductRange : System.Nullable<decimal> = 28.8663M
 
 open System
-let totalOrderQuantity =
+let totalOrderQuantity' =
     query { for c in db.Customers do 
             let numOrders = 
                 query { for o in c.Orders do 
@@ -356,6 +299,73 @@ let totalOrderQuantity =
                         averageByNullable (Nullable(od.UnitPrice)) }
             select (c.ContactName, numOrders, averagePrice) }
     |> Seq.toList
+
+let productsGroupedByNameAndCountedTest1 =
+    query { for p in db.Products do
+            groupBy p.Category.CategoryName into group
+            let sum = 
+                query { for p in group do
+                        sumBy (int p.UnitsInStock.Value) }
+            select (group.Key, sum) }
+    |> Seq.toList
+
+let innerJoinQuery = 
+    query { for c in db.Categories do
+            join p in db.Products on (c.CategoryID =? p.CategoryID) 
+            select (p.ProductName, c.CategoryName) } 
+    |> Seq.toList
+
+let innerJoinQuery' = 
+    query { for p in db.Products do
+            select (p.ProductName, p.Category.CategoryName) }
+    |> Seq.toList
+
+let innerGroupJoinQueryWithAggregation =
+    query { for c in db.Categories do
+            groupJoin p in db.Products on (c.CategoryID =? p.CategoryID) into prodGroup
+            let groupMax = query { for p in prodGroup do maxByNullable p.UnitsOnOrder }
+            select (c.CategoryName, groupMax) }
+    |> Seq.toList
+
+//--> Referenced 'C:\Windows\Microsoft.NET\Framework\v4.0.30319\System.Data.Linq.dll'
+//--> Referenced 'C:\Program Files (x86)\Reference Assemblies\Microsoft\FSharp\.NETFramework\v4.0\4.3.0.0\Type Providers\FSharp.Data.TypeProviders.dll'
+//
+//SELECT [t0].[Country] AS [Item1], [t0].[CompanyName] AS [Item2]
+//FROM [dbo].[Customers] AS [t0]
+//ORDER BY [t0].[Country]
+//-- Context: SqlProvider(Sql2008) Model: AttributedMetaModel Build: 4.6.81.0
+//
+//SELECT TOP (5) [t0].[FirstName] AS [Item1], [t0].[LastName] AS [Item2]
+//FROM [dbo].[Employees] AS [t0]
+//WHERE ([t0].[LastName] LIKE @p0) AND (DATEPART(Year, [t0].[BirthDate]) > @p1)
+//-- @p0: Input NVarChar (Size = 4000; Prec = 0; Scale = 0) [S%]
+//-- @p1: Input Int (Size = -1; Prec = 0; Scale = 0) [1960]
+//-- Context: SqlProvider(Sql2008) Model: AttributedMetaModel Build: 4.6.81.0
+//
+//SELECT [t0].[Country] AS [Item1], [t0].[Region] AS [Item2], [t0].[CompanyName] AS [Item3]
+//FROM [dbo].[Customers] AS [t0]
+//ORDER BY [t0].[Country], [t0].[Region]
+//-- Context: SqlProvider(Sql2008) Model: AttributedMetaModel Build: 4.6.81.0
+//
+//SELECT SUM(CONVERT(Int,[t0].[Quantity])) AS [value]
+//FROM [dbo].[Order Details] AS [t0]
+//-- Context: SqlProvider(Sql2008) Model: AttributedMetaModel Build: 4.6.81.0
+//
+//SELECT AVG([t2].[value]) AS [value]
+//FROM (
+//    SELECT CONVERT(Float,(
+//        SELECT COUNT(*)
+//        FROM [dbo].[Orders] AS [t1]
+//        WHERE [t1].[CustomerID] = [t0].[CustomerID]
+//        )) AS [value]
+//    FROM [dbo].[Customers] AS [t0]
+//    ) AS [t2]
+//-- Context: SqlProvider(Sql2008) Model: AttributedMetaModel Build: 4.6.81.0
+//
+//SELECT AVG([t0].[UnitPrice]) AS [value]
+//FROM [dbo].[Products] AS [t0]
+//-- Context: SqlProvider(Sql2008) Model: AttributedMetaModel Build: 4.6.81.0
+//
 //SELECT [t0].[ContactName] AS [Item1], (
 //    SELECT SUM([t3].[value])
 //    FROM (
@@ -372,94 +382,96 @@ let totalOrderQuantity =
 //    WHERE ([t6].[CustomerID] = [t0].[CustomerID]) AND ([t6].[OrderID] = [t6].[OrderID2])
 //    ) AS [Item3]
 //FROM [dbo].[Customers] AS [t0]
-//-- Context: SqlProvider(Sql2008) Model: AttributedMetaModel Build: 4.0.30319.17626
-
-//val totalOrderQuantity :
-//  (string * System.Nullable<int> * System.Nullable<decimal>) list =
-//  [("Maria Anders", 174, 26.7375M); ("Ana Trujillo", 63, 21.5050M);
-//   ("Antonio Moreno", 359, 21.7194M); ("Thomas Hardy", 650, 19.1766M);
-//   ...
-//   ("Zbyszek Piestrzeniewicz", 205, 20.6312M)]
-
-let productsGroupedByNameAndCountedTest1 =
-    query { for p in db.Products do
-            groupBy p.Category.CategoryName into group
-            let sum = 
-                query { for p in group do
-                        sumBy (int p.UnitsInStock.Value) }
-            select (group.Key, sum) }
-    |> Seq.toList
+//-- Context: SqlProvider(Sql2008) Model: AttributedMetaModel Build: 4.6.81.0
+//
 //SELECT SUM(CONVERT(Int,[t0].[UnitsInStock])) AS [Item2], [t1].[CategoryName] AS [Item1]
 //FROM [dbo].[Products] AS [t0]
 //LEFT OUTER JOIN [dbo].[Categories] AS [t1] ON [t1].[CategoryID] = [t0].[CategoryID]
 //GROUP BY [t1].[CategoryName]
-//-- Context: SqlProvider(Sql2008) Model: AttributedMetaModel Build: 4.0.30319.17626
-
-//val productsGroupedByNameAndCountedTest1 : (string * int) list =
-//  [("Beverages", 559); ("Condiments", 507); ("Confections", 386);
-//   ("Dairy Products", 393); ("Grains/Cereals", 308); ("Meat/Poultry", 165);
-//   ("Produce", 100); ("Seafood", 701)]
-
-let innerJoinQuery = 
-    query { for c in db.Categories do
-            join p in db.Products on (c.CategoryID =? p.CategoryID) 
-            select (p.ProductName, c.CategoryName) } 
-    |> Seq.toList
+//-- Context: SqlProvider(Sql2008) Model: AttributedMetaModel Build: 4.6.81.0
+//
 //SELECT [t1].[ProductName] AS [Item1], [t0].[CategoryName] AS [Item2]
 //FROM [dbo].[Categories] AS [t0]
 //INNER JOIN [dbo].[Products] AS [t1] ON ([t0].[CategoryID]) = [t1].[CategoryID]
-//-- Context: SqlProvider(Sql2008) Model: AttributedMetaModel Build: 4.0.30319.17626
-
-//val innerJoinQuery : (string * string) list =
-//  [("Chai", "Beverages"); ("Chang", "Beverages");
-//   ("Aniseed Syrup", "Condiments");
-//   ...
-//   ("Lakkalikööri", "Beverages");
-//   ("Original Frankfurter grüne Soße", "Condiments")]
-
-let innerJoinQuery = 
-    query { for p in db.Products do
-            select (p.ProductName, p.CategoryName) }
-    |> Seq.toList
-//SELECT [t0].[ProductName] AS [Item1], [t2].[test], [t2].[CategoryID], [t2].[CategoryName], [t2].[Description], [t2].[Picture]
+//-- Context: SqlProvider(Sql2008) Model: AttributedMetaModel Build: 4.6.81.0
+//
+//SELECT [t0].[ProductName] AS [Item1], [t1].[CategoryName] AS [Item2]
 //FROM [dbo].[Products] AS [t0]
-//LEFT OUTER JOIN (
-//    SELECT 1 AS [test], [t1].[CategoryID], [t1].[CategoryName], [t1].[Description], [t1].[Picture]
-//    FROM [dbo].[Categories] AS [t1]
-//    ) AS [t2] ON [t2].[CategoryID] = [t0].[CategoryID]
-//-- Context: SqlProvider(Sql2008) Model: AttributedMetaModel Build: 4.0.30319.17626
-
-//val innerJoinQuery : (string * NorthwndDb.ServiceTypes.Category) list =
-//  [("Chai", Category); ("Chang", Category); ("Aniseed Syrup", Category);
-//   ("Chef Anton's Cajun Seasoning", Category);
-//   ...
-//   ("Rhönbräu Klosterbier", Category); ("Lakkalikööri", Category);
-//   ("Original Frankfurter grüne Soße", Category)]
-
-let innerGroupJoinQueryWithAggregation =
-    query { for c in db.Categories do
-            groupJoin p in db.Products on (c.CategoryID =? p.CategoryID) into prodGroup
-            let groupMax = query { for p in prodGroup do maxByNullable p.UnitsOnOrder }
-            select (c.CategoryName, groupMax) }
-    |> Seq.toList
+//LEFT OUTER JOIN [dbo].[Categories] AS [t1] ON [t1].[CategoryID] = [t0].[CategoryID]
+//-- Context: SqlProvider(Sql2008) Model: AttributedMetaModel Build: 4.6.81.0
+//
 //SELECT [t0].[CategoryName] AS [Item1], (
 //    SELECT MAX([t1].[UnitsOnOrder])
 //    FROM [dbo].[Products] AS [t1]
 //    WHERE ([t0].[CategoryID]) = [t1].[CategoryID]
 //    ) AS [Item2]
 //FROM [dbo].[Categories] AS [t0]
-//-- Context: SqlProvider(Sql2008) Model: AttributedMetaModel Build: 4.0.30319.17626
-
-//val innerGroupJoinQueryWithAggregation : (string * Nullable<int16>) list =
+//-- Context: SqlProvider(Sql2008) Model: AttributedMetaModel Build: 4.6.81.0
+//
+//
+//type NorthwndDb =
+//  class
+//    static member GetDataContext : unit -> NorthwndDb.ServiceTypes.SimpleDataContextTypes.Northwind
+//     + 1 overload
+//    nested type ServiceTypes
+//  end
+//val db : NorthwndDb.ServiceTypes.SimpleDataContextTypes.Northwind
+//val customersSortedByCountry : (string * string) list =
+//  [("Argentina", "Cactus Comidas para llevar");
+//   ("Argentina", "Océano Atlántico Ltda."); ("Argentina", "Rancho grande");
+//...
+//   ("Venezuela", "LINO-Delicateses"); ("Venezuela", "HILARION-Abastos");
+//   ("Venezuela", "GROSELLA-Restaurante")]
+//val selectedEmployees : (string * string) list = [("Michael", "Suyama")]
+//val customersSortedTwoColumns : (string * string * string) list =
+//  [("Argentina", null, "Cactus Comidas para llevar");
+//   ("Argentina", null, "Océano Atlántico Ltda.");
+//...
+//   ("Venezuela", "Nueva Esparta", "LINO-Delicateses");
+//   ("Venezuela", "Táchira", "HILARION-Abastos")]
+//val totalOrderQuantity : int = 51317
+//val customersAverageOrders : float = 9.120879121
+//val averagePriceOverProductRange : System.Nullable<decimal> = 28.8663M
+//val totalOrderQuantity' :
+//  (string * System.Nullable<int> * System.Nullable<decimal>) list =
+//  [("Maria Anders", 174, 26.7375M); ("Ana Trujillo", 63, 21.5050M);
+//   ("Antonio Moreno", 359, 21.7194M); ("Thomas Hardy", 650, 19.1766M);
+//...
+//   ("Karl Jablonski", 1063, 31.9582M); ("Matti Karttunen", 148, 25.1588M);
+//   ("Zbyszek Piestrzeniewicz", 205, 20.6312M)]
+//val productsGroupedByNameAndCountedTest1 : (string * int) list =
+//  [("Beverages", 559); ("Condiments", 507); ("Confections", 386);
+//   ("Dairy Products", 393); ("Grains/Cereals", 308); ("Meat/Poultry", 165);
+//   ("Produce", 100); ("Seafood", 701)]
+//val innerJoinQuery : (string * string) list =
+//  [("Chai", "Beverages"); ("Chang", "Beverages");
+//   ("Aniseed Syrup", "Condiments");
+//...
+//   ("Lakkalikööri", "Beverages");
+//   ("Original Frankfurter grüne Soße", "Condiments")]
+//val innerJoinQuery' : (string * string) list =
+//  [("Chai", "Beverages"); ("Chang", "Beverages");
+//   ("Aniseed Syrup", "Condiments");
+//...
+//   ("Lakkalikööri", "Beverages");
+//   ("Original Frankfurter grüne Soße", "Condiments")]
+//val innerGroupJoinQueryWithAggregation :
+//  (string * System.Nullable<int16>) list =
 //  [("Beverages", 40s); ("Condiments", 100s); ("Confections", 70s);
 //   ("Dairy Products", 70s); ("Grains/Cereals", 80s); ("Meat/Poultry", 0s);
 //   ("Produce", 20s); ("Seafood", 70s)]
 
+
+// NOTE: The adventure works sample database is available at http://msftdbprodsamples.codeplex.com.
+// NOTE: This sample code has a connection string to the 2012 version of the sample database.
+
+#I "./packages/FSharp.Data.SqlClient/lib/net40"
+#r "FSharp.Data.SqlClient.dll"
 open FSharp.Data
 
 [<Literal>]
 let connectionString = 
-    @"Data Source=.;Initial Catalog=AdventureWorks2014;Integrated Security=True"
+    @"Data Source=.;Initial Catalog=AdventureWorks2012;Integrated Security=True"
 
 let cmd = 
     new SqlCommandProvider<
@@ -469,14 +481,29 @@ let cmd =
         ORDER BY SalesYTD" , connectionString>()
 
 cmd.Execute(topN = 3L, regionName = "United States", salesMoreThan = 1000000M) |> printfn "%A"
+//--> Added 'E:\...\13ExternalData\./packages/FSharp.Data.SqlClient/lib/net40' to library include path
+//--> Referenced 'E:\...\13ExternalData\./packages/FSharp.Data.SqlClient/lib/net40\FSharp.Data.SqlClient.dll'
+//
+//seq
+//  [{ FirstName = "Pamela"; LastName = "Ansman-Wolfe"; SalesYTD = 1352577.1325M };
+//   { FirstName = "David"; LastName = "Campbell"; SalesYTD = 1573012.9383M };
+//   { FirstName = "Tete"; LastName = "Mensa-Annan"; SalesYTD = 1576562.1966M }]
+//
+//val connectionString : string =
+//  "Data Source=.;Initial Catalog=AdventureWorks2012;Integrated S"+[12 chars]
+//val cmd : FSharp.Data.SqlCommandProvider<...>
+//val it : unit = ()
+
+// NOTE: The book describes this section connecting to ".\SQLEXPRESS" as the server not "." as I do here.
 
 open System.Data
 open System.Data.SqlClient
 
-let connString = @"Server='.\SQLEXPRESS';Integrated Security=SSPI"
+// NOTE: Database is not set in this connection string because I cannot connect to a database that doesn't yet exist.
+// System.Data.SqlClient.SqlException (0x80131904): Cannot open database "company" requested by the login. The login failed.
+//let connString = @"Server='.';Database=company;Integrated Security=SSPI"
+let connString = @"Server='.';Integrated Security=SSPI"
 let conn = new SqlConnection(connString)
-//val connString : string = "Server='.\SQLEXPRESS';Integrated Security=SSPI"
-//val conn : SqlConnection = System.Data.SqlClient.SqlConnection
 
 conn.Open()
 
@@ -486,28 +513,43 @@ open System.Data.SqlClient
 let execNonQuery conn s =
     let comm = new SqlCommand(s, conn, CommandTimeout = 10)
     comm.ExecuteNonQuery() |> ignore
+//val connString : string = "Server='.';Integrated Security=SSPI"
+//val conn : SqlConnection = System.Data.SqlClient.SqlConnection
 //val execNonQuery : conn:SqlConnection -> s:string -> unit
 
 execNonQuery conn "CREATE DATABASE company"
+//val it : unit = ()
 
-execNonQuery conn "CREATE TABLE Employees (
+// NOTE: At this stage I could stick with the same connection string or narrow it down to the database.
+// If the former, then I need to add the TSQL USE statement.
+//let connString = @"Server='.';Database=company;Integrated Security=SSPI"
+execNonQuery conn "USE company"
+
+execNonQuery conn """
+CREATE TABLE Employees (
    EmpID int NOT NULL,
    FirstName varchar(50) NOT NULL,
    LastName varchar(50) NOT NULL,
    Birthday datetime,
-   PRIMARY KEY (EmpID))"
+   PRIMARY KEY (EmpID))"""
+//val it : unit = ()
 
-execNonQuery conn "INSERT INTO Employees (EmpId, FirstName, LastName, Birthday)
-   VALUES (1001, 'Joe', 'Smith', '02/14/1965')"
+execNonQuery conn """
+INSERT INTO Employees (EmpId, FirstName, LastName, Birthday)
+   VALUES (1001, 'Joe', 'Smith', '02/14/1965')"""
+//val it : unit = ()
 
-execNonQuery conn "INSERT INTO Employees (EmpId, FirstName, LastName, Birthday)
-   VALUES (1002, 'Mary', 'Jones', '09/15/1985')"
+execNonQuery conn """
+INSERT INTO Employees (EmpId, FirstName, LastName, Birthday)
+   VALUES (1002, 'Mary', 'Jones', '09/15/1985')"""
+//val it : unit = ()
 
 let query() =
     seq {
         use conn = new SqlConnection(connString)
         conn.Open()
-        use comm = new SqlCommand("SELECT FirstName, Birthday FROM Employees", conn)
+        use comm = new SqlCommand("""
+SELECT FirstName, Birthday FROM Employees""", conn)
         use reader = comm.ExecuteReader()
         while reader.Read() do
             yield (reader.GetString 0, reader.GetDateTime 1)
@@ -522,17 +564,21 @@ query()
 query() |> Seq.iter (fun (fn, bday) -> printfn "%s has birthday %O" fn bday)
 //Joe has birthday 14/02/1965 00:00:00
 //Mary has birthday 15/09/1985 00:00:00
+//val it : unit = ()
 
 query()
-  |> Seq.filter (fun (nm, bday) -> bday < System.DateTime.Parse("01/01/1985"))
-  |> Seq.length;;
+  |> Seq.filter (fun (_, bday) -> bday < System.DateTime.Parse("01/01/1985"))
+  |> Seq.length
 //val it : int = 1
 
-execNonQuery conn "
+// NOTE: Cannot execute create procedure, preceded by a USE statement.
+//System.Data.SqlClient.SqlException (0x80131904): 'CREATE/ALTER PROCEDURE' must be the first statement in a query batch.
+execNonQuery conn """
 CREATE PROCEDURE dbo.GetEmployeesByLastName ( @Name nvarchar(50) ) AS
     SELECT Employees.FirstName, Employees.LastName
     FROM Employees
-    WHERE Employees.LastName LIKE @Name"
+    WHERE Employees.LastName LIKE @Name"""
+//val it : unit = ()
 
 let GetEmployeesByLastName (name : string) =
     use comm = new SqlCommand("GetEmployeesByLastName", conn,
@@ -548,3 +594,4 @@ let GetEmployeesByLastName (name : string) =
 for row in GetEmployeesByLastName("Smith").Rows do
      printfn "row = %O, %O" (row.Item "FirstName") (row.Item "LastName")
 //row = Joe, Smith
+//val it : unit = ()
