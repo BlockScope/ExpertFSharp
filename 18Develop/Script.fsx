@@ -189,7 +189,7 @@ let negTests(strings) =
                        sprintf "isPalindrome(\"%s\") must return false" s)
 
 [<Test>]
-let ``isPalindrome returns true on the emoty string`` () =
+let ``isPalindrome returns true on the empty string`` () =
     Assert.That(isPalindrome(""), Is.True,
                   "isPalindrome must return true on an empty string")
 
@@ -213,7 +213,7 @@ let ``isPalindrome returns false for some examples`` () =
 //--> Referenced 'C:\...\packages/NUnit/lib\nunit.framework.dll'
 //val posTests : strings:seq<string> -> unit
 //val negTests : strings:seq<string> -> unit
-//val ( isPalindrome returns true on the emoty string ) : unit -> unit
+//val ( isPalindrome returns true on the empty string ) : unit -> unit
 //val ( isPalindrome returns true for a single character ) : unit -> unit
 //val ( isPalindrome returns true for even examples ) : unit -> unit
 //val ( isPalindrome returns true for odd examples ) : unit -> unit
