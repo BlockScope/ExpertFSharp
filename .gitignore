@@ -25,3 +25,4 @@ syntax: glob
 */AspNet-Website.dll.min.js
 */bin/*
 *.un~
+**/SymbolicDifferentiation.exe
