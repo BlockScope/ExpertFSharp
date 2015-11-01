@@ -1,5 +1,8 @@
 syntax: glob
+**/UpgradeLog.htm
+*.swp
 *.dll
+**/packages/**
 **/paket.exe
 *.suo
 *.pdb

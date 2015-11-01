@@ -1,19 +1,14 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "19Debugging", "19Debugging.fsproj", "{69E66480-8F85-41A9-AE8F-DF78152BA275}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{B0281656-A7F5-46D6-9E5F-0F07CD827737}"
-	ProjectSection(SolutionItems) = preProject
-		.nuget\NuGet.Config = .nuget\NuGet.Config
-		.nuget\NuGet.targets = .nuget\NuGet.targets
-		.nuget\nuget.exe = .nuget\nuget.exe
-	EndProjectSection
-EndProject
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9A7C9CFE-9DB3-456F-805E-CD474D012506}"
 	ProjectSection(SolutionItems) = preProject
 		..\Script.fsx = ..\Script.fsx
 	EndProjectSection
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "19Debugging", "19Debugging.fsproj", "{69E66480-8F85-41A9-AE8F-DF78152BA275}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
