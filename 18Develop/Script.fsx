@@ -262,21 +262,19 @@ type Test() =
 
 open FsCheck
 
-let revPropertyCheck (xs : list<int>) = List.rev(List.rev xs) = xs
-let revPropertyCheck' (xs : list<int>) = List.rev xs = xs
+let revTwice (xs : list<int>) = List.rev(List.rev xs) = xs
+let revOnce (xs : list<int>) = List.rev xs = xs
 
-Check.Quick revPropertyCheck
-Check.Quick revPropertyCheck'
+Check.Quick revTwice
+Check.Quick revOnce
 //--> Added 'C:\...\packages/FsCheck/lib/net45' to library include path
 //--> Referenced 'C:\..\packages/FsCheck/lib/net45\FsCheck.dll'
 //
 //Ok, passed 100 tests.
-//Falsifiable, after 2 tests (2 shrinks) (StdGen (575151704,296076989)):
+//Falsifiable, after 2 tests (0 shrinks) (StdGen (1711668133,296077015)):
 //Original:
-//[2; 1; -1]
-//Shrunk:
-//[1; 0]
+//[0; 1]
 //
-//val revPropertyCheck : xs:int list -> bool
-//val revPropertyCheck' : xs:int list -> bool
+//val revTwice : xs:int list -> bool
+//val revOnce : xs:int list -> bool
 //val it : unit = ()
