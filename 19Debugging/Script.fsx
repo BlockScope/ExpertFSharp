@@ -2,29 +2,22 @@ open System.Windows.Forms
 
 let form = new Form(Width = 400, Height = 300,
                     Visible = true, Text = "F# Forms Sample")
+//val form : System.Windows.Forms.Form =
+//  System.Windows.Forms.Form, Text: F# Forms Sample
+
 #if COMPILED
 // Run the main code
 System.Windows.Forms.Application.Run(form)
 #endif
 
-c:\dev\apress\f-3.0code\7Encapsulate\Library>fsc -a --doc:whales.xml whales.fs
-//Microsoft (R) F# 3.0 Compiler build 11.0.50522.1
+C:\...\19Debugging>fsc -a --doc:whales.xml ..\07Encapsulate\Whales\whales.fs 
+//Microsoft (R) F# Compiler version 14.0.23020.0
 //Copyright (c) Microsoft Corporation. All Rights Reserved.
-
-//You can also generate a simple XML documentation file using the --doc command-line option. You must name the output file. For example, using fsc -a --doc:whales.xml whales.fs for the code in Listing 7-10 generates the file whales.xml containing the following:
+//
 //<?xml version="1.0" encoding="utf-8"?>
 //<doc>
 //<assembly><name>whales</name></assembly>
 //<members>
-//<member name="">
-//
-//</member>
-//<member name="">
-//
-//</member>
-//<member name="">
-//
-//</member>
 //<member name="T:Whales.Fictional.WhaleKind">
 //<summary>
 // The three kinds of whales we cover in this release
@@ -50,28 +43,8 @@ c:\dev\apress\f-3.0code\7Encapsulate\Library>fsc -a --doc:whales.xml whales.fs
 // The main whale
 //</summary>
 //</member>
-//<member name="T:Whales.Fictional">
-//
-//</member>
 //</members>
 //</doc>
-
-C:\Users\dsyme\Desktop> sn.exe -k whales.snk
-//
-//Microsoft (R) .NET Framework Strong Name Utility  Version 4.0.30319.17626
-//Copyright (c) Microsoft Corporation.  All rights reserved.
-//
-//Key pair written to whales.snk
-
-C:\Users\dsyme\Desktop> fsc -a --keyfile:whales.snk whales.fs
-Microsoft (R) F# 3.0 Compiler build 11.0.50522.1
-Copyright (c) Microsoft Corporation. All Rights Reserved.
-
-C:\Users\dsyme\Desktop> gacutil /i whales.dll
-//Microsoft (R) .NET Global Assembly Cache Utility.  Version 4.0.30319.17626
-//Copyright (c) Microsoft Corporation.  All rights reserved.
-//
-//Assembly successfully added to the cache
 
 let isPalindrome (str : string) =
     let rec check(s : int, e : int) =
@@ -81,6 +54,13 @@ let isPalindrome (str : string) =
 
     check(0, str.Length - 1)
 //val isPalindrome : str:string -> bool
+
+isPalindrome "abba"
+//System.IndexOutOfRangeException: Index was outside the bounds of the array.
+//   at FSI_0005.check@48-2(String str, Int32 s, Int32 e) in C:\...\Script.fsx:line 49
+//   at FSI_0005.isPalindrome(String str) in C:\...\Script.fsx:line 48
+//   at <StartupCode$FSI_0006>.$FSI_0006.main@() in C:\...\Script.fsx:line 70
+//Stopped due to error
 
 open System.Diagnostics
 
@@ -96,13 +76,19 @@ let isPalindrome (str : string) =
     check(0, str.Length - 1)
 //val isPalindrome : str:string -> bool
 
+isPalindrome "abba"
+//val it : bool = true
+
 open System
 
 [<DebuggerDisplay("{re}+{im}i")>]
-type MyComplex= {re : double; im : double}
+type MyComplex = {re : double; im : double}
 
 let c = {re = 0.0; im = 0.0}
 Console.WriteLine("{0}+{1}i", c.re, c.im)
+//>
+//0+0i
+//
 //type MyComplex =
 //  {re: double;
 //   im: double;}
@@ -120,35 +106,6 @@ t1.Start(); t2.Start()
 //val t1 : Threading.Thread
 //val t2 : Threading.Thread
 
-open System
-open System.Windows.Forms
-
-let f = new Form(Text = "Hello world")
-let b = new Button(Text = "Click me!", Dock = DockStyle.Fill)
-
-b.Click.Add(fun _ ->
-    b.Text <- "Click me again"
-    MessageBox.Show("Hello world") |> ignore)
-
-f.Controls.Add(b)
-f.Show()
-Application.Run(f)
-
-open System
-open System.Windows.Forms
-open System.Drawing
-
-let f = new Form(Text = "Hello world")
-
-f.Paint.Add(fun args ->
-    let g = args.Graphics
-
-    for i = 0 to f.Width / 10 do
-        g.DrawLine(Pens.Black, i * 10, 0, i * 10, f.Height))
-
-f.Show()
-Application.Run(f)
-
 type APoint(angle, radius) =
     member x.Angle = angle
     member x.Radius = radius
@@ -161,14 +118,14 @@ type APoint(angle, radius) =
 //    member Radius : float
 //  end
 
-> let p = APoint();;
+let p = APoint()
 //val p : APoint
 
-> p.GetType();;
+p.GetType()
 //val it : System.Type =
-//  FSI_0004+APoint
+//  FSI_0002+APoint
 //    {Assembly = FSI-ASSEMBLY, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null;
-//     AssemblyQualifiedName = "FSI_0004+APoint, FSI-ASSEMBLY, Version=0.0.0.0, ...}
+//     AssemblyQualifiedName = "FSI_0002+APoint, FSI-ASSEMBLY, Version=0.0.0.0, ...}
 
 type APoint(angle, radius) =
     member x.Angle = angle
@@ -184,66 +141,83 @@ type APoint(angle, radius) =
 //    member Radius : float
 //  end
 
-> p.Stretch(22.0);;
+p.Stretch(22.0)
 //error FS0039: The field, constructor or member 'Stretch' is not defined
 
-> let p2 = APoint();;
+let p2 = APoint()
 //val p2 : APoint
 
-> p2.GetType();;
+p2.GetType()
 //val it : System.Type =
-//  FSI_0007+APoint
+//  FSI_0005+APoint
 //    {Assembly = FSI-ASSEMBLY, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null;
-//     AssemblyQualifiedName = "FSI_0007+APoint, FSI-ASSEMBLY, Version=0.0.0.0, ...}
+//     AssemblyQualifiedName = "FSI_0005+APoint, FSI-ASSEMBLY, Version=0.0.0.0, ...}
 
-#r @"EnvDTE.dll"
-#r @"EnvDTE80.dll"
-open System.Runtime.InteropServices
-let appObj = Marshal.GetActiveObject("VisualStudio.DTE") :?> EnvDTE80.DTE2
-printfn "%s" (appObj.ActiveDocument.FullName)
 
-#r @".\..\19Debugging\packages\NUnit.2.6.0.12054\lib\nunit.framework.dll"
+module IsPalindrome =
+    open System.Diagnostics
+
+    let isPalindrome (str : string) =
+        let rec check(s : int, e : int) =
+            Debug.WriteLine("check call")
+            Debug.WriteLineIf((s = 0), "check: First call")
+            Debug.Assert((s >= 0 || s < str.Length), sprintf "s is out of bounds: %d" s)
+            Debug.Assert((e >= 0 || e < str.Length), sprintf "e is out of bounds: %d" e)
+            if s = e || s = e + 1 then true
+            else if str.[s] <> str.[e] then false
+            else check(s + 1, e - 1)
+        check(0, str.Length - 1)
+//module IsPalindrome = begin
+//  val isPalindrome : str:string -> bool
+//end
+
+#I "packages/NUnit/lib"
+#r "nunit.framework.dll"
+
 open System
 open NUnit.Framework
+open IsPalindrome
 
-[<TestFixture>]
-type Test() =
+let posTests(strings) =
+    for s in strings do
+        Assert.That(isPalindrome s, Is.True,
+                      sprintf "isPalindrome(\"%s\") must return true" s)
 
-    let posTests(strings) =
-        for s in strings do
-            Assert.That(isPalindrome s, Is.True,
-                          sprintf "isPalindrome(\"%s\") must return true" s)
+let negTests(strings) =
+    for s in strings do
+        Assert.That(isPalindrome s, Is.False,
+                       sprintf "isPalindrome(\"%s\") must return false" s)
 
-    let negTests(strings) =
-        for s in strings do
-            Assert.That(isPalindrome s, Is.False,
-                           sprintf "isPalindrome(\"%s\") must return false" s)
+[<Test>]
+let ``isPalindrome returns true on the emoty string`` () =
+    Assert.That(isPalindrome(""), Is.True,
+                  "isPalindrome must return true on an empty string")
 
-    [<Test>]
-    member x.EmptyString () =
-        Assert.That(isPalindrome(""), Is.True,
-                      "isPalindrome must return true on an empty string")
+[<Test>]
+let ``isPalindrome returns true for a single character``() = 
+    posTests ["a"]
 
-    [<Test>]
-    member x.SingleChar () = posTests ["a"]
+[<Test>]
+let ``isPalindrome returns true for even examples`` () = 
+    posTests ["aa"; "abba"; "abaaba"]
 
-    [<Test>]
-    member x.EvenPalindrome () = posTests ["aa"; "abba"; "abaaba"]
+[<Test>]
+let ``isPalindrome returns true for odd examples`` () = 
+    posTests ["aba"; "abbba"; "abababa"]
 
-    [<Test>]
-    member x.OddPalindrome () = posTests ["aba"; "abbba"; "abababa"]
+[<Test>]
+let ``isPalindrome returns false for some examples`` () =
+    negTests ["as"; "F# is wonderful"; "Nice"]
 
-    [<Test>]
-    member x.WrongString () = negTests ["as"; "F# is wonderful"; "Nice"]
-//type Test =
-//  class
-//    new : unit -> Test
-//    member EmptyString : unit -> unit
-//    member EvenPalindrome : unit -> unit
-//    member OddPalindrome : unit -> unit
-//    member SingleChar : unit -> unit
-//    member WrongString : unit -> unit
-//  end
+//--> Added 'C:\...\packages/NUnit/lib' to library include path
+//--> Referenced 'C:\...\packages/NUnit/lib\nunit.framework.dll'
+//val posTests : strings:seq<string> -> unit
+//val negTests : strings:seq<string> -> unit
+//val ( isPalindrome returns true on the emoty string ) : unit -> unit
+//val ( isPalindrome returns true for a single character ) : unit -> unit
+//val ( isPalindrome returns true for even examples ) : unit -> unit
+//val ( isPalindrome returns true for odd examples ) : unit -> unit
+//val ( isPalindrome returns false for some examples ) : unit -> unit
 
 open System
 open NUnit.Framework
@@ -282,3 +256,27 @@ type Test() =
 //    member InitTest : unit -> unit
 //    member InitTestFixture : unit -> unit
 //  end
+
+#I "packages/FsCheck/lib/net45"
+#r "FsCheck.dll"
+
+open FsCheck
+
+let revPropertyCheck (xs : list<int>) = List.rev(List.rev xs) = xs
+let revPropertyCheck' (xs : list<int>) = List.rev xs = xs
+
+Check.Quick revPropertyCheck
+Check.Quick revPropertyCheck'
+//--> Added 'C:\...\packages/FsCheck/lib/net45' to library include path
+//--> Referenced 'C:\..\packages/FsCheck/lib/net45\FsCheck.dll'
+//
+//Ok, passed 100 tests.
+//Falsifiable, after 2 tests (2 shrinks) (StdGen (575151704,296076989)):
+//Original:
+//[2; 1; -1]
+//Shrunk:
+//[1; 0]
+//
+//val revPropertyCheck : xs:int list -> bool
+//val revPropertyCheck' : xs:int list -> bool
+//val it : unit = ()
