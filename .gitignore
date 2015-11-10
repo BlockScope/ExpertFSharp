@@ -2,6 +2,13 @@ syntax: glob
 **/UpgradeLog.htm
 *.swp
 *.dll
+*.obj
+*.log
+*.lib
+*.idb
+*.ilk
+*.exp
+**/*.tlog/**
 **/packages/**
 **/paket.exe
 *.suo
