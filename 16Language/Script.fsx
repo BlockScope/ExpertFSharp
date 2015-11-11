@@ -654,3 +654,12 @@ let est1 = Errors.Estimate(fun x -> x - 3.0 * x + 6.0 * (x * x))
 //                   (float * Error -> float * Error)
 //  end
 //val est1 : (float * Error -> float * Error)
+
+#r @"MTypesNProperties/bin/Debug/MTypesNProperties.dll"
+
+type F = MyCode.MyTypeProvider<60,100>
+F.Type57.StaticProp78
+//--> Referenced 'C:\...\MTypesNProperties/bin/Debug/MTypesNProperties.dll'
+//
+//type F = MyCode.MyTypeProvider<...>
+//val it : string = "Hello world: 78"
