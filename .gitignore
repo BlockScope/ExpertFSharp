@@ -11,6 +11,7 @@ syntax: glob
 **/*.tlog/**
 **/packages/**
 **/paket.exe
+**/temp/**
 *.suo
 *.pdb
 *.cache
