@@ -134,6 +134,15 @@ let sumIfBothSmall' (inp1, inp2) =
               return sum.Value}
 //val sumIfBothSmall' : inp1:int * inp2:int -> (unit -> int option)
 
+let sumIfBothSmall'' (inp1, inp2) = 
+    attempt { let sum = ref 0
+              let! n1 = failIfBig inp1
+              sum := !sum + n1
+              let! n2 = failIfBig inp2
+              sum := !sum + n2
+              return sum.Value}
+//val sumIfBothSmall'' : inp1:int * inp2:int -> (unit -> int option)
+
 runAttempt(sumIfBothSmall' (999, 999))
 //val it : int option = Some 1998
 
