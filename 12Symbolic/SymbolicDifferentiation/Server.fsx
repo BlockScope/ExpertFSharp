@@ -19,7 +19,7 @@ let parse text =
     ExprParser.expr ExprLexer.main lex 
 
 let toJson x = 
-    OK ("{ \"result\": \"" + sprintf "%A" x  + "\" }")
+    OK (sprintf """{ "result": "%A" }""" x)
     >>= Writers.setMimeType "application/json"
 
 let webServerSpec () =

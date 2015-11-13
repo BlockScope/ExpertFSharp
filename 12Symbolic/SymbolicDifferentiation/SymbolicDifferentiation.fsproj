@@ -63,6 +63,9 @@
   -->
   <Import Project="..\.paket\paket.targets" />
   <ItemGroup>
+    <Content Include="InstallationDummyFile.txt">
+      <Paket>True</Paket>
+    </Content>
     <Compile Include="Expr.fs" />
     <Compile Include="ExprParser.fsi" />
     <Compile Include="ExprParser.fs" />
