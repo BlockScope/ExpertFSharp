@@ -1,24 +1,25 @@
 # 1 "ExprLexer.fsl"
  
-module ExprLexer
+module Symbolic.Expressions.ExprLexer
 
 open System
+open Symbolic.Expressions
+open Symbolic.Expressions.ExprParser
 open Microsoft.FSharp.Text.Lexing
-open ExprParser
 
 let lexeme = LexBuffer<_>.LexemeString
 
 let special lexbuf = function
-    | "+" -> PLUS | "-" -> MINUS
-    | "*" -> TIMES | "/" -> DIV
-    | "(" -> LPAREN | ")" -> RPAREN | "^" -> HAT
-    | _ -> failwith "Invalid operator"
+    | "+" -> PLUS    | "-" -> MINUS
+    | "*" -> TIMES   | "/" -> DIV
+    | "(" -> LPAREN  | ")" -> RPAREN  | "^" -> HAT
+    | _   -> failwith "Invalid operator"
 
 let id lexbuf = function
-    | "sin" -> SIN | "cos" -> COS
-    | "e" -> E | id -> ID id
+    | "sin" -> SIN   | "cos" -> COS
+    | "e"   -> E     | id    -> ID id
 
-# 21 "ExprLexer.fs"
+# 22 "ExprLexer.fs"
 let trans : uint16[] array = 
     [| 
     (* State 0 *)
@@ -67,42 +68,40 @@ and main  (lexbuf : Microsoft.FSharp.Text.Lexing.LexBuffer<_>) = _fslex_main  0 
 and _fslex_main  _fslex_state lexbuf =
   match _fslex_tables.Interpret(_fslex_state,lexbuf) with
   | 0 -> ( 
-# 31 "ExprLexer.fsl"
-                          INT (Convert.ToInt32(lexeme lexbuf))
-# 72 "ExprLexer.fs"
+# 32 "ExprLexer.fsl"
+                                  INT     (Convert.ToInt32(lexeme lexbuf)) 
+# 73 "ExprLexer.fs"
           )
   | 1 -> ( 
-# 32 "ExprLexer.fsl"
-                            FLOAT (Convert.ToDouble(lexeme lexbuf))
-# 77 "ExprLexer.fs"
+# 33 "ExprLexer.fsl"
+                                  FLOAT   (Convert.ToDouble(lexeme lexbuf)) 
+# 78 "ExprLexer.fs"
           )
   | 2 -> ( 
-# 33 "ExprLexer.fsl"
-                         id lexbuf (lexeme lexbuf)
-# 82 "ExprLexer.fs"
+# 34 "ExprLexer.fsl"
+                                  id      lexbuf (lexeme lexbuf) 
+# 83 "ExprLexer.fs"
           )
   | 3 -> ( 
-# 34 "ExprLexer.fsl"
-                              special lexbuf (lexeme lexbuf)
-# 87 "ExprLexer.fs"
+# 35 "ExprLexer.fsl"
+                                  special lexbuf (lexeme lexbuf) 
+# 88 "ExprLexer.fs"
           )
   | 4 -> ( 
-# 35 "ExprLexer.fsl"
-                              main lexbuf
-# 92 "ExprLexer.fs"
+# 36 "ExprLexer.fsl"
+                                  main    lexbuf 
+# 93 "ExprLexer.fs"
           )
   | 5 -> ( 
-# 36 "ExprLexer.fsl"
-                          EOF
-# 97 "ExprLexer.fs"
+# 37 "ExprLexer.fsl"
+                                  EOF 
+# 98 "ExprLexer.fs"
           )
   | 6 -> ( 
-# 37 "ExprLexer.fsl"
-                        failwith (lexeme lexbuf)
-# 102 "ExprLexer.fs"
+# 38 "ExprLexer.fsl"
+                                  failwith (lexeme lexbuf) 
+# 103 "ExprLexer.fs"
           )
   | _ -> failwith "main"
-
-# 39 "ExprLexer.fsl"
 
 # 3000000 "ExprLexer.fs"

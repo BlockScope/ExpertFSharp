@@ -9,10 +9,11 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>SymbolicDifferentiation</RootNamespace>
     <AssemblyName>SymbolicDifferentiation</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <Name>SymbolicDifferentiation</Name>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">.\</SolutionDir>
-    <TargetFSharpCoreVersion>4.3.0.0</TargetFSharpCoreVersion>
+    <TargetFSharpCoreVersion>4.4.0.0</TargetFSharpCoreVersion>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -37,30 +38,6 @@
     <DocumentationFile>bin\Release\SymbolicDifferentiation.XML</DocumentationFile>
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="mscorlib" />
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Numerics" />
-    <Reference Include="System.Windows.Forms" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Expr.fs" />
-    <None Include="App.config" />
-    <Compile Include="ExprParser.fsi" />
-    <Compile Include="ExprParser.fs" />
-    <Compile Include="ExprLexer.fs" />
-    <Compile Include="ExprUtil.fs" />
-    <Compile Include="VisualExpr.fs" />
-    <Compile Include="Main.fs" />
-    <None Include="ExprParser.fsy" />
-    <None Include="paket.references" />
-    <None Include="ExprLexer.fsl" />
-  </ItemGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
   </PropertyGroup>
@@ -85,26 +62,70 @@
   </Target>
   -->
   <Import Project="..\.paket\paket.targets" />
+  <ItemGroup>
+    <Compile Include="Expr.fs" />
+    <Compile Include="ExprParser.fsi" />
+    <Compile Include="ExprParser.fs" />
+    <Compile Include="ExprLexer.fs" />
+    <Compile Include="ExprUtils.fs" />
+    <Compile Include="VisualExpr.fs" />
+    <Compile Include="Main.fs" />
+    <None Include="ExprParser.fsy" />
+    <None Include="ExprLexer.fsl" />
+    <None Include="App.config" />
+    <None Include="Main.fsx" />
+    <None Include="Server.fsx" />
+    <None Include="paket.references" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="mscorlib" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Windows.Forms" />
+  </ItemGroup>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.0' Or $(TargetFrameworkVersion) == 'v4.5' Or $(TargetFrameworkVersion) == 'v4.5.1' Or $(TargetFrameworkVersion) == 'v4.5.2' Or $(TargetFrameworkVersion) == 'v4.5.3' Or $(TargetFrameworkVersion) == 'v4.6')">
+      <ItemGroup>
+        <Reference Include="FSharp.PowerPack">
+          <HintPath>..\packages\FSPowerPack.Core.Community\Lib\Net40\FSharp.PowerPack.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.0' Or $(TargetFrameworkVersion) == 'v4.5' Or $(TargetFrameworkVersion) == 'v4.5.1' Or $(TargetFrameworkVersion) == 'v4.5.2' Or $(TargetFrameworkVersion) == 'v4.5.3' Or $(TargetFrameworkVersion) == 'v4.6')">
       <ItemGroup>
         <Reference Include="FSharp.PowerPack.Linq">
-          <HintPath>..\packages\FSPowerPack.Community\Lib\Net40\FSharp.PowerPack.Linq.dll</HintPath>
+          <HintPath>..\packages\FSPowerPack.Linq.Community\Lib\Net40\FSharp.PowerPack.Linq.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.0' Or $(TargetFrameworkVersion) == 'v4.5' Or $(TargetFrameworkVersion) == 'v4.5.1' Or $(TargetFrameworkVersion) == 'v4.5.2' Or $(TargetFrameworkVersion) == 'v4.5.3' Or $(TargetFrameworkVersion) == 'v4.6')">
+      <ItemGroup>
         <Reference Include="FSharp.PowerPack.Metadata">
-          <HintPath>..\packages\FSPowerPack.Community\Lib\Net40\FSharp.PowerPack.Metadata.dll</HintPath>
+          <HintPath>..\packages\FSPowerPack.Metadata.Community\Lib\Net40\FSharp.PowerPack.Metadata.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.0' Or $(TargetFrameworkVersion) == 'v4.5' Or $(TargetFrameworkVersion) == 'v4.5.1' Or $(TargetFrameworkVersion) == 'v4.5.2' Or $(TargetFrameworkVersion) == 'v4.5.3' Or $(TargetFrameworkVersion) == 'v4.6')">
+      <ItemGroup>
         <Reference Include="FSharp.PowerPack.Parallel.Seq">
-          <HintPath>..\packages\FSPowerPack.Community\Lib\Net40\FSharp.PowerPack.Parallel.Seq.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="FSharp.PowerPack">
-          <HintPath>..\packages\FSPowerPack.Community\Lib\Net40\FSharp.PowerPack.dll</HintPath>
+          <HintPath>..\packages\FSPowerPack.Parallel.Seq.Community\Lib\Net40\FSharp.PowerPack.Parallel.Seq.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

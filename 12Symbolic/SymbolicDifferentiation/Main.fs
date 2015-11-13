@@ -54,9 +54,9 @@ let Parse s =
 let NewStringExpression form s =
     try
         let e1 = Parse s
-        let e2 = Utils.Simplify e1
-        let e3 = Utils.Differentiate "x" e2
-        let e4 = Utils.Simplify e3
+        let e2 = Utils.simplify e1
+        let e3 = Utils.diff "x" e2
+        let e4 = Utils.simplify e3
         NewExpression form s ["Original:", e1; "Simplified:", e2;
                               "Derivative:", e3; "Simplified:", e4]
     with

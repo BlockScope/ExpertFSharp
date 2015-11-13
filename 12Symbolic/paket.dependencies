@@ -1,4 +1,6 @@
 source https://www.nuget.org/api/v2/
 framework >= net40
 
-nuget FSPowerPack.Community 2.1.3.1
+nuget FSPowerPack.Community
+nuget FsLexYacc
+nuget Suave
