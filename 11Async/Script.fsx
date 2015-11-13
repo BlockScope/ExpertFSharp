@@ -890,3 +890,9 @@ type MutablePair<'T, 'U>(x : 'T, y : 'U) =
 //    member Update : x:'T * y:'U -> unit
 //    member Value : 'T * 'U
 //  end
+
+// NOTE: For let () = expr of the async workflow expressions.
+let () = ()
+let () = 1 |> ignore
+let 1 = 1
+//warning FS0025: Incomplete pattern matches on this expression. For example, the value '0' may indicate a case not covered by the pattern(s).
