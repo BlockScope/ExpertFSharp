@@ -44,10 +44,9 @@ type AsyncTcpServerSecure(addr, port, handleServerRequest) =
                 findType = X509FindType.FindBySubjectName,
                 findValue = Dns.GetHostName(),
                 validOnly = true)
-        seq {
-        for c in certs do if c.FriendlyName = "localhost" then yield Some(c)
-        yield None}
-        |> Seq.head
+        certs 
+        |> Seq.cast<X509Certificate2>
+        |> Seq.tryFind (fun c -> c.FriendlyName = "localhost")
 
     let handleServerRequestSecure (client : TcpClient) = 
         async {
