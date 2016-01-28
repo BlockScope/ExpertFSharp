@@ -64,12 +64,6 @@ let server = async {
     while true do
         use client = socket.AcceptTcpClient()
         do! handleRequest client}
-//val mimeTypes : System.Collections.Generic.IDictionary<string,string>
-//val getMimeType : ext:string -> string
-//val ( |Regex1|_| ) : patt:string -> inp:string -> string option
-//val root : string = "c:\inetpub\wwwroot"
-//val handleRequest : client:System.Net.Sockets.TcpClient -> Async<unit>
-//val server : Async<unit>
 
-> Async.Start server;;
+//Async.Start server;;
 //val it : unit = ()
