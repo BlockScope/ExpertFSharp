@@ -61,3 +61,14 @@
 #*.PDF   diff=astextplain
 #*.rtf   diff=astextplain
 #*.RTF   diff=astextplain
+
+###############################################################################
+# mask certain file types from linguist to ensure the proper
+# language emphasis is supported in GraphQL API searches
+###############################################################################
+
+*.css linguist-detectable=false
+*.scss linguist-detectable=false
+*.js linguist-detectable=false
+*.html linguist-detectable=false
+*.javascript linguist-detectable=false
